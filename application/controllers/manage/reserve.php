@@ -306,6 +306,31 @@ class Reserve extends MY_Controller
 		}
 		else
 		{
+			echo "<hr>";
+			echo "ข้อมูลผู้จอง";
+			echo "<hr>";
+			echo "<p>person_type : ".$this->input->post("select_person_type")."</p>";
+			echo "<p>person : ".$this->input->post("select_person")."</p>";
+			if($this->input->post("select_person")=="03")//บุคคลทั่วไป
+			{
+				echo "<p>select_job_position : ".$this->input->post("select_job_position")."</p>";
+				if($this->input->post("select_job_position")=="00")
+					echo "<p>input_job_position : ".$this->input->post("input_job_position")."</p>";
+				echo "<p>select_office : ".$this->input->post("select_office")."</p>";
+				if($this->input->post("select_office")=="00")
+					echo "<p>input_office : ".$this->input->post("input_office")."</p>";
+			}
+			echo "<p>input_phone : ".$this->input->post("input_phone")."</p>";
+			echo "<hr>";
+			echo "มีความประสงค์ขอใช้";
+			echo "<hr>";
+			echo "<p>select_room_type : ".$this->input->post("select_room_type")."</p>";
+			echo "<p>select_room : ".$this->input->post("select_room")."</p>";
+			echo "<p>input_num_of_people : ".$this->input->post("input_num_of_people")."</p>";
+			echo "<p>textarea_for_use : ".$this->input->post("textarea_for_use")."</p>";
+			//echo "<p> : ".$this->input->post("")."</p>";
+			//echo $this->input->post("select_person_type");
+			//echo $this->input->post("select_person_type");
 			print_r($this->input->post("article"));
 			print_r($this->input->post("article_num"));
 			

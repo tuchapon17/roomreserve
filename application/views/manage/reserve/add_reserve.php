@@ -68,7 +68,7 @@ echo $head;
       			<form role="form" action="?d=manage&c=reserve&m=add" method="post" id="reserve_add">
       			
       				<fieldset class="scheduler-border">
-						<legend class="scheduler-border"></legend>
+						<legend class="scheduler-border">ข้อมูลผู้จอง</legend>
 						
 						<?php 
 						echo $se_person_type;
@@ -622,7 +622,8 @@ echo $js;
 			}
 			else
 			{
-				bootbox.alert("กรุณาเลือก ประเภทกำหนดการ");
+				$("#span-time2").after("<label class='my-error-class'>โปรดเลือก</label>");
+				//bootbox.alert("กรุณาเลือก ประเภทกำหนดการ");
 				e.preventDefault();
 			}
 			
