@@ -328,23 +328,42 @@ class Reserve extends MY_Controller
 			echo "<p>select_room : ".$this->input->post("select_room")."</p>";
 			echo "<p>input_num_of_people : ".$this->input->post("input_num_of_people")."</p>";
 			echo "<p>textarea_for_use : ".$this->input->post("textarea_for_use")."</p>";
+			echo "<hr>";
+			echo "ครุภัณฑ์/อุปกรณ์ที่ใช้";
+			echo "<hr>";
+			echo "<p>checkbox article[] : ".print_r($this->input->post("article"))."</p>";
+			echo "<p>checkbox article_num[] : ".print_r($this->input->post("article_num"))."</p>";
+			echo "<p>textarea other_article : ".$this->input->post("other_article")."</p>";
+			echo "<hr>";
+			echo "ข้อมูลโครงการ";
+			echo "<hr>";
+			echo "<p>input_project_name : ".$this->input->post("input_project_name")."</p>";
+			echo "<hr>";
+			echo "กำหนดเวลา";
+			echo "<hr>";
+			echo "<p>radio: ".$this->input->post("reserve_time")."</p>";
+			echo "<p>input-begin-time1[] : ".print_r($this->input->post("input-begin-time1"))."</p>";
+			echo "<p>input-end-time1[] : ".print_r($this->input->post("input-end-time1"))."</p>";
+			echo "<p>input-begin-time2 : ".$this->input->post("input-begin-time2")."</p>";
+			echo "<p>input-end-time2 : ".$this->input->post("input-end-time2")."</p>";
+			echo "<p>day-time2[] : ".print_r($this->input->post("day-time2"))."</p>";
 			//echo "<p> : ".$this->input->post("")."</p>";
 			//echo $this->input->post("select_person_type");
 			//echo $this->input->post("select_person_type");
-			print_r($this->input->post("article"));
-			print_r($this->input->post("article_num"));
+			//print_r($this->input->post("article"));
+			//print_r($this->input->post("article_num"));
 			
 			
-			print_r($this->input->post("input-begin-time1"));
-			print_r($this->input->post("input-end-time1"));
+			//print_r($this->input->post("input-begin-time1"));
+			//print_r($this->input->post("input-end-time1"));
 			foreach($this->input->post("input-begin-time1") as $key=>$bg)
 			{
-				echo $this->convert_datetime($bg)["date"];
-				echo "<hr>";
+				//echo $this->convert_datetime($bg)["date"];
+				//echo "<hr>";
 				//echo $this->convert_datetime($bg)["time"];
 				
 			}
-			print_r($this->input->post("day-time2"));
+			//print_r($this->input->post("day-time2"));
 		}
 		//redirect(base_url()."?d=manage&c=reserve&m=add_datetime");
 	}
