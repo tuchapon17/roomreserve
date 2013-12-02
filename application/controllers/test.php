@@ -19,8 +19,14 @@ class Test extends CI_Controller {
 	 */
 	public function index()
 	{
-		$this->load->model("register_model");
-		echo $this->register_model->username_already_exist2("abcdefgh");
+		$data=array(
+				"name1"=>"testname1",
+				"name2"=>"testname2"
+		);
+		$this->db->insert("testtable",$data);
+		echo $this->db->_error_number();
+		echo "<hr>";
+		echo $this->db->_error_message();
 	}
 }
 

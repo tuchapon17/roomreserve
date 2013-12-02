@@ -589,7 +589,10 @@ echo $js;
 				var endtime=match_time($("input[name='input-end-time2']").val());
 				var datestat=0;
 				var timestat=0;
-				if(compare_date(begindate,enddate))
+				alert(enddate.getDate());
+				alert(enddate.getDate() - new Date(begindate).getDate());
+				if(enddate-begindate>7)
+				//if(compare_date(begindate,enddate))
 				{
 					if(begindate==enddate)
 					{

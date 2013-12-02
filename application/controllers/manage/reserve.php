@@ -306,6 +306,314 @@ class Reserve extends MY_Controller
 		}
 		else
 		{
+			//insert tb_reserve
+			$reserve_id=$this->load_reserve_model->get_maxid(5,"reserve_id","tb_reserve");
+			$data=array(
+					"reserve_id"=>$reserve_id,
+					"tb_user_username"=>$this->session->userdata("rs_username"),
+					"tb_room_id"=>$this->input->post("select_room"),
+					"for_use"=>$this->input->post("textarea_for_use"),
+					"project_name"=>$this->input->post("input_project_name"),
+					"other_article"=>$this->input->post("other_article"),
+					"num_of_people"=>$this->input->post("input_num_of_people"),
+					"reserve_on"=>date('Y-m-d H:i:s')
+					//""=>"",
+			);
+			$redirect_link="?d=manage&c=reserve&m=add";
+			$this->load_reserve_model->manage_add2($data,"tb_reserve");
+			
+			//insert tb_reserve_has_article
+			foreach ($this->input->post("article") as $index=>$val)
+			{
+				$data2=array(
+						"tb_reserve_id"=>$reserve_id,
+						"tb_article_id"=>$val,
+						"unit_num"=>$this->input->post("article_num")[$index]
+				);
+				$this->load_reserve_model->manage_add2($data2,"tb_reserve_has_article");
+			}
+			
+			//insert tb_reserve_has_datetime
+			if($this->input->post("reserve_time")=="reserve_time1")
+			{
+				foreach($this->input->post("input-begin-time1") as $key=>$val)
+				{
+					$data3=array(
+							"datetime_id"=>$this->load_reserve_model->get_maxid(6,"datetime_id","tb_reserve_has_datetime"),
+							"tb_reserve_id"=>$reserve_id,
+							"reserve_datetime_begin"=>$this->convert_datetime($val)["date"]." ".$this->convert_datetime($val)["time"],
+							"reserve_datetime_end"=>$this->convert_datetime($this->input->post("input-end-time1")[$key])["date"]." ".$this->convert_datetime($this->input->post("input-end-time1")[$key])["time"]
+					);
+					$this->load_reserve_model->manage_add2($data3,"tb_reserve_has_datetime");
+				}
+			}
+			else if($this->input->post("reserve_time")=="reserve_time2")
+			{
+				$yearBegin=substr($this->convert_datetime($this->input->post("input-begin-time2"))["date"],0,4);
+				$monthBegin=substr($this->convert_datetime($this->input->post("input-begin-time2"))["date"],5,2);
+				$dateBegin=substr($this->convert_datetime($this->input->post("input-begin-time2"))["date"],8,2);
+				$yearEnd=substr($this->convert_datetime($this->input->post("input-end-time2"))["date"],0,4);
+				$monthEnd=substr($this->convert_datetime($this->input->post("input-end-time2"))["date"],5,2);
+				$dateEnd=substr($this->convert_datetime($this->input->post("input-end-time2"))["date"],8,2);
+				$timeBegin=$this->convert_datetime($this->input->post("input-begin-time2"))["time"];
+				$timeEnd=$this->convert_datetime($this->input->post("input-end-time2"))["time"];
+				$arrDateTimeBegin=array();
+				$arrDateTimeEnd=array();
+				$arr_dayofweek=$this->input->post("day-time2");
+				for($y=$yearBegin; $y<=$yearEnd; $y++)
+				{
+					if($yearEnd-$y>0)
+					{
+						if($y==$yearBegin) $minmonth=$monthBegin;
+						else $minmonth=1;
+						for($m=$minmonth; $m<=12; $m++)
+						{
+							$d1;
+							if($y==$yearBegin)//ถ้าเป็นปีแรก
+							{
+							//ถ้าเป็นเดือนแรกให้เริ่มloopตั้งแต่วันเริ่มที่เลือกไว้
+								if($m==$monthBegin) $d1=$dateBegin;
+								else $d1=1;
+							}
+							else $d1=1;
+							for($d1; $d1<=cal_days_in_month(CAL_GREGORIAN, $m, $y); $d1++)
+							{
+								foreach($arr_dayofweek as $key=>$val)
+								{
+									if(date('w',strtotime($y."-".$m."-".$d1))==$val)
+									{
+										array_push($arrDateTimeBegin, $y."-".$m."-".$d1." ".$timeBegin);
+										array_push($arrDateTimeEnd, $y."-".$m."-".$d1." ".$timeEnd);
+									}
+								}
+							}
+						}
+					}
+					else if($yearEnd-$y==0)
+					{
+						for($m=1; $m<=$monthEnd; $m++)
+						{
+							if($m==$monthEnd)
+							{
+								for($d1=1; $d1<=$dateEnd; $d1++)
+								{
+									foreach($arr_dayofweek as $key=>$val)
+									{
+										if(date('w',strtotime($y."-".$m."-".$d1))==$val)
+										{
+											array_push($arrDateTimeBegin, $y."-".$m."-".$d1." ".$timeBegin);
+											array_push($arrDateTimeEnd, $y."-".$m."-".$d1." ".$timeEnd);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				foreach($arrDateTimeBegin as $index=>$val)
+				{
+					$data3=array(
+							"datetime_id"=>$this->load_reserve_model->get_maxid(6,"datetime_id","tb_reserve_has_datetime"),
+							"tb_reserve_id"=>$reserve_id,
+							"reserve_datetime_begin"=>$val,
+							"reserve_datetime_end"=>$arrDateTimeEnd[$index]
+					);
+					$this->load_reserve_model->manage_add2($data3,"tb_reserve_has_datetime");
+				}
+			}
+					
+			//insert tb_reserve_has_person
+			if($this->input->post("select_person")=="03")//บุคคลทั่วไป
+			{
+				$job_position_id=$this->input->post("select_job_position");
+				$office_id=$this->input->post("select_office");
+				if($this->input->post("select_job_position")=="00")
+				{
+					$job_position_id=$this->load_reserve_model->get_maxid(2,"job_position_id","tb_job_position");
+					$this->load_reserve_model->manage_add2(
+							array(
+								"job_position_id"=>$job_position_id,
+								"job_position_name"=>$this->input->post("input_job_position")
+							),
+							"tb_job_position");
+				}
+				if($this->input->post("select_office")=="00")
+				{
+					$office_id=$this->load_reserve_model->get_maxid(2,"office_id","tb_office");
+					$this->load_reserve_model->manage_add2(
+							array(
+									"office_id"=>$office_id,
+									"office_name"=>$this->input->post("input_office")
+							),
+							"tb_office");
+				}
+				$data4=array(
+						"tb_reserve_id"=>$reserve_id,
+						"tb_person_id"=>$this->input->post("select_person"),
+						"phone"=>$this->input->post("input_phone"),
+						"tb_job_position_id"=>$job_position_id,
+						"tb_office_id"=>$office_id
+				);
+			}
+			else if($this->input->post("select_person")=="02" || $this->input->post("select_person")=="01")//std || teacher
+			{
+				$faculty_id=$this->input->post("select_faculty");
+				$department_id=$this->input->post("select_department");
+				$job_position_id=$this->input->post("select_job_position");
+				if($this->input->post("select_faculty")=="00")
+				{
+					$faculty_id=$this->load_reserve_model->get_maxid(2,"faculty_id","tb_faculty");
+					$this->load_reserve_model->manage_add2(
+							array(
+									"faculty_id"=>$faculty_id,
+									"faculty_name"=>$this->input->post("input_faculty")
+							),
+							"tb_faculty");
+				}
+				if($this->input->post("select_department")=="00")
+				{
+					$department_id=$this->load_reserve_model->get_maxid(2,"department_id","tb_department");
+					$this->load_reserve_model->manage_add2(
+							array(
+									"department_id"=>$department_id,
+									"department_name"=>$this->input->post("input_department")
+							),
+							"tb_department");
+				}
+				if($this->input->post("select_person")=="01")
+				{
+					if($this->input->post("select_job_position")=="00")
+					{
+						$job_position_id=$this->load_reserve_model->get_maxid(2,"job_position_id","tb_job_position");
+						$this->load_reserve_model->manage_add2(
+								array(
+										"job_position_id"=>$job_position_id,
+										"job_position_name"=>$this->input->post("input_job_position")
+								),
+								"tb_job_position");
+					}
+				}
+				
+				if($this->input->post("select_person")=="01")
+				{
+					$data4=array(
+							"tb_reserve_id"=>$reserve_id,
+							"tb_person_id"=>$this->input->post("select_person"),
+							"phone"=>$this->input->post("input_phone"),
+							"tb_faculty_id"=>$faculty_id,
+							"tb_department_id"=>$department_id,
+							"tb_job_position_id"=>$job_position_id
+					);
+				}
+				else 
+				{
+					$data4=array(
+							"tb_reserve_id"=>$reserve_id,
+							"tb_person_id"=>$this->input->post("select_person"),
+							"phone"=>$this->input->post("input_phone"),
+							"tb_faculty_id"=>$faculty_id,
+							"tb_department_id"=>$department_id,
+							"std_id"=>$this->input->post("input_std_id")
+					);
+				}
+			}
+			$this->load_reserve_model->manage_add2($data4,"tb_reserve_has_person");
+			
+			
+			echo "<hr>";
+			echo "tb_reserve";
+			echo "<hr>";
+			echo "<p>reserve_id : xxx</p>";
+			echo "<p>tb_user_username : session_username</p>";
+			echo "<p>tb_room_id : ".$this->input->post("select_room")."</p>";
+			echo "<p>for_use : ".$this->input->post("textarea_for_use")."</p>";
+			echo "<p>project_name : ".$this->input->post("input_project_name")."</p>";
+			echo "<p>other_article : ".$this->input->post("other_article")."</p>";
+			echo "<p>num_of_people : ".$this->input->post("input_num_of_people")."</p>";
+			echo "<p>reserve_on : ".date("Y-m-d H:i:s")."</p>";
+			echo "<p> : ".$this->input->post("")."</p>";
+			//echo "<p> : ".$this->input->post("")."</p>";
+			echo "<hr>";
+			echo "tb_reserve_has_datetime";
+			echo "<hr>";
+			if($this->input->post("reserve_time")=="reserve_time1")
+			{
+				foreach($this->input->post("input-begin-time1") as $key=>$val)
+				{
+					echo "<p>begin-time1:".$key." : ".$this->input->post("input-begin-time1")[$key]."</p>";
+					echo "<p>end-time1:".$key." : ".$this->input->post("input-end-time1")[$key]."</p>";
+				}
+			}
+			else if($this->input->post("reserve_time")=="reserve_time2")
+			{
+				
+				$yearBegin=substr($this->convert_datetime($this->input->post("input-begin-time2"))["date"],0,4);
+				$monthBegin=substr($this->convert_datetime($this->input->post("input-begin-time2"))["date"],5,2);
+				$dateBegin=substr($this->convert_datetime($this->input->post("input-begin-time2"))["date"],8,2);
+				$yearEnd=substr($this->convert_datetime($this->input->post("input-end-time2"))["date"],0,4);
+				$monthEnd=substr($this->convert_datetime($this->input->post("input-end-time2"))["date"],5,2);
+				$dateEnd=substr($this->convert_datetime($this->input->post("input-end-time2"))["date"],8,2);
+				$timeBegin=$this->convert_datetime($this->input->post("input-begin-time2"))["time"];
+				$timeEnd=$this->convert_datetime($this->input->post("input-end-time2"))["time"];
+				$arrDateTimeBegin=array();
+				$arrDateTimeEnd=array();
+				$arr_dayofweek=$this->input->post("day-time2");
+				for($y=$yearBegin; $y<=$yearEnd; $y++)
+				{
+					if($yearEnd-$y>0)
+					{
+						if($y==$yearBegin) $minmonth=$monthBegin;
+						else $minmonth=1;
+						for($m=$minmonth; $m<=12; $m++)
+						{
+							$d1;
+							if($y==$yearBegin)//ถ้าเป็นปีแรก
+							{
+								//ถ้าเป็นเดือนแรกให้เริ่มloopตั้งแต่วันเริ่มที่เลือกไว้
+								if($m==$monthBegin) $d1=$dateBegin;
+								else $d1=1;
+							}
+							else $d1=1;
+							for($d1; $d1<=cal_days_in_month(CAL_GREGORIAN, $m, $y); $d1++)
+							{
+								foreach($arr_dayofweek as $key=>$val)
+								{
+									if(date('w',strtotime($y."-".$m."-".$d1))==$val)
+									{
+										array_push($arrDateTimeBegin, $y."-".$m."-".$d1." ".$timeBegin);
+										array_push($arrDateTimeEnd, $y."-".$m."-".$d1." ".$timeEnd);
+									}
+								}
+							}
+						}
+					}
+					else if($yearEnd-$y==0)
+					{
+						for($m=1; $m<=$monthEnd; $m++)
+						{
+							if($m==$monthEnd)
+							{
+								for($d1=1; $d1<=$dateEnd; $d1++)
+								{
+									foreach($arr_dayofweek as $key=>$val)
+									{
+										if(date('w',strtotime($y."-".$m."-".$d1))==$val)
+										{
+											array_push($arrDateTimeBegin, $y."-".$m."-".$d1." ".$timeBegin);
+											array_push($arrDateTimeEnd, $y."-".$m."-".$d1." ".$timeEnd);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+				print_r($arrDateTimeBegin);
+				print_r($arrDateTimeEnd);
+				//echo $this->convert_datetime($this->input->post("input-begin-time2"))["date"];
+			}
+			
+			
 			echo "<hr>";
 			echo "ข้อมูลผู้จอง";
 			echo "<hr>";
@@ -319,6 +627,23 @@ class Reserve extends MY_Controller
 				echo "<p>select_office : ".$this->input->post("select_office")."</p>";
 				if($this->input->post("select_office")=="00")
 					echo "<p>input_office : ".$this->input->post("input_office")."</p>";
+			}
+			else if($this->input->post("select_person")=="02")//std
+			{
+				//select_faculty
+				//	input_faculty
+				//select_department
+				//	input_department
+				//input_std_id
+			}
+			else if($this->input->post("select_person")=="01")//teacher
+			{
+				//select_faculty
+				//	input_faculty
+				//select_department
+				//	input_department
+				//select_job_position
+				//	input_job_position
 			}
 			echo "<p>input_phone : ".$this->input->post("input_phone")."</p>";
 			echo "<hr>";
@@ -415,7 +740,7 @@ class Reserve extends MY_Controller
 		}
 
 		//find time
-		$pattern = "/(0[0-9]|1[0-9]|2[0-4]):(0[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]|6[0]):(0[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]|6[0])/";
+		$pattern = "/([0-9]|0[0-9]|1[0-9]|2[0-4]):(0[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]|6[0]):(0[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]|6[0])/";
 		preg_match($pattern,$subject, $matches);
 		if(count($matches)>0)$datetime["time"]=$matches[0];
 		return $datetime;
