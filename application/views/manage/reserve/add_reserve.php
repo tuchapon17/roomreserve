@@ -65,7 +65,7 @@ echo $head;
       		 		echo form_error($em_name["in_fee_over_unit_lump_sum"]);*/
       		 	?>
       			</div>
-      			<form role="form" action="?d=manage&c=reserve&m=add" method="post" id="reserve_add">
+      			<form role="form" action="?d=manage&c=reserve&m=add" method="post" id="reserve_add" enctype="multipart/form-data">
       			
       				<fieldset class="scheduler-border">
 						<legend class="scheduler-border">ข้อมูลผู้จอง</legend>
@@ -232,6 +232,7 @@ echo $js;
 	<script type="text/javascript" src="<?php echo base_url();?>js/jquery.numeric.js"></script>
 	<script type="text/javascript" src="<?php echo base_url();?>plugins/jquery-validation-1.11.1/dist/jquery.validate.min.js"></script>
 	<script type="text/javascript" src="<?php echo base_url();?>plugins/jquery-validation-1.11.1/localization/messages_th.js"></script>
+	<script type="text/javascript" src="<?php echo base_url();?>plugins/jquery-validation-1.11.1/dist/additional-methods.min.js"></script>
 	
 	<script type="text/javascript">
 	<!--
@@ -306,6 +307,13 @@ echo $js;
 				else return true;
 			}
 		}, "โปรดระบุหน่วยงานอื่นๆ");
+		$.validator.addMethod('filesize', function(value, element, param) {
+		    // param = size (en bytes) 
+		    // element = element to validate (<input>)
+		    // value = value of the element (file name)
+		    return this.optional(element) || (element.files[0].size <= param) 
+		});
+
 		
 		$("#reserve_add").validate({
 			lang:'th',
@@ -366,6 +374,11 @@ echo $js;
 				},
 				"input_office":{
 					otheroffice:true
+				},
+				"project_file":{
+					required:true,
+					filesize:2097152,
+					extension:"docx|doc|pdf"
 				}
 			},
 			messages:{
@@ -421,14 +434,6 @@ echo $js;
 
 
 
-
-
-
-
-
-
-
-
 		/*#################################################
 		* จำนวนครุภัณฑ์อุปกรณ์ : เฉพาะตัวเลข 
 		###################################################*/
@@ -440,59 +445,7 @@ echo $js;
 		* เมื่อ submit form การจอง
 		###################################################*/
 		$("#reserve_add").submit(function(e){
-			/*if($("#select_person_type").val()=='')bootbox.alert("กรุณาเลือกประเภทบุคคล");
-			else
-			{
-				if($("#select_person").val()=='')bootbox.alert("กรุณาเลือกบุคคล");
-				else if($("#select_person").val()=='03')//บุคคลภายนอก
-				{
-					if($("#select_job_position").val()=='')bootbox.alert("กรุณาเลือกตำแหน่งงาน");
-					else if($("#select_job_position").val()=='00')
-					{
-						if($("#input_job_position").val().length<1)bootbox.alert("กรุณาระบุแหน่งงานอื่นๆ");
-					}
-					if($("#select_office").val()=='')bootbox.alert("กรุณาเลือกหน่วยงาน");
-					else if($("#select_office").val()=='00')
-					{
-						if($("#input_office").val().length<1)bootbox.alert("กรุณาระบุหน่วยงานอื่นๆ");
-					}
-				}
-				else if($("#select_person").val()=='02')//นักศึกษา
-				{
-					if($("#select_faculty").val()=='')bootbox.alert("กรุณาเลือกคณะ");
-					else if($("#select_faculty").val()=='00')
-					{
-						if($("#input_faculty").val().length<1)bootbox.alert("กรุณาระบุคณะอื่นๆ");
-					}
-					if($("#select_department").val()=='')bootbox.alert("กรุณาเลือกสาขา/งาน");
-					else if($("#select_department").val()=='00')
-					{
-						if($("#input_department").val().length<1)bootbox.alert("กรุณาระบุสาขา/งานอื่นๆ");
-					}
-					if($("#input_std_id").val().length<11)bootbox.alert("รหัสนักศึกษาไม่ถูกต้อง");
-				}
-				else if($("#select_person").val()=='01')//อาจารย์/เจ้าหน้าที่
-				{
-					if($("#select_faculty").val()=='')bootbox.alert("กรุณาเลือกคณะ");
-					else if($("#select_faculty").val()=='00')
-					{
-						if($("#input_faculty").val().length<1)bootbox.alert("กรุณาระบุคณะอื่นๆ");
-					}
-					if($("#select_department").val()=='')bootbox.alert("กรุณาเลือกสาขา/งาน");
-					else if($("#select_department").val()=='00')
-					{
-						if($("#input_department").val().length<1)bootbox.alert("กรุณาระบุสาขา/งานอื่นๆ");
-					}
-					if($("#select_job_position").val()=='')bootbox.alert("กรุณาเลือกตำแหน่งงาน");
-					else if($("#select_job_position").val()=='00')
-					{
-						if($("#input_job_position").val().length<1)bootbox.alert("กรุณาระบุแหน่งงานอื่นๆ");
-					}
-				}
-			}
-			if($("#input_phone").val().length<9)bootbox.alert("เบอร์โทรศัพท์ที่ติดต่อได้ไม่ถูกต้อง");
 			
-			e.preventDefault();*/
 			var checked=0;
 			$("input[name='article[]']").each(function(){
 				if($(this).is(":checked"))
@@ -513,7 +466,6 @@ echo $js;
 					$("#used_article").prepend("<label class='article-error my-error-class'>โปรดเลือก</label>");
 					e.preventDefault();
 				}
-				
 			}
 			
 			/*#################################################
@@ -560,7 +512,6 @@ echo $js;
 							message[i]="โปรดตรวจสอบวันเริ่มต้น และวันสิ้นสุด";
 							//alertmessage+="<li>กรุณากำหนดวันเริ่มต้น และวันสิ้นสุด</li>";
 						}
-						
 					}
 				}
 				//bootbox.alert("<ul>"+alertmessage+"</ul>");
@@ -860,14 +811,27 @@ echo $js;
 				$(this).remove();
 			});
 		});
-		
+
+		//add upload file
+		$('#select_person_type').on('change keyup',function(){
+			if($(this).find("option:selected").val()=="01")
+			{
+				if(!$("div").hasClass("div_project_file"))
+				{
+					var html='<div class="form-group div_project_file">';
+					html+='<label for="project_file">ไฟล์เอกสารโครงการ</label>';
+					html+='<input type="file" id="project_file" name="project_file">';
+					html+='</div>';
+					$("input#input_project_name").parent().after(html);
+				}
+			}
+			else $(".div_project_file").remove();
+		});
 		
 		$(document.body).on('change', '#used_article input[type="checkbox"][name="article[]"]' ,function(){
-			//alert($(this).parent().text());
 			if(this.checked)
 			{	
 				var oldtext=$(this).parent().text();
-				//var html='<span><br/>จำนวน'+$(this).parent().text();
 				var html='<span class="input_num"><br/>ระบุจำนวน';
 				html+='<input type="text" name="article_num[]" class="form-control" maxlength="4"></span>';
 				$(this).parent().after(html);
@@ -877,12 +841,6 @@ echo $js;
 				$(this).parent().parent().find('span[class="input_num"]').remove();
 			}
 		});
-		
-		/*$("#used_article input:checkbox").change(function(){
-			if(this.checked) alert($(this).attr("name"));
-			$("input[type='checkbox'][name='article']").each(function(){
-			});
-		});*/
 	});
 	function hide_in_ex()
 	{
@@ -898,43 +856,20 @@ echo $js;
 	}
 	function person_in_staff()
 	{
-		
-			$("#select_faculty").parent().show();
-			$("#select_department").parent().show();
-			$("#select_job_position").parent().show();
-		
-		/*else if(state=="hide")
-		{
-			$("#select_faculty").hide();
-			$("#select_department").hide();
-			$("#select_job_position").hide();
-		}*/
+		$("#select_faculty").parent().show();
+		$("#select_department").parent().show();
+		$("#select_job_position").parent().show();
 	}
 	function person_in_std()
 	{
-		
-			$("#select_faculty").parent().show();
-			$("#select_department").parent().show();
-			$("#input_std_id").parent().show();
-		
-		/*else if(state=="hide")
-		{
-			$("#select_faculty").hide();
-			$("#select_department").hide();
-			$("#input_std_id").hide();
-		}*/
+		$("#select_faculty").parent().show();
+		$("#select_department").parent().show();
+		$("#input_std_id").parent().show();
 	}
 	function person_ex()
 	{
-		
-			$("#select_job_position").parent().show();
-			$("#select_office").parent().show();
-		
-		/*else if(state=="hide")
-		{
-			$("#select_job_position").hide();
-			$("#select_office").hide();
-		}*/
+		$("#select_job_position").parent().show();
+		$("#select_office").parent().show();
 	}
 
 	/*#################################################
