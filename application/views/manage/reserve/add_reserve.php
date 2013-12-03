@@ -468,9 +468,9 @@ echo $js;
 				}
 			}
 			
-			/*#################################################
+			/*
 			* for datetime
-			###################################################*/
+			*/
 			if($("#reserve_time1").is(":checked"))
 			{
 				$("#span-time1").show();
@@ -579,110 +579,12 @@ echo $js;
 			}
 			
 			//------------------------------------------------------
-		});
-
-		$(document.body).on('click', 'input[name="article[]"]' ,function(){
-			var checked=0;
-			$("input[name='article[]']").each(function(){
-				if($(this).is(":checked"))
-				{
-					$("label.article-error").remove();
-					checked++;
-				}
-			});
-			if(checked==0)
-			{
-				$("#used_article").prepend("<label class='myerror my-error-class'>โปรดเลือก</label>");
-				e.preventDefault();
-			}
-		});
+		});//end on submit event
 
 		
-		/*#################################################
-		faculty
-		###################################################*/
-		$("#input_faculty").parent('div').parent('fieldset').attr('id','otherfaculty');
-		//$("#otherfaculty").hide();
-		$("#select_faculty").on("keyup change",function(){
-			if($(this).find('option:selected').val()=="00")
-			{
-				$("#otherfaculty").show();
-			}
-			else
-			{
-				$("#input_faculty").val('');
-				$("#otherfaculty").hide();
-			}
-		});
 
-		//------------------------------------------------------
 		
-		/*#################################################
-		department
-		###################################################*/
-		$("#input_department").parent('div').parent('fieldset').attr('id','otherdepartment');
-		//$("#otherdepartment").hide();
-		$("#select_department").on("keyup change",function(){
-			if($(this).find('option:selected').val()=="00")
-			{
-				$("#otherdepartment").show();
-			}
-			else
-			{
-				$("#input_department").val('');
-				$("#otherdepartment").hide();
-			}
-		});
-		/*#################################################
-		job_position
-		###################################################*/
-		$("#input_job_position").parent('div').parent('fieldset').attr('id','otherjob_position');
-		//$("#otherjob_position").hide();
-		$("#select_job_position").on("keyup change",function(){
-			if($(this).find('option:selected').val()=="00")
-			{
-				$("#otherjob_position").show();
-			}
-			else
-			{
-				$("#input_job_position").val('');
-				$("#otherjob_position").hide();
-			}
-		});
-		/*#################################################
-		office
-		###################################################*/
-		$("#input_office").parent('div').parent('fieldset').attr('id','otheroffice');
-		//$("#otheroffice").hide();
-		$("#select_office").on("keyup change",function(){
-			if($(this).find('option:selected').val()=="00")
-			{
-				$("#otheroffice").show();
-			}
-			else
-			{
-				$("#input_office").val('');
-				$("#otheroffice").hide();
-			}
-		});
-		$("#select_person").on("keyup change",function(){
-			$("#select_faculty").val('');
-			$("#select_department").val('');
-			$("#select_job_position").val('');
-			$("#select_office").val('');
-		});
 		
-		hide_in_ex();
-		$("#select_person_type").on("keyup change",function(){ hide_in_ex(); });
-		$("#select_person").on("keyup change",function(){
-			hide_in_ex();
-			//อาจารย์
-			if($(this).find("option:selected").val()=="01")person_in_staff();
-			//student
-			else if($(this).find("option:selected").val()=="02")person_in_std();
-			//บุคคลภายนอก
-			else if($(this).find("option:selected").val()=="03")person_ex();
-		});
 		/*#################################################
 		Highlight the <input> <select> 
 		If span text length > 0 change input border color to red
@@ -714,9 +616,160 @@ echo $js;
 			window.location="?d=manage&c=article&m=edit";
 		});
 
-		/*#################################################
-		Get room list
-		###################################################*/
+		
+		
+		
+
+		//add upload file
+		$('#select_person_type').on('change keyup',function(){
+			if($(this).find("option:selected").val()=="01")
+			{
+				if(!$("div").hasClass("div_project_file"))
+				{
+					var html='<div class="form-group div_project_file">';
+					html+='<label for="project_file">ไฟล์เอกสารโครงการ</label>';
+					html+='<input type="file" id="project_file" name="project_file">';
+					html+='</div>';
+					$("input#input_project_name").parent().after(html);
+				}
+			}
+			else $(".div_project_file").remove();
+		});
+		if($('#select_person_type').find("option:selected").val()=="01")
+		{
+			$('#select_person_type').trigger("change");
+		}
+		
+		
+		
+
+		
+		/*----------------------------------- 
+		* ข้อมูลผู้จอง
+		-----------------------------------*/
+		
+		/*
+		*แสดงข้อมูลบุคคลใน dropdown (Get person list)
+		*/
+		$("#select_person_type").on("keyup change",function(){
+			if($(this).find("option:selected").val()!=""){
+				$.ajax({
+					url:"?d=manage&c=reserve&m=select_person_list",
+					data:{person_type_id:$(this).find("option:selected").val()},
+					type:"POST",
+					dataType:"json",
+					success:function(resp){
+						$("#select_person").find("option:gt(0)").remove();
+						if(resp.person_list!=null)$("#select_person").append(resp.person_list);
+					},
+					error:function(error){
+						alert("Error : "+error);
+					}
+				});
+			}
+			else
+			{
+				$("#select_person").find("option:gt(0)").remove();
+			}
+		});
+		//ถ้ามีการเลือกอยู่แล้วตอนเปิดหน้า ให้ทำการเรียกใช้ event
+		if($("#select_person_type").find("option:selected").val()!="")
+		{
+			$("#select_person_type").trigger("change");
+		}
+
+		/*
+		*แสดง/ซ่อน คณะ (faculty)
+		*/
+		//add id to fieldset
+		$("#input_faculty").parent('div').parent('fieldset').attr('id','otherfaculty');
+		//แสดง/ซ่อน input อื่นๆ
+		$("#select_faculty").on("keyup change",function(){
+			if($(this).find('option:selected').val()=="00")
+			{
+				$("#otherfaculty").show();
+			}
+			else
+			{
+				$("#input_faculty").val('');
+				$("#otherfaculty").hide();
+			}
+		});
+
+		/*
+		*แสดง/ซ่อน สาขา/งาน (department)
+		*/
+		//add id to fieldset
+		$("#input_department").parent('div').parent('fieldset').attr('id','otherdepartment');
+		//แสดง/ซ่อน input อื่นๆ
+		$("#select_department").on("keyup change",function(){
+			if($(this).find('option:selected').val()=="00")
+			{$("#otherdepartment").show();}
+			else
+			{
+				$("#input_department").val('');
+				$("#otherdepartment").hide();
+			}
+		});
+
+		/*
+		*แสดง/ซ่อน ตำแหน่งงาน (job_position)
+		*/
+		//add id to fieldset
+		$("#input_job_position").parent('div').parent('fieldset').attr('id','otherjob_position');
+		//แสดง/ซ่อน input อื่นๆ
+		$("#select_job_position").on("keyup change",function(){
+			if($(this).find('option:selected').val()=="00")
+			{$("#otherjob_position").show();}
+			else
+			{
+				$("#input_job_position").val('');
+				$("#otherjob_position").hide();
+			}
+		});
+
+		/*
+		*แสดง/ซ่อน หน่วยงาน (office)
+		*/
+		//add id to fieldset
+		$("#input_office").parent('div').parent('fieldset').attr('id','otheroffice');
+		//แสดง/ซ่อน input อื่นๆ
+		$("#select_office").on("keyup change",function(){
+			if($(this).find('option:selected').val()=="00")
+			{$("#otheroffice").show();}
+			else
+			{
+				$("#input_office").val('');
+				$("#otheroffice").hide();
+			}
+		});
+
+		//reset dropdown
+		$("#select_person").on("keyup change",function(){
+			$("#select_faculty").val('');
+			$("#select_department").val('');
+			$("#select_job_position").val('');
+			$("#select_office").val('');
+		});
+
+		hide_in_ex();
+		$("#select_person_type").on("keyup change",function(){ hide_in_ex(); });
+		$("#select_person").on("keyup change",function(){
+			hide_in_ex();
+			//อาจารย์
+			if($(this).find("option:selected").val()=="01")person_in_staff();
+			//student
+			else if($(this).find("option:selected").val()=="02")person_in_std();
+			//บุคคลภายนอก
+			else if($(this).find("option:selected").val()=="03")person_ex();
+		});
+
+		/*----------------------------------- 
+		* มีความประสงค์ขอใช้
+		-----------------------------------*/
+		/*
+		*แสดงข้อมูลห้องใน dropdown (Get room list)
+		*/
 		$("#select_room_type").on("keyup change",function(){
 			if($(this).find("option:selected").val()!=""){
 				$.ajax({
@@ -739,15 +792,18 @@ echo $js;
 				$("#select_room").find("option:gt(0)").remove();
 			}
 		});
-		
+		//ถ้ามีการเลือกอยู่แล้วตอนเปิดหน้า ให้ทำการเรียกใช้ event
 		if($("#select_room_type").find("option:selected").val()!="")
 		{
 			$("#select_room_type").trigger('change');
 		}
-		
-		/*#################################################
-		Get room_has_article
-		###################################################*/
+
+		/*----------------------------------- 
+		* ครุภัณฑ์/อุปกรณ์ที่ใช้
+		-----------------------------------*/
+		/*
+		*แสดงรายชื่ออุปกรณ์ของห้องที่เลือก (Get room_has_article)
+		*/
 		$("#select_room").on("keyup change",function(){
 			if($(this).find("option:selected").val()!=""){
 				$.ajax({
@@ -756,9 +812,6 @@ echo $js;
 					type:"POST",
 					dataType:"json",
 					success:function(resp){
-						//$("#select_room").find("option:gt(0)").remove();
-						//if(resp.room_list!=null)$("#select_room").append(resp.room_list);
-						
 						$.each(resp,function(index,value){
 							$("#used_article").prepend(value);
 						});
@@ -768,66 +821,41 @@ echo $js;
 					}
 				});
 			}
-			else
-			{
-				//$("#select_room").find("option:gt(0)").remove();
-			}
+			else{}
 		});
 
-		/*#################################################
-		Get person list
-		###################################################*/
-		$("#select_person_type").on("keyup change",function(){
-			if($(this).find("option:selected").val()!=""){
-				$.ajax({
-					url:"?d=manage&c=reserve&m=select_person_list",
-					data:{person_type_id:$(this).find("option:selected").val()},
-					type:"POST",
-					dataType:"json",
-					success:function(resp){
-						$("#select_person").find("option:gt(0)").remove();
-						if(resp.person_list!=null)$("#select_person").append(resp.person_list);
-					},
-					error:function(error){
-						alert("Error : "+error);
-					}
-				});
-			}
-			else
-			{
-				$("#select_person").find("option:gt(0)").remove();
-			}
-		});
-		if($("#select_person_type").find("option:selected").val()!="")
-		{
-			$("#select_person_type").trigger("change");
-		}
-		/*#################################################
-		Remove all checkbox in #used_article
-		###################################################*/
+		/*
+		เมื่อมีการเลือกห้องอื่น ให้ลบ checkbox เดิมออก (Remove all checkbox in #used_article)
+		*/
 		$("#select_room_type , #select_room").on("keyup change",function(){
 			$("#used_article").children(".del-checkbox").each(function(){
-				//alert($(this).attr('class'));
 				$(this).remove();
 			});
 		});
 
-		//add upload file
-		$('#select_person_type').on('change keyup',function(){
-			if($(this).find("option:selected").val()=="01")
-			{
-				if(!$("div").hasClass("div_project_file"))
+		/*
+		เมื่อคลิกเลือกอุปกรณ์ ถ้ายังไม่มีเลือกอุปกรณ์ใดๆ ให้แสดงข้อความเตือน
+		เมื่อมีการเลือกหลังแสดงข้อความเตือนให้ลบข้อความเตือนออก
+		*/
+		$(document.body).on('click', 'input[name="article[]"]' ,function(){
+			var checked=0;
+			$("input[name='article[]']").each(function(){
+				if($(this).is(":checked"))
 				{
-					var html='<div class="form-group div_project_file">';
-					html+='<label for="project_file">ไฟล์เอกสารโครงการ</label>';
-					html+='<input type="file" id="project_file" name="project_file">';
-					html+='</div>';
-					$("input#input_project_name").parent().after(html);
+					$("label.article-error").remove();
+					checked++;
 				}
+			});
+			if(checked==0)
+			{
+				$("#used_article").prepend("<label class='myerror my-error-class'>โปรดเลือก</label>");
+				//e.preventDefault();
 			}
-			else $(".div_project_file").remove();
 		});
-		
+
+		/*
+		เมื่อมีการเลือกอุปกรณ์ ให้ทำการเพิ่ม input สำหรับระบุจำนวนอุปกรณ์
+		*/
 		$(document.body).on('change', '#used_article input[type="checkbox"][name="article[]"]' ,function(){
 			if(this.checked)
 			{	
@@ -841,6 +869,8 @@ echo $js;
 				$(this).parent().parent().find('span[class="input_num"]').remove();
 			}
 		});
+
+		
 	});
 	function hide_in_ex()
 	{
