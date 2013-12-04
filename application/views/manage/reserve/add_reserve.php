@@ -65,7 +65,8 @@ echo $head;
       		 		echo form_error($em_name["in_fee_over_unit_lump_sum"]);*/
       		 	?>
       			</div>
-      			<form role="form" action="?d=manage&c=reserve&m=add" method="post" id="reserve_add" enctype="multipart/form-data">
+      			<!--<form role="form" action="?d=manage&c=reserve&m=add" method="post" id="reserve_add" enctype="multipart/form-data">  -->
+      			<form role="form" action="?c=test" method="post" id="reserve_add" enctype="multipart/form-data">
       			
       				<fieldset class="scheduler-border">
 						<legend class="scheduler-border">ข้อมูลผู้จอง</legend>
@@ -319,7 +320,7 @@ echo $js;
 			lang:'th',
 			errorClass: "my-error-class",
 			rules: {
-				"select_person_type": {
+				/*"select_person_type": {
 					required:true
 				},
 				"select_person":{
@@ -379,7 +380,7 @@ echo $js;
 					required:true,
 					filesize:2097152,
 					extension:"docx|doc|pdf"
-				}
+				}*/
 			},
 			messages:{
 				"select_person_type": {
@@ -387,49 +388,6 @@ echo $js;
 				}
 			}
 		});
-
-
-
-
-
-
-
-
-
-
-		/*#################################################
-		* for datetime
-		###################################################*/
-		$("#span-time1").hide();
-		$("#span-time2").hide();
-		$("#reserve_time1").click(function(){
-			if($("#reserve_time1").is(":checked"))$("#span-time1").show();$("#span-time2").hide();
-		});
-		$("#reserve_time2").click(function(){
-			if($("#reserve_time2").is(":checked"))$("#span-time2").show();$("#span-time1").hide();
-		});
-
-		$(document.body).on('click', '#del-time1' ,function(){
-			$(this).parent().parent().remove();
-		});
-		$('#add-time1').click(function(){
-			
-			var num=parseInt($('fieldset .fieldset-time1').last().find('legend').text())+1;
-			//$('fieldset .fieldset-time1:first').clone().appendTo('#span-time1');
-			$('fieldset .fieldset-time1').last().after($('fieldset .fieldset-time1:first').clone());
-			$('fieldset .fieldset-time1').last().find('div input[class="form-control"]').val('');	
-			$('fieldset .fieldset-time1').last().find('legend').text(num);
-			$('fieldset .fieldset-time1').last().find('label.my-error-class').remove();
-			$('<br><div class="text-right"><i class="fa fa-minus-square fa-lg" id="del-time1"></i> ลบ</div>').appendTo('fieldset .fieldset-time1:last');
-			init_datetimepicker();
-		});
-		init_datetimepicker();
-
-		$('input[name="input-end"]').on("click",function(){
-			alert($('#input-end').datetimepicker('getDate'));
-		});
-
-		//------------------------------------------------------
 
 
 
@@ -467,6 +425,29 @@ echo $js;
 					e.preventDefault();
 				}
 			}
+			
+			//file upload
+			$("input[name='project_file[]']").each(function(){
+				var maxfilesize=2*1024*1024;//2MB
+				var pdf="application/pdf";
+				var docx="application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+				var doc="application/msword";
+				var showtype=0;
+				if(this.files[0].type==doc){}
+				else if(this.files[0].type==docx){}
+				else if(this.files[0].type==pdf){}
+				else
+				{
+					//$("label.file-error").remove();
+					showtype=1;
+					$(this).after("<label class='file-error my-error-class'>ตรวจสอบประเภทไฟล์</label>");
+				}
+				if(this.files[0].size>maxfilesize && showtype==0)
+				{
+					//$("label.file-error").remove();
+					$(this).after("<label class='file-error my-error-class'>ตรวจสอบขนาดไฟล์</label>");
+				}
+			});
 			
 			/*
 			* for datetime
@@ -620,25 +601,7 @@ echo $js;
 		
 		
 
-		//add upload file
-		$('#select_person_type').on('change keyup',function(){
-			if($(this).find("option:selected").val()=="01")
-			{
-				if(!$("div").hasClass("div_project_file"))
-				{
-					var html='<div class="form-group div_project_file">';
-					html+='<label for="project_file">ไฟล์เอกสารโครงการ</label>';
-					html+='<input type="file" id="project_file" name="project_file">';
-					html+='</div>';
-					$("input#input_project_name").parent().after(html);
-				}
-			}
-			else $(".div_project_file").remove();
-		});
-		if($('#select_person_type').find("option:selected").val()=="01")
-		{
-			$('#select_person_type').trigger("change");
-		}
+		
 		
 		
 		
@@ -870,6 +833,76 @@ echo $js;
 			}
 		});
 
+		/*----------------------------------- 
+		* ข้อมูลเกี่ยวกับโครงการ
+		-----------------------------------*/
+		//add upload file
+		$('#select_person_type').on('change keyup',function(){
+			if($(this).find("option:selected").val()=="01")
+			{
+				if(!$("div").hasClass("div_project_file"))
+				{
+					var html='<div class="form-group div_project_file">';
+					html+='<label for="project_file">ไฟล์เอกสารโครงการ</label>';
+					html+='<input type="file" id="project_file" multiple name="project_file[]">';
+					html+='</div><div class="div_project_file"><i class="fa fa-plus-square fa-lg" id="plusfile"></i></div>';
+					$("input#input_project_name").parent().after(html);
+				}
+			}
+			else $(".div_project_file").remove();
+		});
+		if($('#select_person_type').find("option:selected").val()=="01")
+		{
+			$('#select_person_type').trigger("change");
+		}
+		$(document.body).on('click', '#plusfile' ,function(){
+			var html='<div class="form-group div_project_file">';
+			html+='<label for="project_file">ไฟล์เอกสารโครงการ</label><i class="fa fa-minus-square fa-lg" id="minusfile"></i>';
+			html+='<input type="file" id="project_file" name="project_file[]">';
+			html+='</div>';
+			$(this).before(html);
+		});
+		$(document.body).on('click', '#minusfile' ,function(){
+			$(this).parent().remove();
+		});
+		
+		/*----------------------------------- 
+		* กำหนดเวลา
+		-----------------------------------*/
+		//for datetime
+		$("#span-time1").hide();
+		$("#span-time2").hide();
+		$("#reserve_time1").click(function(){
+			if($("#reserve_time1").is(":checked"))$("#span-time1").show();$("#span-time2").hide();
+		});
+		$("#reserve_time2").click(function(){
+			if($("#reserve_time2").is(":checked"))$("#span-time2").show();$("#span-time1").hide();
+		});
+
+		$(document.body).on('click', '#del-time1' ,function(){
+			$(this).parent().parent().remove();
+		});
+		$('#add-time1').click(function(){
+			
+			var num=parseInt($('fieldset .fieldset-time1').last().find('legend').text())+1;
+			//$('fieldset .fieldset-time1:first').clone().appendTo('#span-time1');
+			$('fieldset .fieldset-time1').last().after($('fieldset .fieldset-time1:first').clone());
+			$('fieldset .fieldset-time1').last().find('div input[class="form-control"]').val('');	
+			$('fieldset .fieldset-time1').last().find('legend').text(num);
+			$('fieldset .fieldset-time1').last().find('label.my-error-class').remove();
+			$('<br><div class="text-right"><i class="fa fa-minus-square fa-lg" id="del-time1"></i> ลบ</div>').appendTo('fieldset .fieldset-time1:last');
+			init_datetimepicker();
+		});
+		init_datetimepicker();
+
+		$('input[name="input-end"]').on("click",function(){
+			alert($('#input-end').datetimepicker('getDate'));
+		});
+
+		//------------------------------------------------------
+
+
+		//test zone
 		
 	});
 	function hide_in_ex()

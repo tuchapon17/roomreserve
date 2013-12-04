@@ -19,14 +19,49 @@ class Test extends CI_Controller {
 	 */
 	public function index()
 	{
-		$data=array(
-				"name1"=>"testname1",
-				"name2"=>"testname2"
-		);
-		$this->db->insert("testtable",$data);
-		echo $this->db->_error_number();
-		echo "<hr>";
-		echo $this->db->_error_message();
+		$this->load->library('upload'); // Load Library
+		$files = $_FILES;
+		//print_r($_FILES);
+		$cpt = count($_FILES['project_file']['name']);
+		$config = array();
+		$config['upload_path'] = './upload/';
+		$config['allowed_types'] = 'doc|docx|pdf';
+		$config['max_size']      = '0';
+		$config['overwrite']     = FALSE;
+		$this->upload->initialize($config); // These are just my options. Also keep in mind with PDF's YOU MUST TURN OFF xss_clean
+				
+		for($i=0; $i<$cpt; $i++)
+		{
+			
+			$name = $_FILES["project_file"]["name"][$i];
+			$ext = end(explode(".", $name));
+			$file_detail=array(
+					"name"=>$_FILES["project_file"]["name"][$i],
+					"ext"=>end(explode(".", $_FILES["project_file"]["name"][$i])),
+					"type"=>$_FILES["project_file"]["type"][$i],
+					"error"=>$_FILES["project_file"]["error"][$i],
+					"size"=>$_FILES["project_file"]["size"][$i]
+			);
+			print_r($file_detail);
+				
+			$_FILES['project_file']['name']= $files['project_file']['name'][$i];
+			$_FILES['project_file']['type']= $files['project_file']['type'][$i];
+			$_FILES['project_file']['tmp_name']= $files['project_file']['tmp_name'][$i];
+			$_FILES['project_file']['error']= $files['project_file']['error'][$i];
+			$_FILES['project_file']['size']= $files['project_file']['size'][$i];
+			//echo "<hr>";print_r($_FILES);
+			if($this->upload->do_upload('project_file'))echo "uploaded".$i;
+			else echo "not up".$i;
+			echo $this->upload->display_errors('<p>', '</p>');
+		
+										
+										
+		
+		
+		}
+		
+		
+		
 	}
 }
 
