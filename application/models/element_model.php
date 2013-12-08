@@ -60,13 +60,15 @@ class Element_model extends CI_Model
 	}
 	function select_faculty()
 	{
-		$this->db->select()->from("tb_faculty")->order_by("CONVERT(faculty_name USING TIS620)","ASC");
+		$this->db->select()->from("tb_faculty")->where("checked",1)->order_by("CONVERT(faculty_name USING TIS620)","ASC");
 		$query=$this->db->get();
 		return $query->result_array();
 	}
-	function get_select($table_name,$order_field)
+	function get_select($table_name,$order_field,$where='')
 	{
-		$this->db->select()->from($table_name)->order_by("CONVERT(".$order_field." USING TIS620)","ASC");
+		if($where=='')
+			$this->db->select()->from($table_name)->order_by("CONVERT(".$order_field." USING TIS620)","ASC");
+		else $this->db->select()->from($table_name)->where($where)->order_by("CONVERT(".$order_field." USING TIS620)","ASC");
 		$query=$this->db->get();
 		return $query->result_array();
 	}

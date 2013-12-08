@@ -149,7 +149,7 @@ class Reserve extends MY_Controller
 					"S_name"=>$this->lang->line("select_department"),
 					"S_id"=>$this->lang->line("select_department"),
 					"S_old_value"=>$this->input->post($this->lang->line("select_department")),
-					"S_data"=>$this->emm->get_select("tb_department","department_name"),
+					"S_data"=>$this->emm->get_select("tb_department","department_name",array("checked"=>1)),
 					"S_id_field"=>"department_id",
 					"S_name_field"=>"department_name",
 					"help_text"=>''
@@ -161,7 +161,7 @@ class Reserve extends MY_Controller
 					"S_name"=>$this->lang->line("select_job_position"),
 					"S_id"=>$this->lang->line("select_job_position"),
 					"S_old_value"=>$this->input->post($this->lang->line("select_job_position")),
-					"S_data"=>$this->emm->get_select("tb_job_position","job_position_name"),
+					"S_data"=>$this->emm->get_select("tb_job_position","job_position_name",array("checked"=>1)),
 					"S_id_field"=>"job_position_id",
 					"S_name_field"=>"job_position_name",
 					"help_text"=>''
@@ -197,7 +197,7 @@ class Reserve extends MY_Controller
 					"S_name"=>$this->lang->line("select_office"),
 					"S_id"=>$this->lang->line("select_office"),
 					"S_old_value"=>$this->input->post($this->lang->line("select_office")),
-					"S_data"=>$this->emm->get_select("tb_office","office_name"),
+					"S_data"=>$this->emm->get_select("tb_office","office_name",array("checked"=>1)),
 					"S_id_field"=>"office_id",
 					"S_name_field"=>"office_name",
 					"help_text"=>''
@@ -306,6 +306,8 @@ class Reserve extends MY_Controller
 		}
 		else
 		{
+			$this->db->trans_begin();
+			
 			//insert tb_reserve
 			$reserve_id=$this->load_reserve_model->get_maxid(5,"reserve_id","tb_reserve");
 			$data=array(
@@ -338,13 +340,28 @@ class Reserve extends MY_Controller
 			{
 				foreach($this->input->post("input-begin-time1") as $key=>$val)
 				{
-					$data3=array(
-							"datetime_id"=>$this->load_reserve_model->get_maxid(6,"datetime_id","tb_reserve_has_datetime"),
-							"tb_reserve_id"=>$reserve_id,
-							"reserve_datetime_begin"=>$this->convert_datetime($val)["date"]." ".$this->convert_datetime($val)["time"],
-							"reserve_datetime_end"=>$this->convert_datetime($this->input->post("input-end-time1")[$key])["date"]." ".$this->convert_datetime($this->input->post("input-end-time1")[$key])["time"]
-					);
-					$this->load_reserve_model->manage_add2($data3,"tb_reserve_has_datetime");
+					$beginDT=new DateTime($this->convert_datetime($val)["date"]." ".$this->convert_datetime($val)["time"]);
+					$endDT=new DateTime($this->convert_datetime($this->input->post("input-end-time1")[$key])["date"]." ".$this->convert_datetime($this->input->post("input-end-time1")[$key])["time"]);
+					$interval = DateInterval::createFromDateString('1 day');
+					$period = new DatePeriod($beginDT, $interval, $endDT);
+					
+					foreach ( $period as $dt )
+					{
+						$begin1=$dt->format( "Y-m-d H:i:s" );
+						
+						$pattern = "/[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/";
+						preg_match($pattern,$dt->format( "Y-m-d H:i:s" ), $enddate);
+						
+						$end1=$enddate[0]." ".$this->convert_datetime($this->input->post("input-end-time1")[$key])["time"];
+						$data3=array(
+								"datetime_id"=>$this->load_reserve_model->get_maxid(6,"datetime_id","tb_reserve_has_datetime"),
+								"tb_reserve_id"=>$reserve_id,
+								"reserve_datetime_begin"=>$begin1,
+								"reserve_datetime_end"=>$end1
+						);
+						$this->load_reserve_model->manage_add2($data3,"tb_reserve_has_datetime");
+					}
+					
 				}
 			}
 			else if($this->input->post("reserve_time")=="reserve_time2")
@@ -429,60 +446,13 @@ class Reserve extends MY_Controller
 				$office_id=$this->input->post("select_office");
 				if($this->input->post("select_job_position")=="00")
 				{
-					$job_position_id=$this->load_reserve_model->get_maxid(2,"job_position_id","tb_job_position");
-					$this->load_reserve_model->manage_add2(
-							array(
-								"job_position_id"=>$job_position_id,
-								"job_position_name"=>$this->input->post("input_job_position")
-							),
-							"tb_job_position");
-				}
-				if($this->input->post("select_office")=="00")
-				{
-					$office_id=$this->load_reserve_model->get_maxid(2,"office_id","tb_office");
-					$this->load_reserve_model->manage_add2(
-							array(
-									"office_id"=>$office_id,
-									"office_name"=>$this->input->post("input_office")
-							),
-							"tb_office");
-				}
-				$data4=array(
-						"tb_reserve_id"=>$reserve_id,
-						"tb_person_id"=>$this->input->post("select_person"),
-						"phone"=>$this->input->post("input_phone"),
-						"tb_job_position_id"=>$job_position_id,
-						"tb_office_id"=>$office_id
-				);
-			}
-			else if($this->input->post("select_person")=="02" || $this->input->post("select_person")=="01")//std || teacher
-			{
-				$faculty_id=$this->input->post("select_faculty");
-				$department_id=$this->input->post("select_department");
-				$job_position_id=$this->input->post("select_job_position");
-				if($this->input->post("select_faculty")=="00")
-				{
-					$faculty_id=$this->load_reserve_model->get_maxid(2,"faculty_id","tb_faculty");
-					$this->load_reserve_model->manage_add2(
-							array(
-									"faculty_id"=>$faculty_id,
-									"faculty_name"=>$this->input->post("input_faculty")
-							),
-							"tb_faculty");
-				}
-				if($this->input->post("select_department")=="00")
-				{
-					$department_id=$this->load_reserve_model->get_maxid(2,"department_id","tb_department");
-					$this->load_reserve_model->manage_add2(
-							array(
-									"department_id"=>$department_id,
-									"department_name"=>$this->input->post("input_department")
-							),
-							"tb_department");
-				}
-				if($this->input->post("select_person")=="01")
-				{
-					if($this->input->post("select_job_position")=="00")
+					if($this->load_reserve_model->find_one("tb_job_position",array("job_position_name"=>$this->input->post("input_job_position"))))
+					{
+						$exists_data=$this->load_reserve_model->find_one("tb_job_position",array("job_position_name"=>$this->input->post("input_job_position")))[0];
+						if($this->countdim($exists_data)==1)
+							$job_position_id=$exists_data["job_position_id"];
+					}
+					else
 					{
 						$job_position_id=$this->load_reserve_model->get_maxid(2,"job_position_id","tb_job_position");
 						$this->load_reserve_model->manage_add2(
@@ -493,9 +463,100 @@ class Reserve extends MY_Controller
 								"tb_job_position");
 					}
 				}
-				
-				if($this->input->post("select_person")=="01")
+				if($this->input->post("select_office")=="00")
 				{
+					if($this->load_reserve_model->find_one("tb_office",array("office_name"=>$this->input->post("input_office"))))
+					{
+						$exists_data=$this->load_reserve_model->find_one("tb_office",array("office_name"=>$this->input->post("input_office")))[0];
+						if($this->countdim($exists_data)==1)
+							$office_id=$exists_data["office_id"];
+					}
+					else
+					{
+						$office_id=$this->load_reserve_model->get_maxid(2,"office_id","tb_office");
+						$this->load_reserve_model->manage_add2(
+								array(
+										"office_id"=>$office_id,
+										"office_name"=>$this->input->post("input_office")
+								),
+								"tb_office");
+					}
+				}
+				$data4=array(
+						"tb_reserve_id"=>$reserve_id,
+						"tb_person_id"=>$this->input->post("select_person"),
+						"phone"=>$this->input->post("input_phone"),
+						"tb_job_position_id"=>$job_position_id,
+						"tb_office_id"=>$office_id
+				);
+			}
+			else if($this->input->post("select_person")=="02" || $this->input->post("select_person")=="01")//02std || 01teacher
+			{
+				$faculty_id=$this->input->post("select_faculty");
+				$department_id=$this->input->post("select_department");
+				$job_position_id=$this->input->post("select_job_position");
+				if($this->input->post("select_faculty")=="00")
+				{
+					//ถ้ามี ชื่อที่ซ้ำกันอยู่แล้วให้เลือกคีย์ของชื่อนั้นมาใช้อ้างอิง เพราะ ฟิลด์ชื่อเป็น unique
+					if($this->load_reserve_model->find_one("tb_faculty",array("faculty_name"=>$this->input->post("input_faculty"))))
+					{
+						$exists_data=$this->load_reserve_model->find_one("tb_faculty",array("faculty_name"=>$this->input->post("input_faculty")))[0];
+						if($this->countdim($exists_data)==1)
+							$faculty_id=$exists_data["faculty_id"];
+					}
+					else
+					{
+						$faculty_id=$this->load_reserve_model->get_maxid(2,"faculty_id","tb_faculty");
+						$this->load_reserve_model->manage_add2(
+							array(
+									"faculty_id"=>$faculty_id,
+									"faculty_name"=>$this->input->post("input_faculty")
+							),
+							"tb_faculty");
+					}
+				}
+				if($this->input->post("select_department")=="00")
+				{
+					//ถ้ามี ชื่อที่ซ้ำกันอยู่แล้วให้เลือกคีย์ของชื่อนั้นมาใช้อ้างอิง เพราะ ฟิลด์ชื่อเป็น unique
+					if($this->load_reserve_model->find_one("tb_department",array("department_name"=>$this->input->post("input_department"))))
+					{
+						$exists_data=$this->load_reserve_model->find_one("tb_department",array("department_name"=>$this->input->post("input_department")))[0];
+						if($this->countdim($exists_data)==1)
+							$department_id=$exists_data["department_id"];
+					}
+					else
+					{
+						$department_id=$this->load_reserve_model->get_maxid(2,"department_id","tb_department");
+						$this->load_reserve_model->manage_add2(
+							array(
+									"department_id"=>$department_id,
+									"department_name"=>$this->input->post("input_department")
+							),
+							"tb_department");
+					}
+				}
+				if($this->input->post("select_person")=="01")//01=อาจารย์/เจ้าหน้าที่
+				{
+					if($this->input->post("select_job_position")=="00")
+					{
+						if($this->load_reserve_model->find_one("tb_job_position",array("job_position_name"=>$this->input->post("input_job_position"))))
+						{
+							$exists_data=$this->load_reserve_model->find_one("tb_job_position",array("job_position_name"=>$this->input->post("input_job_position")))[0];
+							if($this->countdim($exists_data)==1)
+								$job_position_id=$exists_data["job_position_id"];
+						}
+						else
+						{
+							$job_position_id=$this->load_reserve_model->get_maxid(2,"job_position_id","tb_job_position");
+							$this->load_reserve_model->manage_add2(
+									array(
+											"job_position_id"=>$job_position_id,
+											"job_position_name"=>$this->input->post("input_job_position")
+									),
+									"tb_job_position");
+						}
+					}
+					//data 01teacher
 					$data4=array(
 							"tb_reserve_id"=>$reserve_id,
 							"tb_person_id"=>$this->input->post("select_person"),
@@ -505,8 +566,9 @@ class Reserve extends MY_Controller
 							"tb_job_position_id"=>$job_position_id
 					);
 				}
-				else 
+				else
 				{
+					//data 02std
 					$data4=array(
 							"tb_reserve_id"=>$reserve_id,
 							"tb_person_id"=>$this->input->post("select_person"),
@@ -517,9 +579,66 @@ class Reserve extends MY_Controller
 					);
 				}
 			}
+			//data4 ใช้กับรหัส person 01 02 03
 			$this->load_reserve_model->manage_add2($data4,"tb_reserve_has_person");
 			
+			//upload file
+			$this->load->library('upload'); // Load Library
+			$files = $_FILES;
+			$cpt = count($_FILES['project_file']['name']);
+			$config = array();
+			$config['upload_path'] = './upload/';
+			$config['allowed_types'] = 'doc|docx|pdf';
+			$config['max_size']      = '0';
+			$config['overwrite']     = FALSE;
+			$this->upload->initialize($config); // These are just my options. Also keep in mind with PDF's YOU MUST TURN OFF xss_clean
 			
+			for($i=0; $i<$cpt; $i++)
+			{
+				$name = $_FILES["project_file"]["name"][$i];
+				$ext = end(explode(".", $name));
+				$file_detail=array(
+						"new_name"=>str_replace(".", "_", microtime(true)).".".end(explode(".", $files["project_file"]["name"][$i])),
+						"old_name"=>$files["project_file"]["name"][$i],
+						"ext"=>end(explode(".", $files["project_file"]["name"][$i])),
+						"type"=>$files["project_file"]["type"][$i],
+						"error"=>$files["project_file"]["error"][$i],
+						"size"=>$files["project_file"]["size"][$i]
+				);
+				print_r($file_detail);
+				$_FILES['project_file']['name']= $file_detail["new_name"];
+				$_FILES['project_file']['type']= $files['project_file']['type'][$i];
+				$_FILES['project_file']['tmp_name']= $files['project_file']['tmp_name'][$i];
+				$_FILES['project_file']['error']= $files['project_file']['error'][$i];
+				$_FILES['project_file']['size']= $files['project_file']['size'][$i];
+				//echo "<hr>";print_r($_FILES);
+				if($this->upload->do_upload('project_file'))
+				{
+					//upload success
+					$data5=array(
+							"file_id"=>$this->load_reserve_model->get_maxid(5,"file_id","tb_reserve_has_file"),
+							"tb_reserve_id"=>$reserve_id,
+							"file_name"=>$file_detail["new_name"],
+							"old_file_name"=>$file_detail["old_name"]
+					);
+					$this->load_reserve_model->manage_add2($data5,"tb_reserve_has_file");
+				}
+				else
+				{
+					echo $this->upload->display_errors('<p>', '</p>');
+				}
+			}
+			if($this->db->trans_status()===FALSE)
+			{
+				$this->db->trans_rollback();
+			}
+			else
+			{
+				$this->db->trans_commit();
+			}
+			
+			
+			/* TEST SHOW DATA ZONE
 			echo "<hr>";
 			echo "tb_reserve";
 			echo "<hr>";
@@ -689,6 +808,8 @@ class Reserve extends MY_Controller
 				
 			}
 			//print_r($this->input->post("day-time2"));
+			 
+			*/
 		}
 		//redirect(base_url()."?d=manage&c=reserve&m=add_datetime");
 	}
@@ -796,5 +917,18 @@ class Reserve extends MY_Controller
 			}
 			echo json_encode($arr);	
 		}
+	}
+	// count dimension of array
+	function countdim($array)
+	{
+		if (is_array(reset($array)))
+		{
+			$return = countdim(reset($array)) + 1;
+		}
+		else
+		{
+			$return = 1;
+		}
+		return $return;
 	}
 }

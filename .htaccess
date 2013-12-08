@@ -1,4 +1,4 @@
 RewriteEngine On
 RewriteBase /roomreserve/
-RewriteCond $1 !^(index\.php|images|js|css|ckeditor|less|fonts|tinymce|plugins|files|server|upload)
+RewriteCond $1 !^(index\.php|images|js|css|plugins|upload)
 RewriteRule ^(.*)$ index.php [L]

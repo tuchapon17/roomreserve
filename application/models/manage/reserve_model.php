@@ -11,4 +11,9 @@ class Reserve_model extends MY_Model
 		$this->db->select($select_feild)->from("tb_room_has_article")->join("tb_article","tb_room_has_article.tb_article_id=tb_article.article_id")->where("tb_room_id",$room_id);
 		return $this->db->get()->result_array();
 	}
+	function find_one($table, $where)
+	{
+		$this->db->select()->from($table)->where($where)->limit(1);
+		return $this->db->get()->result_array();
+	}
 }

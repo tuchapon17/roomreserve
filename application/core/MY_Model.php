@@ -44,19 +44,19 @@ class MY_Model extends CI_Model
 	
 	function manage_add2($data, $table_name)
 	{
-		$this->db->trans_begin();
-		// Set for session flashdata
-		//$session_message_type=$message_type."_message";
+		//*$this->db->trans_begin();
+			// Set for session flashdata
+			//$session_message_type=$message_type."_message";
 		$this->db->set($data)->insert($table_name);
-		if($this->db->trans_status()===FALSE):
-		$this->db->trans_rollback();
-		//$this->session->set_flashdata($session_message_type,"<p class='text-danger'>".$error_message."</p>");
-		//redirect(base_url().$error_link);
-		else:
-		$this->db->trans_commit();
-		//$this->session->set_flashdata($session_message_type,"<p class='text-success'>".$success_message."</p>");
-		//redirect(base_url().$success_link);
-		endif;
+		//*if($this->db->trans_status()===FALSE):
+		//*$this->db->trans_rollback();
+			//$this->session->set_flashdata($session_message_type,"<p class='text-danger'>".$error_message."</p>");
+			//redirect(base_url().$error_link);
+		//*else:
+		//*$this->db->trans_commit();
+			//$this->session->set_flashdata($session_message_type,"<p class='text-success'>".$success_message."</p>");
+			//redirect(base_url().$success_link);
+		//*endif;
 	}
 	
 	function manage_edit($set, $where, $table_name, $session_edit_id, $message_type, $success_message='success', $error_message='error', $main_url='', $prev_url)
@@ -181,4 +181,5 @@ class MY_Model extends CI_Model
 	{
 		return $this->db->list_fields($table_name);
 	}
+	
 }

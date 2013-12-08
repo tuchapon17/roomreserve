@@ -36,7 +36,8 @@ class Test extends CI_Controller {
 			$name = $_FILES["project_file"]["name"][$i];
 			$ext = end(explode(".", $name));
 			$file_detail=array(
-					"name"=>$_FILES["project_file"]["name"][$i],
+					"new_name"=>str_replace(".", "_", microtime(true)).".".end(explode(".", $_FILES["project_file"]["name"][$i])),
+					"old_name"=>$_FILES["project_file"]["name"][$i],
 					"ext"=>end(explode(".", $_FILES["project_file"]["name"][$i])),
 					"type"=>$_FILES["project_file"]["type"][$i],
 					"error"=>$_FILES["project_file"]["error"][$i],
@@ -59,9 +60,16 @@ class Test extends CI_Controller {
 		
 		
 		}
+
+	}
+	public function calen($year=null,$month=null)
+	{
+		if(isset($_GET['year']))$year=$_GET['year'];
+		if(isset($_GET['month']))$month=$_GET['month'];
 		
-		
-		
+		$this->load->model('test_model');
+		$data["calendar"]=$this->test_model->generate($year,$month);
+		$this->load->view("test",$data);
 	}
 }
 

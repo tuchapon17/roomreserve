@@ -65,8 +65,8 @@ echo $head;
       		 		echo form_error($em_name["in_fee_over_unit_lump_sum"]);*/
       		 	?>
       			</div>
-      			<!--<form role="form" action="?d=manage&c=reserve&m=add" method="post" id="reserve_add" enctype="multipart/form-data">  -->
-      			<form role="form" action="?c=test" method="post" id="reserve_add" enctype="multipart/form-data">
+      			<form role="form" action="?d=manage&c=reserve&m=add" method="post" id="reserve_add" enctype="multipart/form-data">  
+      			<!--<form role="form" action="?c=test" method="post" id="reserve_add" enctype="multipart/form-data">-->
       			
       				<fieldset class="scheduler-border">
 						<legend class="scheduler-border">ข้อมูลผู้จอง</legend>
@@ -320,7 +320,7 @@ echo $js;
 			lang:'th',
 			errorClass: "my-error-class",
 			rules: {
-				/*"select_person_type": {
+				"select_person_type": {
 					required:true
 				},
 				"select_person":{
@@ -380,7 +380,7 @@ echo $js;
 					required:true,
 					filesize:2097152,
 					extension:"docx|doc|pdf"
-				}*/
+				}
 			},
 			messages:{
 				"select_person_type": {
@@ -433,21 +433,33 @@ echo $js;
 				var docx="application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 				var doc="application/msword";
 				var showtype=0;
-				if(this.files[0].type==doc){}
-				else if(this.files[0].type==docx){}
-				else if(this.files[0].type==pdf){}
-				else
+				for(var i=0; i<this.files.length; i++)
 				{
-					//$("label.file-error").remove();
-					showtype=1;
-					$(this).after("<label class='file-error my-error-class'>ตรวจสอบประเภทไฟล์</label>");
-				}
-				if(this.files[0].size>maxfilesize && showtype==0)
-				{
-					//$("label.file-error").remove();
-					$(this).after("<label class='file-error my-error-class'>ตรวจสอบขนาดไฟล์</label>");
+					if(this.files[i].type==doc){}
+					else if(this.files[i].type==docx){}
+					else if(this.files[i].type==pdf){}
+					else
+					{
+						//$("label.file-error").remove();
+						showtype=1;
+						$(this).after("<div><label class='file-error my-error-class'>ตรวจสอบประเภทไฟล์</label></div>");
+						e.preventDefault();
+					}
+					if(this.files[i].size>maxfilesize )//&& showtype==0
+					{
+						//$("label.file-error").remove();
+						$(this).after("<div><label class='file-error my-error-class'>ตรวจสอบขนาดไฟล์</label></div>");
+						e.preventDefault();
+					}
 				}
 			});
+			//check each file for multiple selected files
+			/*$(document.body).on('change', '#project_file' ,function(){
+				for(var i=0; i<this.files.length; i++)
+				{
+					alert(this.files[i].type);
+				}
+			});*/
 			
 			/*
 			* for datetime
@@ -845,7 +857,8 @@ echo $js;
 					var html='<div class="form-group div_project_file">';
 					html+='<label for="project_file">ไฟล์เอกสารโครงการ</label>';
 					html+='<input type="file" id="project_file" multiple name="project_file[]">';
-					html+='</div><div class="div_project_file"><i class="fa fa-plus-square fa-lg" id="plusfile"></i></div>';
+					html+='</div>';
+					//html+='<div class="div_project_file"><i class="fa fa-plus-square fa-lg" id="plusfile"></i></div>';
 					$("input#input_project_name").parent().after(html);
 				}
 			}
@@ -857,11 +870,13 @@ echo $js;
 		}
 		$(document.body).on('click', '#plusfile' ,function(){
 			var html='<div class="form-group div_project_file">';
-			html+='<label for="project_file">ไฟล์เอกสารโครงการ</label><i class="fa fa-minus-square fa-lg" id="minusfile"></i>';
+			//html+='<label for="project_file">ไฟล์เอกสารโครงการ</label><i class="fa fa-minus-square fa-lg" id="minusfile"></i>';
+			html+='<label for="project_file">ไฟล์เอกสารโครงการ</label>';
 			html+='<input type="file" id="project_file" name="project_file[]">';
 			html+='</div>';
 			$(this).before(html);
 		});
+		//เพิ่ม input file upload
 		$(document.body).on('click', '#minusfile' ,function(){
 			$(this).parent().remove();
 		});
