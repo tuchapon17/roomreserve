@@ -582,50 +582,54 @@ class Reserve extends MY_Controller
 			//data4 ใช้กับรหัส person 01 02 03
 			$this->load_reserve_model->manage_add2($data4,"tb_reserve_has_person");
 			
-			//upload file
-			$this->load->library('upload'); // Load Library
-			$files = $_FILES;
-			$cpt = count($_FILES['project_file']['name']);
-			$config = array();
-			$config['upload_path'] = './upload/';
-			$config['allowed_types'] = 'doc|docx|pdf';
-			$config['max_size']      = '0';
-			$config['overwrite']     = FALSE;
-			$this->upload->initialize($config); // These are just my options. Also keep in mind with PDF's YOU MUST TURN OFF xss_clean
 			
-			for($i=0; $i<$cpt; $i++)
+			//upload file
+			if($this->input->post("select_person_type")!=02)
 			{
-				$name = $_FILES["project_file"]["name"][$i];
-				$ext = end(explode(".", $name));
-				$file_detail=array(
-						"new_name"=>str_replace(".", "_", microtime(true)).".".end(explode(".", $files["project_file"]["name"][$i])),
-						"old_name"=>$files["project_file"]["name"][$i],
-						"ext"=>end(explode(".", $files["project_file"]["name"][$i])),
-						"type"=>$files["project_file"]["type"][$i],
-						"error"=>$files["project_file"]["error"][$i],
-						"size"=>$files["project_file"]["size"][$i]
-				);
-				print_r($file_detail);
-				$_FILES['project_file']['name']= $file_detail["new_name"];
-				$_FILES['project_file']['type']= $files['project_file']['type'][$i];
-				$_FILES['project_file']['tmp_name']= $files['project_file']['tmp_name'][$i];
-				$_FILES['project_file']['error']= $files['project_file']['error'][$i];
-				$_FILES['project_file']['size']= $files['project_file']['size'][$i];
-				//echo "<hr>";print_r($_FILES);
-				if($this->upload->do_upload('project_file'))
+				$this->load->library('upload'); // Load Library
+				$files = $_FILES;
+				$cpt = count($_FILES['project_file']['name']);
+				$config = array();
+				$config['upload_path'] = './upload/';
+				$config['allowed_types'] = 'doc|docx|pdf';
+				$config['max_size']      = '0';
+				$config['overwrite']     = FALSE;
+				$this->upload->initialize($config); // These are just my options. Also keep in mind with PDF's YOU MUST TURN OFF xss_clean
+				
+				for($i=0; $i<$cpt; $i++)
 				{
-					//upload success
-					$data5=array(
-							"file_id"=>$this->load_reserve_model->get_maxid(5,"file_id","tb_reserve_has_file"),
-							"tb_reserve_id"=>$reserve_id,
-							"file_name"=>$file_detail["new_name"],
-							"old_file_name"=>$file_detail["old_name"]
+					$name = $_FILES["project_file"]["name"][$i];
+					$ext = end(explode(".", $name));
+					$file_detail=array(
+							"new_name"=>str_replace(".", "_", microtime(true)).".".end(explode(".", $files["project_file"]["name"][$i])),
+							"old_name"=>$files["project_file"]["name"][$i],
+							"ext"=>end(explode(".", $files["project_file"]["name"][$i])),
+							"type"=>$files["project_file"]["type"][$i],
+							"error"=>$files["project_file"]["error"][$i],
+							"size"=>$files["project_file"]["size"][$i]
 					);
-					$this->load_reserve_model->manage_add2($data5,"tb_reserve_has_file");
-				}
-				else
-				{
-					echo $this->upload->display_errors('<p>', '</p>');
+					print_r($file_detail);
+					$_FILES['project_file']['name']= $file_detail["new_name"];
+					$_FILES['project_file']['type']= $files['project_file']['type'][$i];
+					$_FILES['project_file']['tmp_name']= $files['project_file']['tmp_name'][$i];
+					$_FILES['project_file']['error']= $files['project_file']['error'][$i];
+					$_FILES['project_file']['size']= $files['project_file']['size'][$i];
+					//echo "<hr>";print_r($_FILES);
+					if($this->upload->do_upload('project_file'))
+					{
+						//upload success
+						$data5=array(
+								"file_id"=>$this->load_reserve_model->get_maxid(5,"file_id","tb_reserve_has_file"),
+								"tb_reserve_id"=>$reserve_id,
+								"file_name"=>$file_detail["new_name"],
+								"old_file_name"=>$file_detail["old_name"]
+						);
+						$this->load_reserve_model->manage_add2($data5,"tb_reserve_has_file");
+					}
+					else
+					{
+						echo $this->upload->display_errors('<p>', '</p>');
+					}
 				}
 			}
 			if($this->db->trans_status()===FALSE)

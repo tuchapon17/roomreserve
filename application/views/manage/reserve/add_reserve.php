@@ -376,7 +376,7 @@ echo $js;
 				"input_office":{
 					otheroffice:true
 				},
-				"project_file":{
+				"project_file[]":{
 					required:true,
 					filesize:2097152,
 					extension:"docx|doc|pdf"

@@ -16,7 +16,7 @@ class Calendar_Model extends CI_Model
 		$this->year=(isset($_GET["year"]) ? $this->year=$_GET["year"] : $this->year="");
 		
 		$this->conf["template"]='
-		{table_open}<table class="table-bordered2">{/table_open}
+		{table_open}<table class="table-calendar">{/table_open}
 
 	   	{heading_row_start}<tr>{/heading_row_start}
 	
@@ -34,13 +34,20 @@ class Calendar_Model extends CI_Model
 	   	{cal_cell_start}<td>{/cal_cell_start}
 
 	   	{cal_cell_content}
-				{day}
-				<div>{content}</div>
+				<span class="date" id="'.$this->year.'-'.$this->month.'-{day}">{day}</span>
+				{content}
 		{/cal_cell_content}
-	   	{cal_cell_content_today}<div class="highlight"><a href="{content}">{day}</a></div>{/cal_cell_content_today}
+	   	{cal_cell_content_today}
+				<span class="highlight date" id="'.$this->year.'-'.$this->month.'-{day}">{day}</span>
+				{content}
+		{/cal_cell_content_today}
 
-	   	{cal_cell_no_content}{day}{/cal_cell_no_content}
-	   	{cal_cell_no_content_today}<div class="highlight">{day}</div>{/cal_cell_no_content_today}
+	   	{cal_cell_no_content}
+				<span class="date" id="'.$this->year.'-'.$this->month.'-{day}">{day}</span>
+		{/cal_cell_no_content}
+	   	{cal_cell_no_content_today}
+				<span class="highlight date" id="'.$this->year.'-'.$this->month.'-{day}">{day}</span>
+		{/cal_cell_no_content_today}
 
 	   	{cal_cell_blank}&nbsp;{/cal_cell_blank}
 
@@ -54,14 +61,22 @@ class Calendar_Model extends CI_Model
 	{
 		$query=$this->db->select()->from("tb_reserve_has_datetime")
 		->join("tb_reserve","tb_reserve_has_datetime.tb_reserve_id=tb_reserve.reserve_id")
+		->where("tb_reserve.approve",1)
 		->like("reserve_datetime_begin","$year-$month","after")->get();
 		$cal_data=array();
+		
 		foreach ($query->result_array() as $row)
 		{
+			//$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)]="<i class='fa fa-info-circle'></i>";
+			
+			
+			
 			if(!array_key_exists((int)substr($row["reserve_datetime_begin"],8,2), $cal_data))
-				$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)]="<div onclick='alert(\"$row[reserve_datetime_begin].$row[reserve_datetime_end]\");'>".$row["project_name"]."</div>";
+				//$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)]="<div class='text-left' onclick='alert(\"$row[reserve_datetime_begin].$row[reserve_datetime_end]\");'>".$row["project_name"]."</div>";
+				$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)]="<div><small>".substr($row["reserve_datetime_begin"],11,5)."</small></div>";
 			else 
-				$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)].="<div onclick='alert(\"$row[reserve_datetime_begin].$row[reserve_datetime_end]\");'>".$row["project_name"]."</div>";
+				//$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)].="<div class='text-left' onclick='alert(\"$row[reserve_datetime_begin].$row[reserve_datetime_end]\");'>".$row["project_name"]."</div>";
+				$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)].="<div><small>".substr($row["reserve_datetime_begin"],11,5)."</small></div>";
 			
 		}
 		//print_r($cal_data);
