@@ -29,6 +29,20 @@ class Calendar extends CI_Controller {
 		);
 		$this->load->view("calendar_main",$data);
 	}
+	function bydate()
+	{
+		$data=array(
+				"htmlopen"=>$this->pel->htmlopen(),
+				"head"=>$this->pel->head("จองห้อง"),
+				"bodyopen"=>$this->pel->bodyopen(),
+				"navbar"=>$this->pel->navbar(),
+				"js"=>$this->pel->js(),
+				"footer"=>$this->pel->footer(),
+				"bodyclose"=>$this->pel->bodyclose(),
+				"htmlclose"=>$this->pel->htmlclose()
+		);
+		$this->load->view("calendar_by_date",$data);
+	}
 	function get_date_detail()
 	{
 		$query=$this->db->select()->from("tb_reserve")
@@ -41,5 +55,11 @@ class Calendar extends CI_Controller {
 		if($query->num_rows()>0)
 		echo json_encode($query->result_array());
 		else echo json_encode("");
+	}
+	function testdate()
+	{
+		$this->db->select()->from("tb_reserve_has_datetime")->like("reserve_datetime_begin",$this->input->post("likedate"));
+		echo json_encode($this->db->get()->result_array());
+		
 	}
 }

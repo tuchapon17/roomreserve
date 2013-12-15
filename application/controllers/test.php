@@ -19,6 +19,7 @@ class Test extends CI_Controller {
 	 */
 	public function index()
 	{
+		/*
 		$this->load->library('upload'); // Load Library
 		$files = $_FILES;
 		//print_r($_FILES);
@@ -59,8 +60,8 @@ class Test extends CI_Controller {
 										
 		
 		
-		}
-
+		}*/
+		$this->load->view("test");
 	}
 	public function calen($year=null,$month=null)
 	{

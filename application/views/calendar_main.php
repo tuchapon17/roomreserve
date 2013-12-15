@@ -123,6 +123,9 @@ echo $head;
 			border:1px solid #ccc;
 			padding:5px;
 		}
+		.time-small-begin{
+			text-align:right;
+		}
     </style>
 <?php
 	echo $bodyopen;
@@ -135,7 +138,7 @@ echo $head;
       	<?php //echo $titlename_tab;?>
       		<div class="col-lg-10 col-lg-offset-1" id="loginform">
 				
-      		 	<h2>ปฏิฑิน</h2>
+      		 	<h2>ปฏิทิน</h2>
       		 	<div class="alert-danger" id="login-alert">
       		 	
       			</div>
