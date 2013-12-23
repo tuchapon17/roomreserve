@@ -174,7 +174,7 @@ echo $js;
 		},function(){
 			$(this).css("background-color","");
 		});
-		$("span.date").parent().click(function(){
+		/*$("span.date").parent().click(function(){
 			var get_date=$(this).children("span.date").attr("id");
 			var ym=get_date.substr(0,8);
 			var d=get_date.substr(8,2);
@@ -203,7 +203,7 @@ echo $js;
 					alert("Error : "+error);
 				}
 			});
-		});
+		});*/
 		/*#################################################
 		Show bootbox alert
 		###################################################*/

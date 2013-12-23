@@ -53,13 +53,25 @@ class Calendar extends CI_Controller {
 		->like("tb_reserve_has_datetime.reserve_datetime_begin",$this->input->post("ymd"),"after")->get();
 		//$query=$this->db->select()->from("tb_reserve_has_datetime")->like("reserve_datetime_begin",$this->input->post("ymd"),"after")->get();
 		if($query->num_rows()>0)
-		echo json_encode($query->result_array());
-		else echo json_encode("");
+			echo json_encode($query->result_array());
+		//else echo json_encode("");
 	}
-	function testdate()
+	function getdatetime()
 	{
 		$this->db->select()->from("tb_reserve_has_datetime")->like("reserve_datetime_begin",$this->input->post("likedate"));
 		echo json_encode($this->db->get()->result_array());
 		
+	}
+	function get_datetime_detail()
+	{
+		$query=$this->db->select()->from("tb_reserve")
+		->join("tb_reserve_has_datetime","tb_reserve.reserve_id=tb_reserve_has_datetime.tb_reserve_id")
+		->join("tb_reserve_has_person","tb_reserve.reserve_id=tb_reserve_has_person.tb_reserve_id")
+		->join("tb_room","tb_reserve.tb_room_id=tb_room.room_id")
+		->where("tb_reserve_has_datetime.datetime_id",$this->input->post("datetime_id"))->get();
+		//echo $this->db->last_query();
+		if($query->num_rows()>0)
+			echo json_encode($query->result_array()[0]);
+		//else echo json_encode("");
 	}
 }

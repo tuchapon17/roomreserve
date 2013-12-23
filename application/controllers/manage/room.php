@@ -1,22 +1,40 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class Room extends MY_Controller
 {
+	//element_model
+	private $emm;
+	
+	//element_lib
+	private $eml;
+	
+	//page_element_lib
+	private $pel;
+	
+	//form_validation
+	private $frm;
+	
 	function __construct()
 	{
 		parent::__construct();
+		//load and set
+		//$this->load->library('element_lib');
+		$this->eml=$this->element_lib;
+		//$this->load->library("form_validation");
+			$this->frm=$this->form_validation;
+			$this->pel=$this->page_element_lib;
+		$this->load->model("element_model");
+			$this->emm=$this->element_model;
+		$this->lang->load("help_text","thailand");
+		$this->lang->load("label_name","thailand");
+		
+		
 		$this->load->library('element_lib');
 		$this->load->library("form_validation");
 		$this->load->model("manage/room_model");
 		$this->load->model("element_model");
-		$this->lang->load("help_text","thailand");
-		$this->lang->load("label_name","thailand");
 	}
 	function add()
 	{
-		$emm=$this->element_model;
-		$eml=$this->element_lib;
-		$frm=$this->form_validation;
-		
 		$config=array(
 				array(
 						"field"=>"input_room_name",
@@ -39,14 +57,14 @@ class Room extends MY_Controller
 						"rules"=>"required|max_length[6]"
 				)
 		);
-		$frm->set_rules($config);
-		$frm->set_message("rule","message");
-		if($frm->run() == false)
+		$this->frm->set_rules($config);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
 		{
 			$in_room_name_name="input_room_name";
 			$in_room_name=array(
 					"LB_text"=>"ชื่อห้อง",
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$in_room_name_name,
@@ -58,12 +76,12 @@ class Room extends MY_Controller
 			);
 			$se_room_type=array(
 					"LB_text"=>"ประเภทห้อง",
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"S_class"=>'',
 					"S_name"=>"select_room_type",
 					"S_id"=>"select_room_type",
 					"S_old_value"=>$this->input->post("select_room_type"),
-					"S_data"=>$emm->select_room_type(),
+					"S_data"=>$this->emm->select_room_type(),
 					"S_id_field"=>"room_type_id",
 					"S_name_field"=>"room_type_name",
 					"help_text"=>''
@@ -71,7 +89,7 @@ class Room extends MY_Controller
 			$te_room_detail_name="textarea_room_detail";
 			$te_room_detail=array(
 					"LB_text"=>"รายละเอียดห้อง",
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_class"=>'',
 					"IN_name"=>$te_room_detail_name,
 					"IN_id"=>$te_room_detail_name,
@@ -81,7 +99,7 @@ class Room extends MY_Controller
 			$in_discount_percent_name="input_discount_percent";
 			$in_discount_percent=array(
 					"LB_text"=>"ส่วนลด(%)",
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$in_discount_percent_name,
@@ -103,10 +121,10 @@ class Room extends MY_Controller
 					"bodyclose"=>$PEL->bodyclose(),
 					"htmlclose"=>$PEL->htmlclose(),
 					"room_tab"=>$this->room_tab(),
-					"in_room_name"=>$eml->form_input($in_room_name),
-					"se_room_type"=>$eml->form_select($se_room_type),
-					"te_room_detail"=>$eml->form_textarea($te_room_detail),
-					"in_discount_percent"=>$eml->form_input($in_discount_percent)
+					"in_room_name"=>$this->eml->form_input($in_room_name),
+					"se_room_type"=>$this->eml->form_select($se_room_type),
+					"te_room_detail"=>$this->eml->form_textarea($te_room_detail),
+					"in_discount_percent"=>$this->eml->form_input($in_discount_percent)
 			);
 		
 			$this->load->view("manage/room/add_room",$data);
@@ -130,9 +148,9 @@ class Room extends MY_Controller
 	function edit()
 	{
 		$rom=$this->room_model;
-		$emm=$this->element_model;
-		$eml=$this->element_lib;
-		$frm=$this->form_validation;
+		
+		
+		
 	
 	
 		$config=array(
@@ -157,14 +175,15 @@ class Room extends MY_Controller
 						"rules"=>"required|max_length[6]"
 				)
 		);
-		$frm->set_rules($config);
-		$frm->set_message("rule","message");
-		if($frm->run() == false)
+		$this->frm->set_rules($config);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
 		{
 			if(!$this->session->userdata("orderby_room"))
 				$this->session->set_userdata("orderby_room",array("field"=>"room_name","type"=>"ASC"));
 			//pagination
 			$this->load->library("pagination");
+			$config['use_page_numbers'] = TRUE;
 			$config['base_url']=base_url()."?d=manage&c=room&m=edit";
 			//set per_page
 			if($this->session->userdata("set_per_page")) $config['per_page']=$this->session->userdata("set_per_page");
@@ -193,7 +212,7 @@ class Room extends MY_Controller
 			$in_room_name_name="input_room_name";
 			$in_room_name=array(
 					"LB_text"=>"ชื่อห้อง",
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$in_room_name_name,
@@ -205,12 +224,12 @@ class Room extends MY_Controller
 			);
 			$se_room_type=array(
 					"LB_text"=>"ประเภทห้อง",
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"S_class"=>'',
 					"S_name"=>"select_room_type",
 					"S_id"=>"select_room_type",
 					"S_old_value"=>$this->input->post("select_room_type"),
-					"S_data"=>$emm->select_room_type(),
+					"S_data"=>$this->emm->select_room_type(),
 					"S_id_field"=>"room_type_id",
 					"S_name_field"=>"room_type_name",
 					"help_text"=>''
@@ -218,7 +237,7 @@ class Room extends MY_Controller
 			$te_room_detail_name="textarea_room_detail";
 			$te_room_detail=array(
 					"LB_text"=>"รายละเอียดห้อง",
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_class"=>'',
 					"IN_name"=>$te_room_detail_name,
 					"IN_id"=>$te_room_detail_name,
@@ -228,7 +247,7 @@ class Room extends MY_Controller
 			$in_discount_percent_name="input_discount_percent";
 			$in_discount_percent=array(
 					"LB_text"=>"ส่วนลด(%)",
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$in_discount_percent_name,
@@ -250,10 +269,10 @@ class Room extends MY_Controller
 					"bodyclose"=>$PEL->bodyclose(),
 					"htmlclose"=>$PEL->htmlclose(),
 					"room_tab"=>$this->room_tab(),
-					"in_room_name"=>$eml->form_input($in_room_name),
-					"se_room_type"=>$eml->form_select($se_room_type),
-					"te_room_detail"=>$eml->form_textarea($te_room_detail),
-					"in_discount_percent"=>$eml->form_input($in_discount_percent),
+					"in_room_name"=>$this->eml->form_input($in_room_name),
+					"se_room_type"=>$this->eml->form_select($se_room_type),
+					"te_room_detail"=>$this->eml->form_textarea($te_room_detail),
+					"in_discount_percent"=>$this->eml->form_input($in_discount_percent),
 					"table_edit"=>$this->table_edit($get_room_list),
 					"session_search_room"=>$this->session->userdata("search_room"),
 					"pagination_num_rows"=>$config["total_rows"],
@@ -327,7 +346,7 @@ class Room extends MY_Controller
 				<th>รหัส</th>
 				<th>ห้อง</th>
 				<th>ส่วนลด(%)</th>
-				<th class="same_first_td">อนุมัติ<br/><button type="button" class="cbtn cbtn-green" id="allow-all"><button type="button" class="cbtn cbtn-red" id="disallow-all"></th>
+				<th class="same_first_td">สถานะ<br/><button type="button" class="cbtn cbtn-green" id="allow-all"><button type="button" class="cbtn cbtn-red" id="disallow-all"></th>
 				<th class="same_first_td">แก้ไข</th>
 				<th>ลบ<br/><input type="checkbox" id="del_all_room"></th>
 		';
@@ -349,7 +368,7 @@ class Room extends MY_Controller
 					<td id="room'.$dt["room_id"].'">'.$dt["room_name"].'</td>
 					<td>'.$dt["discount_percent"].'</td>
 					<td class="same_first_td">'.$checkbox.'</td>
-					<td class="same_first_td"><button type="button" class="btn btn-primary" onclick=load_room("'.$dt["room_id"].'")><img width="17" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_150_edit.png"></button></td>
+					<td class="same_first_td">'.$this->eml->btn('edit','onclick=load_room("'.$dt["room_id"].'")').'</td>
 					<td><input type="checkbox" value="'.$dt["room_id"].'" name="del_room[]" class="del_room"></td>
 			';
 			$html.='</tr>';
@@ -360,11 +379,10 @@ class Room extends MY_Controller
 				<td></td>
 				<td></td>
 				<td></td>
-				<td align="center"><button type="button" class="btn btn-success" onclick="show_allow_list();return false;"><img width="12" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_206_ok_2.png"></button>
-									<button type="button" class="btn btn-warning" onclick="location.reload(true);"><img width="12" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_081_refresh.png"></button>
-						</td>
+				<td align="center">'.$this->eml->btn('submitcheck','onclick="show_allow_list();return false;"')." ".
+									$this->eml->btn('refreshcheck','onclick="location.reload(true);"').'</td>
 				<td></td>
-				<td><button type="submit" class="btn btn-danger" onclick="show_del_list();return false;"><img width="12" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_016_bin.png"></button></td>
+				<td>'.$this->eml->btn('delete','onclick="show_del_list();return false;"').'</td>
 				</tr>
 				</table>
 				</form>';
@@ -386,5 +404,11 @@ class Room extends MY_Controller
 		//$data["room_detail"]=$this->reverse_escape($data["room_detail"]);
 		echo json_encode($data);
 	}
-	
+	function set_searchfield()
+	{
+		if($this->input->post("searchfield"))
+		{
+			$this->session->set_userdata("searchfield_room",$this->input->post("searchfield"));
+		}
+	}
 }

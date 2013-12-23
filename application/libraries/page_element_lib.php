@@ -1,9 +1,13 @@
 <?php
 class Page_element_lib
 {
+	var $ci;
+	private $eml;
 	function __construct()
 	{
-		
+		$this->ci =& get_instance();
+		$this->ci->load->library('element_lib');
+			$this->eml=$this->ci->element_lib;
 	}
 	function htmlopen()
 	{
@@ -99,7 +103,12 @@ class Page_element_lib
 		      		#search_box_div{
 						padding:0px;
 					}
-		      		
+		      		i.fa{
+		      			color:black;
+		      		}
+		      		i.fa-white{
+		      			color:white;
+		      		}
 		      		</style>
 		  </head>
 		';
@@ -107,11 +116,11 @@ class Page_element_lib
 	}
 	function navbar()
 	{
-		$ci =& get_instance();
+		//$ci =& get_instance();
 		$html='
 		<div class="navbar navbar-inverse navbar-fixed-top" id="navbarmenu">
 	      <div class="container">
-	        <div class="navbar-header">
+	        <div class="navbar-header" style="background-color: #BD4932;">
 	          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
 	            <span class="icon-bar"></span>
 	            <span class="icon-bar"></span>
@@ -146,7 +155,7 @@ class Page_element_lib
 			      	</li>
 		';
 		
-		if(!$ci->session->userdata("rs_username"))
+		if(!$this->ci->session->userdata("rs_username"))
 		{
 			$html.='<li><a href="?c=register&m=step1">สมัครสมาชิก</a></li>
 					<li><a href="?c=login&m=auth">ลงชื่อเข้าใช้</a></li>';
@@ -154,7 +163,7 @@ class Page_element_lib
 		else
 		{
 			$html.='<li class="dropdown active">
-				        <a href="#" class="dropdown-toggle" data-toggle="dropdown">'.$ci->session->userdata("rs_username").'<b class="caret"></b></a>
+				        <a href="#" class="dropdown-toggle" data-toggle="dropdown">'.$this->ci->session->userdata("rs_username").'<b class="caret"></b></a>
 				        <ul class="dropdown-menu">
 				          <li><a href="?c=user_profile&m=view_profile">ข้อมูลส่วนตัว</a></li>
 				          <li ><a id="logout_menu">ออกจากระบบ</a></li>
@@ -192,28 +201,31 @@ class Page_element_lib
 	}
 	function manage_search_box($search_text)
 	{
-		$ci=&get_instance();
+		//$ci = &get_instance();
 		$html='
-				<div class="input-group col-lg-7 col-lg-offset-5 search-box" id="search_box_div">
+				<div class="input-group col-lg-5 col-lg-offset-7 search-box" id="search_box_div">
 					<span class="input-group-btn">
-						<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-						แสดงแถว<span class="caret"></span>
-						</button>
-						<button type="button" class="btn btn-primary" onclick="select_orderby()">ลำดับข้อมูล</button>
-						<button type="button" class="btn btn-primary" onclick="select_searchfield()">ประเภทการค้นหา</button>
+						'.
+						$this->eml->btn('perpage','').
+						$this->eml->btn('sort_by','onclick="select_orderby()"').
+						$this->eml->btn('search_by','onclick="select_searchfield()"').
+						'
 						<ul class="dropdown-menu" role="menu">
-							<li><a href="#" onclick="set_per_page(3)">3แถว</a></li>
-							<li><a href="#" onclick="set_per_page(5)">5 แถว</a></li>
 							<li><a href="#" onclick="set_per_page(10)">10 แถว</a></li>
-							<li><a href="#" onclick="set_per_page(15)">15 แถว</a></li>
 							<li><a href="#" onclick="set_per_page(20)">20 แถว</a></li>
+							<li><a href="#" onclick="set_per_page(30)">30 แถว</a></li>
+							<li><a href="#" onclick="set_per_page(40)">40 แถว</a></li>
 							<li><a href="#" onclick="set_per_page(50)">50 แถว</a></li>
+							<li><a href="#" onclick="set_per_page(60)">60 แถว</a></li>
+							<li><a href="#" onclick="set_per_page(70)">70 แถว</a></li>
+							<li><a href="#" onclick="set_per_page(80)">80 แถว</a></li>
+							<li><a href="#" onclick="set_per_page(90)">90 แถว</a></li>
+							<li><a href="#" onclick="set_per_page(100)">100 แถว</a></li>
 						</ul>
 					</span>
 					<input type="text" maxlength="30" value="'.$search_text.'" placeholder="ค้นหา" id="input_search_box" name="input_search_box" class="form-control ">
 					<span class="input-group-btn">
-						<button type="submit" class="btn btn-primary"><img src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_027_search.png" width="15"></span></button>
-						<button type="button" class="btn btn-warning" id="clearSearch"><img src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_197_remove.png" width="15"></span>
+						'.$this->eml->btn('search','').$this->eml->btn('clear_search','').'
 					</span>
 				</div>
       		 	';

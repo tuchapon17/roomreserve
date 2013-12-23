@@ -89,6 +89,7 @@ class Titlename extends MY_Controller
 				$this->session->set_userdata("orderby_titlename",array("field"=>"titlename","type"=>"ASC"));
 			//pagination
 			$this->load->library("pagination");
+			$config['use_page_numbers'] = TRUE;
 			$config['base_url']=base_url()."?d=manage&c=titlename&m=edit";
 			//set per_page
 			if($this->session->userdata("set_per_page")) $config['per_page']=$this->session->userdata("set_per_page");

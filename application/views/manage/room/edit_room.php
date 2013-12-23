@@ -1,4 +1,7 @@
 <?php 
+$ci=&get_instance();
+$ci->load->library("element_lib");
+$eml=$ci->element_lib;
 
 echo $htmlopen;
 echo $head;
@@ -71,7 +74,7 @@ echo $head;
 						echo "<span id='".$em_name["in_discount_percent"]."_error' class='hidden'>".form_error($em_name["in_discount_percent"])."</span>";
 						?>	
 					</fieldset>
-					<button type="submit" class="btn btn-default">แก้ไข</button>
+					<?php echo $eml->btn('submit','');?>
 				</form>
       		</div>
         </div>
@@ -315,6 +318,37 @@ echo $js;
 				});
 			}
 		});
+	}
+	function select_searchfield()
+	{
+		var select_field='<select id="searchfield" class="form-control">';
+		select_field+='<option value="room_id">รหัสห้อง</option>';
+		select_field+='<option value="room_name">ชื่อห้อง</option>';
+		select_field+='</select>';
+
+		bootbox.dialog({
+			message: select_field+"<br/>",
+			title: "เลือกประเภทการค้นหา",
+			buttons: {
+				success: {
+					label: "ตกลง",
+					className: "btn-success",
+					callback: function() {
+						$.post("<?php echo base_url()?>?d=manage&c=room&m=set_searchfield",{searchfield:$("#searchfield").val()},function(data,status){
+							window.location="<?php echo base_url();?>?d=manage&c=room&m=edit";
+						});
+					}
+				},
+				danger: {
+					label: "ยกเลิก",
+					className: "btn-danger",
+					callback: function() {
+					
+					}
+				}
+			}
+		});
+		$("#searchfield").val("<?php echo $this->session->userdata("searchfield_auth_log");?>");
 	}
 	//-->
 	

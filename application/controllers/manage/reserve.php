@@ -340,28 +340,29 @@ class Reserve extends MY_Controller
 			{
 				foreach($this->input->post("input-begin-time1") as $key=>$val)
 				{
-					$beginDT=new DateTime($this->convert_datetime($val)["date"]." ".$this->convert_datetime($val)["time"]);
-					$endDT=new DateTime($this->convert_datetime($this->input->post("input-end-time1")[$key])["date"]." ".$this->convert_datetime($this->input->post("input-end-time1")[$key])["time"]);
-					$interval = DateInterval::createFromDateString('1 day');
-					$period = new DatePeriod($beginDT, $interval, $endDT);
-					
-					foreach ( $period as $dt )
+					//วันเริ่ม กับ สิ้นสุดต้องเป็นวันเดียวกัน
+					if($this->convert_datetime($this->input->post("input-begin-time1")[$key])["date"] == $this->convert_datetime($this->input->post("input-end-time1")[$key])["date"])
 					{
-						$begin1=$dt->format( "Y-m-d H:i:s" );
-						
-						$pattern = "/[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/";
-						preg_match($pattern,$dt->format( "Y-m-d H:i:s" ), $enddate);
-						
-						$end1=$enddate[0]." ".$this->convert_datetime($this->input->post("input-end-time1")[$key])["time"];
-						$data3=array(
-								"datetime_id"=>$this->load_reserve_model->get_maxid(6,"datetime_id","tb_reserve_has_datetime"),
-								"tb_reserve_id"=>$reserve_id,
-								"reserve_datetime_begin"=>$begin1,
-								"reserve_datetime_end"=>$end1
-						);
-						$this->load_reserve_model->manage_add2($data3,"tb_reserve_has_datetime");
+						$beginDT=new DateTime($this->convert_datetime($val)["date"]." ".$this->convert_datetime($val)["time"]);
+						$endDT=new DateTime($this->convert_datetime($this->input->post("input-end-time1")[$key])["date"]." ".$this->convert_datetime($this->input->post("input-end-time1")[$key])["time"]);
+						$interval = DateInterval::createFromDateString('1 day');
+						//หาระยะเวลา
+						$period = new DatePeriod($beginDT, $interval, $endDT);
+						foreach ( $period as $dt )
+						{
+							$begin1=$dt->format( "Y-m-d H:i:s" );
+							$pattern = "/[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/";
+							preg_match($pattern,$dt->format( "Y-m-d H:i:s" ), $enddate);
+							$end1=$enddate[0]." ".$this->convert_datetime($this->input->post("input-end-time1")[$key])["time"];
+							$data3=array(
+									"datetime_id"=>$this->load_reserve_model->get_maxid(6,"datetime_id","tb_reserve_has_datetime"),
+									"tb_reserve_id"=>$reserve_id,
+									"reserve_datetime_begin"=>$begin1,
+									"reserve_datetime_end"=>$end1
+							);
+							$this->load_reserve_model->manage_add2($data3,"tb_reserve_has_datetime");
+						}					
 					}
-					
 				}
 			}
 			else if($this->input->post("reserve_time")=="reserve_time2")

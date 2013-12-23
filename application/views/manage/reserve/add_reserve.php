@@ -483,19 +483,20 @@ echo $js;
 					enddate[i]=match_date($(this).val());
 					endtime[i]=match_time($(this).val());
 				});
+				
 				if(begindate.length==enddate.length)
 				{
 					var datestat=0;
 					for(var i=0;i<begindate.length;i++)
 					{
-						
-						if(compare_date(begindate[i],enddate[i]))
+						//วันเริ่มเท่ากับวันสิ้นสุด มากว่าหรือน้อยกว่าไม่ได้
+						if(begindate[i]==enddate[i])
+						//if(compare_date(begindate[i],enddate[i]))
 						{
 							if(begindate[i]==enddate[i])
 							{
 								if(begintime[i]==endtime[i])
 								{
-									//alertmessage+="<li>กรุณาตรวจสอบ เวลา</li>";
 									message[i]="โปรดตรวจสอบ เวลาเริ่มต้น และเวลาสิ้นสุด";
 								}
 							}
@@ -503,11 +504,10 @@ echo $js;
 						else 
 						{
 							message[i]="โปรดตรวจสอบวันเริ่มต้น และวันสิ้นสุด";
-							//alertmessage+="<li>กรุณากำหนดวันเริ่มต้น และวันสิ้นสุด</li>";
 						}
 					}
 				}
-				//bootbox.alert("<ul>"+alertmessage+"</ul>");
+				//error message
 				$.each(message,function(index,val){
 					if(val)
 					{
@@ -520,8 +520,6 @@ echo $js;
 						e.preventDefault();
 					}
 				});
-				//$("#span-time1").before("<label class='my-error-class'>"+text+"</label>");
-				//e.preventDefault();
 			}
 			else if($("#reserve_time2").is(":checked"))
 			{
@@ -529,17 +527,25 @@ echo $js;
 				var alertmessage='';
 				var begindate=match_date($("input[name='input-begin-time2']").val());
 				var enddate=match_date($("input[name='input-end-time2']").val());
-				var begintime=match_time($("input[name='input-begin-time2']").val());
-				var endtime=match_time($("input[name='input-end-time2']").val());
+				var begintime=match_time($("input[name='input-begin-time2']").val()).toString();
+				var endtime=match_time($("input[name='input-end-time2']").val()).toString();
 				var datestat=0;
 				var timestat=0;
-				if(compare_date(begindate,enddate))
+				if(begindate<=enddate)
 				{
 					if(begindate==enddate)
 					{
 						if(begintime==endtime)
 						{
 							//alertmessage+="<li>กรุณาตรวจสอบ เวลา</li>";
+							$(".datetimepickerEnd-time2").after("<label class='my-error-class'>โปรดตรวจสอบ เวลาเริ่มต้น และเวลาสิ้นสุด</label>");
+							e.preventDefault();
+						}
+					}
+					else
+					{
+						if(begintime>endtime)
+						{
 							$(".datetimepickerEnd-time2").after("<label class='my-error-class'>โปรดตรวจสอบ เวลาเริ่มต้น และเวลาสิ้นสุด</label>");
 							e.preventDefault();
 						}
@@ -1011,8 +1017,9 @@ echo $js;
 	function match_time(in_time)
 	{
 		var timeval;
-		if(in_time.match(/(0[0-9]|1[0-9]|2[0-4]):(0[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]|6[0]):(0[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]|6[0])/))
-			timeval=in_time.match(/(0[0-9]|1[0-9]|2[0-4]):(0[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]|6[0]):(0[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]|6[0])/)[0];
+		var regex=/(0[0-9]|1[0-9]|2[0-4]):(0[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]|6[0]):(0[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]|6[0])/;
+		if(in_time.match(regex))
+			timeval=in_time.match(regex)[0];
 		//else timeval='';
 		return timeval;
 	}

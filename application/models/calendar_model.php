@@ -34,7 +34,7 @@ class Calendar_Model extends CI_Model
 	   	{cal_cell_start}<td>{/cal_cell_start}
 
 	   	{cal_cell_content}
-				<span class="date" id="'.$this->year.'-'.$this->month.'-{day}">{day}</span>
+				<a href="'.base_url().'?c=calendar&m=bydate&cdate='.$this->year.'-'.$this->month.'-{day}"><span class="date" id="'.$this->year.'-'.$this->month.'-{day}">{day}</span></a>
 				{content}
 		{/cal_cell_content}
 	   	{cal_cell_content_today}
