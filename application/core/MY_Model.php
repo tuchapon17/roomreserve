@@ -130,9 +130,9 @@ class MY_Model extends CI_Model
 			$where=array(
 					$field_PK=>$allow
 			);
-			$data=array(
-					"checked"=>"1"
-			);
+			if($table=="tb_reserve")$data=array("approve"=>"1","approve_on"=>date('Y-m-d H:i:s'),"approve_by"=>$this->session->userdata("rs_username"));
+			else $data=array("checked"=>"1");
+			
 			if($table=="tb_user")$data=array("user_status"=>"1");
 			if($table=="tb_room")$data=array("room_status"=>"1");
 			$name=$this->db->select($select_field)->from($table)->where($where)->limit(1)->get()->result_array();
@@ -151,9 +151,8 @@ class MY_Model extends CI_Model
 			$where=array(
 					$field_PK=>$disallow
 			);
-			$data=array(
-					"checked"=>"0"
-			);
+			if($table=="tb_reserve")$data=array("approve"=>"0");
+			else $data=array("checked"=>"0");
 			if($table=="tb_user")$data=array("user_status"=>"0");
 			if($table=="tb_room")$data=array("room_status"=>"0");
 			$name=$this->db->select($select_field)->from($table)->where($where)->limit(1)->get()->result_array();

@@ -1,27 +1,21 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class User extends MY_Controller
 {
+	private $us_model;
 	function __construct()
 	{
 		parent::__construct();
-		$this->load->library('element_lib');
-		$this->load->library("form_validation");
 		$this->load->model("manage/user_model");
-		$this->load->model("element_model");
-		$this->lang->load("help_text","thailand");
-		$this->lang->load("label_name","thailand");
+		$this->us_model=$this->user_model;
 	}
 
 	function edit()
 	{
-		$usm=$this->user_model;
-		$emm=$this->element_model;
-		$eml=$this->element_lib;
-		
 		if(!$this->session->userdata("orderby_user"))
 			$this->session->set_userdata("orderby_user",array("field"=>"username","type"=>"ASC"));
 		//pagination
 		$this->load->library("pagination");
+		$config['use_page_numbers'] = TRUE;
 		$config['base_url']=base_url()."?d=manage&c=user&m=edit";
 		//set per_page
 		if($this->session->userdata("set_per_page")) $config['per_page']=$this->session->userdata("set_per_page");
@@ -34,42 +28,39 @@ class User extends MY_Controller
 		if($this->session->userdata("search_user"))
 		{
 			$liketext=$this->session->userdata("search_user");
-			$config['total_rows']=$usm->get_all_numrows("tb_user",$liketext,"username");
+			$config['total_rows']=$this->us_model->get_all_numrows("tb_user",$liketext,"username");
 		
-			$get_user_list=$usm->get_user_list($config['per_page'],$this->getpage,$liketext);
+			$get_user_list=$this->us_model->get_user_list($config['per_page'],$this->getpage,$liketext);
 		}
 		else
 		{
-			$config['total_rows']=$usm->get_all_numrows("tb_user",'',"username");
+			$config['total_rows']=$this->us_model->get_all_numrows("tb_user",'',"username");
 		
-			$get_user_list=$usm->get_user_list($config['per_page'],$this->getpage);
+			$get_user_list=$this->us_model->get_user_list($config['per_page'],$this->getpage);
 		}
 		$this->pagination->initialize($config);
 		
 		//..pagination
-		
-		$PEL=$this->page_element_lib;
 		$data=array(
-				"htmlopen"=>$PEL->htmlopen(),
-				"head"=>$PEL->head("แก้ไข/ลบ  สาขาวิชา/งาน"),
-				"bodyopen"=>$PEL->bodyopen(),
-				"navbar"=>$PEL->navbar(),
-				"js"=>$PEL->js(),
-				"footer"=>$PEL->footer(),
-				"bodyclose"=>$PEL->bodyclose(),
-				"htmlclose"=>$PEL->htmlclose(),
+				"htmlopen"=>$this->pel->htmlopen(),
+				"head"=>$this->pel->head("แก้ไข/ลบ  สาขาวิชา/งาน"),
+				"bodyopen"=>$this->pel->bodyopen(),
+				"navbar"=>$this->pel->navbar(),
+				"js"=>$this->pel->js(),
+				"footer"=>$this->pel->footer(),
+				"bodyclose"=>$this->pel->bodyclose(),
+				"htmlclose"=>$this->pel->htmlclose(),
 				"user_tab"=>$this->user_tab(),
 				"table_edit"=>$this->table_edit($get_user_list),
 				"session_search_user"=>$this->session->userdata("search_user"),
 				"pagination_num_rows"=>$config["total_rows"],
-				"manage_search_box"=>$PEL->manage_search_box($this->session->userdata("search_user"))
+				"manage_search_box"=>$this->pel->manage_search_box($this->session->userdata("search_user"))
 		);
 		$this->load->view("manage/user/edit_user",$data);
 	}
 	function delete()
 	{
-		$usm=$this->user_model;
-		$usm->manage_delete($this->input->post("del_user"), "tb_user", "username", "username", "edit_user", "?d=manage&c=user&m=edit");
+		$this->us_model->manage_delete($this->input->post("del_user"), "tb_user", "username", "username", "edit_user", "?d=manage&c=user&m=edit");
 	}
 	
 	function user_tab()
@@ -89,8 +80,7 @@ class User extends MY_Controller
 		//$data = array
 		$allow_list=$this->input->post("allow_list");
 		$disallow_list=$this->input->post("disallow_list");
-		$usm=$this->user_model;
-		$usm->manage_allow($allow_list,$disallow_list, "tb_user", "username", "username", "edit_user", "?d=manage&c=user&m=edit");
+		$this->us_model->manage_allow($allow_list,$disallow_list, "tb_user", "username", "username", "edit_user", "?d=manage&c=user&m=edit");
 	}
 	function search()
 	{
@@ -139,7 +129,7 @@ class User extends MY_Controller
 					<td id="user'.$dt["username"].'">'.$dt["username"].'</td>
 					<td>'.$dt["group_name"].'</td>
 					<td class="same_first_td">'.$checkbox.'</td>
-					<td class="same_first_td"><button type="button" class="btn btn-primary" onclick=show_all_data("'.$dt["username"].'")><img width="17" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_051_eye_open.png"></button></td>
+					<td class="same_first_td">'.$this->eml->btn('view','onclick=show_all_data("'.$dt["username"].'")').'</td>
 					<td><input type="checkbox" value="'.$dt["username"].'" name="del_user[]" class="del_user"></td>
 			';
 			$html.='</tr>';
@@ -150,11 +140,11 @@ class User extends MY_Controller
 				<td></td>
 				<td></td>
 				<td></td>
-				<td align="center"><button type="button" class="btn btn-success" onclick="show_allow_list();return false;"><img width="12" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_206_ok_2.png"></button>
-									<button type="button" class="btn btn-warning" onclick="location.reload(true);"><img width="12" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_081_refresh.png"></button>
-						</td>
+				<td align="center">'.$this->eml->btn('submitcheck','onclick="show_allow_list();return false;"')." ".
+									$this->eml->btn('refreshcheck','onclick="location.reload(true);"').'
+				</td>
 				<td></td>
-				<td><button type="submit" class="btn btn-danger" onclick="show_del_list();return false;"><img width="12" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_016_bin.png"></button></td>
+				<td>'.$this->eml->btn('delete','onclick="show_del_list();return false;"').'</td>
 				</tr>
 				</table>
 				</form>';
@@ -170,7 +160,6 @@ class User extends MY_Controller
 	}
 	function show_all_data()
 	{
-		$usm=$this->user_model;
-		echo json_encode($usm->get_all_data($this->input->post("username"))[0]);
+		echo json_encode($this->us_model->get_all_data($this->input->post("username"))[0]);
 	}
 }

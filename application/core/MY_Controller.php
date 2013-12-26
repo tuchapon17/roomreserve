@@ -1,9 +1,29 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class MY_Controller extends CI_Controller
 {
+	//element_model
+	public $emm;
+	
+	//element_lib
+	public $eml;
+	
+	//page_element_lib
+	public $pel;
+	
+	//form_validation
+	public $frm;
+	
 	function __construct()
 	{
 		parent::__construct();
+		$this->eml=$this->element_lib;
+		$this->frm=$this->form_validation;
+		$this->pel=$this->page_element_lib;
+		$this->load->model("element_model");
+		$this->emm=$this->element_model;
+		
+		$this->lang->load("help_text","thailand");
+		$this->lang->load("label_name","thailand");
 	}
 	function call_lib($data,$param)
 	{

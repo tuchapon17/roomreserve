@@ -1,22 +1,15 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class Office extends MY_Controller
 {
+	private $off_model;
 	function __construct()
 	{
 		parent::__construct();
-		$this->load->library('element_lib');
-		$this->load->library("form_validation");
 		$this->load->model("manage/office_model");
-		$this->load->model("element_model");
-		$this->lang->load("help_text","thailand");
-		$this->lang->load("label_name","thailand");
+		$this->off_model=$this->office_model;
 	}
 	function add()
 	{
-		$emm=$this->element_model;
-		$eml=$this->element_lib;
-		$frm=$this->form_validation;
-		
 		$config=array(
 				array(
 						"field"=>"input_office_name",
@@ -24,14 +17,14 @@ class Office extends MY_Controller
 						"rules"=>"required|max_length[30]|callback_call_lib[regex_lib,regex_charTHEN,%s - กรอกได้เฉพาะอักษรไทย/อังกฤษ]"
 				)
 		);
-		$frm->set_rules($config);
-		$frm->set_message("rule","message");
-		if($frm->run() == false)
+		$this->frm->set_rules($config);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
 		{
 			$in_office_name_name="input_office_name";
 			$in_office_name=array(
 					"LB_text"=>"หน่วยงาน",
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$in_office_name_name,
@@ -53,32 +46,24 @@ class Office extends MY_Controller
 					"bodyclose"=>$PEL->bodyclose(),
 					"htmlclose"=>$PEL->htmlclose(),
 					"office_tab"=>$this->office_tab(),
-					"in_office_name"=>$eml->form_input($in_office_name)
+					"in_office_name"=>$this->eml->form_input($in_office_name)
 			);
 		
 			$this->load->view("manage/office/add_office",$data);
 		}
 		else
 		{
-		
-			$ofm=$this->office_model;
 			$data=array(
-					"office_id"=>$ofm->get_maxid(2, "office_id", "tb_office"),
+					"office_id"=>$this->off_model->get_maxid(2, "office_id", "tb_office"),
 					"office_name"=>$this->input->post("input_office_name"),
 					"checked"=>"1"
 			);
 			$redirect_link="?d=manage&c=office&m=add";
-			$ofm->manage_add($data,"tb_office",$redirect_link,$redirect_link,"office","เพิ่มหน่วยงานสำเร็จ","เพิ่มหน่วยงานไม่สำเร็จ");
+			$this->off_model->manage_add($data,"tb_office",$redirect_link,$redirect_link,"office","เพิ่มหน่วยงานสำเร็จ","เพิ่มหน่วยงานไม่สำเร็จ");
 		}
 	}
 	function edit()
 	{
-		$ofm=$this->office_model;
-		$emm=$this->element_model;
-		$eml=$this->element_lib;
-		$frm=$this->form_validation;
-		
-		
 		$config=array(
 				array(
 						"field"=>"input_office_name",
@@ -86,14 +71,15 @@ class Office extends MY_Controller
 						"rules"=>"required|max_length[30]|callback_call_lib[regex_lib,regex_charTHEN,%s - กรอกได้เฉพาะอักษรไทย/อังกฤษ]"
 				)
 		);
-		$frm->set_rules($config);
-		$frm->set_message("rule","message");
-		if($frm->run() == false)
+		$this->frm->set_rules($config);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
 		{
 			if(!$this->session->userdata("orderby_office"))
 				$this->session->set_userdata("orderby_office",array("field"=>"office_name","type"=>"ASC"));
 			//pagination
 			$this->load->library("pagination");
+			$config['use_page_numbers'] = TRUE;
 			$config['base_url']=base_url()."?d=manage&c=office&m=edit";
 			//set per_page
 			if($this->session->userdata("set_per_page")) $config['per_page']=$this->session->userdata("set_per_page");
@@ -106,15 +92,15 @@ class Office extends MY_Controller
 			if($this->session->userdata("search_office"))
 			{
 				$liketext=$this->session->userdata("search_office");
-				$config['total_rows']=$ofm->get_all_numrows("tb_office",$liketext,"office_name");
+				$config['total_rows']=$this->off_model->get_all_numrows("tb_office",$liketext,"office_name");
 				
-				$get_office_list=$ofm->get_office_list($config['per_page'],$this->getpage,$liketext);
+				$get_office_list=$this->off_model->get_office_list($config['per_page'],$this->getpage,$liketext);
 			}
 			else
 			{
-				$config['total_rows']=$ofm->get_all_numrows("tb_office",'',"office_name");
+				$config['total_rows']=$this->off_model->get_all_numrows("tb_office",'',"office_name");
 				
-				$get_office_list=$ofm->get_office_list($config['per_page'],$this->getpage);
+				$get_office_list=$this->off_model->get_office_list($config['per_page'],$this->getpage);
 			}
 			$this->pagination->initialize($config);
 		
@@ -122,7 +108,7 @@ class Office extends MY_Controller
 			$in_office_name_name="input_office_name";
 			$in_office_name=array(
 					"LB_text"=>"หน่วยงาน",
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$in_office_name_name,
@@ -144,7 +130,7 @@ class Office extends MY_Controller
 					"bodyclose"=>$PEL->bodyclose(),
 					"htmlclose"=>$PEL->htmlclose(),
 					"office_tab"=>$this->office_tab(),
-					"in_office_name"=>$eml->form_input($in_office_name),
+					"in_office_name"=>$this->eml->form_input($in_office_name),
 					"table_edit"=>$this->table_edit($get_office_list),
 					"session_search_office"=>$this->session->userdata("search_office"),
 					"pagination_num_rows"=>$config["total_rows"],
@@ -162,21 +148,19 @@ class Office extends MY_Controller
 			$where=array(
 					"office_id"=>$this->session->userdata($session_edit_id)
 			);
-			$ofm->manage_edit($set, $where, "tb_office", $session_edit_id, "edit_office", "แก้ไขหน่วยงานสำเร็จ", "แก้ไขหน่วยงานไม่สำเร็จ", "?d=manage&c=office&m=edit", $prev_url);
+			$this->off_model->manage_edit($set, $where, "tb_office", $session_edit_id, "edit_office", "แก้ไขหน่วยงานสำเร็จ", "แก้ไขหน่วยงานไม่สำเร็จ", "?d=manage&c=office&m=edit", $prev_url);
 		}
 	}
 	function delete()
 	{
-		$ofm=$this->office_model;
-		$ofm->manage_delete($this->input->post("del_office"), "tb_office", "office_id", "office_name", "edit_office", "?d=manage&c=office&m=edit");
+		$this->off_model->manage_delete($this->input->post("del_office"), "tb_office", "office_id", "office_name", "edit_office", "?d=manage&c=office&m=edit");
 	}
 	function allow()
 	{
 		//$data = array
 		$allow_list=$this->input->post("allow_list");
 		$disallow_list=$this->input->post("disallow_list");
-		$ofm=$this->office_model;
-		$ofm->manage_allow($allow_list,$disallow_list, "tb_office", "office_id", "office_name", "edit_office", "?d=manage&c=office&m=edit");
+		$this->off_model->manage_allow($allow_list,$disallow_list, "tb_office", "office_id", "office_name", "edit_office", "?d=manage&c=office&m=edit");
 	}
 	
 	
@@ -241,7 +225,7 @@ class Office extends MY_Controller
 					<td>'.$dt["office_id"].'</td>
 					<td id="office'.$dt["office_id"].'">'.$dt["office_name"].'</td>
 					<td class="same_first_td">'.$checkbox.'</td>
-					<td class="same_first_td"><button type="button" class="btn btn-primary" onclick=load_office("'.$dt["office_id"].'")><img width="17" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_150_edit.png"></button></td>
+					<td class="same_first_td">'.$this->eml->btn('edit','onclick=load_office("'.$dt["office_id"].'")').'</td>
 					<td><input type="checkbox" value="'.$dt["office_id"].'" name="del_office[]" class="del_office"></td>
 			';
 			$html.='</tr>';
@@ -251,11 +235,11 @@ class Office extends MY_Controller
 		$html.='<tr>
 				<td></td>
 				<td></td>
-				<td align="center"><button type="button" class="btn btn-success" onclick="show_allow_list();return false;"><img width="12" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_206_ok_2.png"></button>
-									<button type="button" class="btn btn-warning" onclick="location.reload(true);"><img width="12" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_081_refresh.png"></button>
-						</td>
+				<td align="center">'.$this->eml->btn('submitcheck','onclick="show_allow_list();return false;"')." ".
+									$this->eml->btn('refreshcheck','onclick="location.reload(true);"').'
+				</td>
 				<td></td>
-				<td><button type="submit" class="btn btn-danger" onclick="show_del_list();return false;"><img width="12" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_016_bin.png"></button></td>
+				<td>'.$this->eml->btn('delete','onclick="show_del_list();return false;"').'</td>
 				</tr>
 				</table>
 				</form>';
@@ -271,9 +255,7 @@ class Office extends MY_Controller
 	}
 	function load_office()
 	{
-	
-		$ofm=$this->office_model;
-		echo json_encode($ofm->load_office($this->input->post("tid"))[0]);
+		echo json_encode($this->off_model->load_office($this->input->post("tid"))[0]);
 	}
 	
 }

@@ -1,48 +1,14 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class Register extends CI_Controller
+class Register extends MY_Controller
 {
 	function __construct()
 	{
 		parent::__construct();
-		$this->lang->load("help_text","thailand");
-		$this->lang->load("label_name","thailand");
+
 		$this->load->library("page_element_lib");
-		/*$this->label_name_th = array(
-				"username"=>"ชื่อผู้เข้าใช้",
-				"password"=>"รหัสผ่าน",
-				"password2"=>"ยืนยันรหัสผ่าน",
-				"email"=>"อีเมล",
-				"firstname"=>"ชื่อ",
-				"lastname"=>"นามสกุล",
-				"in_occupation"=>"ระบุอาชีพอื่นๆ",
-				"phone"=>"เบอร์โทรศัพท์",
-				"house_no"=>"บ้านเลขที่",
-				"village_no"=>"หมู่ที่",
-				"alley"=>"ตรอก/ซอย",
-				"road"=>"ถนน",
-				"se_titlename"=>"คำนำหน้าชื่อ",
-				"se_occupation"=>"อาชีพ",
-				"se_province"=>"จังหวัด",
-				"se_district"=>"อำเภอ/เขต",
-				"se_subdistrict"=>"ตำบล/แขวง"
-		);*/
-	}
-	function index()
-	{
 	}
 	function step1()
 	{
-		//$label_name_th=$this->label_name_th;
-		
-		$this->load->model("element_model");
-		$emm=$this->element_model;
-		
-		$this->load->library('element_lib');
-		$eml=$this->element_lib;
-		
-		$this->load->library("form_validation");
-		$frm=$this->form_validation;
-		
 		$config=array(
 				array(
 						"field"=>$this->lang->line("regis_in_username"),
@@ -131,15 +97,15 @@ class Register extends CI_Controller
 				)
 				
 		);
-		$frm->set_rules($config);
-		$frm->set_message("rule","message");
-		if($frm->run() == false)
+		$this->frm->set_rules($config);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
 		{
 			/*initial  create element with element_lib*/
 
 			$in_username=array(
 					"LB_text"=>$this->lang->line("label_username"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$this->lang->line("regis_in_username"),
@@ -151,7 +117,7 @@ class Register extends CI_Controller
 			);
 			$in_password=array(
 					"LB_text"=>$this->lang->line("label_password"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'password',
 					"IN_class"=>'',
 					"IN_name"=>$this->lang->line("regis_in_password"),
@@ -163,7 +129,7 @@ class Register extends CI_Controller
 			);
 			$in_password2=array(
 					"LB_text"=>$this->lang->line("label_password2"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'password',
 					"IN_class"=>'',
 					"IN_name"=>$this->lang->line("regis_in_password2"),
@@ -175,7 +141,7 @@ class Register extends CI_Controller
 			);
 			$in_email=array(
 					"LB_text"=>$this->lang->line("label_email"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$this->lang->line("regis_in_email"),
@@ -187,7 +153,7 @@ class Register extends CI_Controller
 			);
 			$in_firstname=array(
 					"LB_text"=>$this->lang->line("label_firstname"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$this->lang->line("regis_in_firstname"),
@@ -199,7 +165,7 @@ class Register extends CI_Controller
 			);
 			$in_lastname=array(
 					"LB_text"=>$this->lang->line("label_lastname"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$this->lang->line("regis_in_lastname"),
@@ -223,7 +189,7 @@ class Register extends CI_Controller
 			);
 			$in_phone=array(
 					"LB_text"=>$this->lang->line("label_phone"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$this->lang->line("regis_in_phone"),
@@ -235,7 +201,7 @@ class Register extends CI_Controller
 			);
 			$in_house_no=array(
 					"LB_text"=>$this->lang->line("label_house_no"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$this->lang->line("regis_in_house_no"),
@@ -284,43 +250,43 @@ class Register extends CI_Controller
 			);
 			$se_titlename=array(
 					"LB_text"=>$this->lang->line("label_se_titlename"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"S_class"=>'',
 					"S_name"=>$this->lang->line("regis_se_titlename"),
 					"S_id"=>$this->lang->line("regis_se_titlename"),
 					"S_old_value"=>$this->input->post($this->lang->line("regis_se_titlename")),
-					"S_data"=>$emm->select_titlename(),
+					"S_data"=>$this->emm->select_titlename(),
 					"S_id_field"=>"titlename_id",
 					"S_name_field"=>"titlename",
 					"help_text"=>''
 			);
 			$se_occupation=array(
 					"LB_text"=>$this->lang->line("label_se_occupation"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"S_class"=>'',
 					"S_name"=>$this->lang->line("regis_se_occupation"),
 					"S_id"=>$this->lang->line("regis_se_occupation"),
 					"S_old_value"=>$this->input->post($this->lang->line("regis_se_occupation")),
-					"S_data"=>$emm->select_occupation(),
+					"S_data"=>$this->emm->select_occupation(),
 					"S_id_field"=>"occupation_id",
 					"S_name_field"=>"occupation_name",
 					"help_text"=>''
 			);
 			$se_province=array(
 					"LB_text"=>$this->lang->line("label_se_province"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"S_class"=>'',
 					"S_name"=>$this->lang->line("regis_se_province"),
 					"S_id"=>$this->lang->line("regis_se_province"),
 					"S_old_value"=>$this->input->post($this->lang->line("regis_se_province")),
-					"S_data"=>$emm->select_province(),
+					"S_data"=>$this->emm->select_province(),
 					"S_id_field"=>"province_id",
 					"S_name_field"=>"province_name",
 					"help_text"=>''
 			);
 			$se_district=array(
 					"LB_text"=>$this->lang->line("label_se_district"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"S_class"=>'',
 					"S_name"=>$this->lang->line("regis_se_district"),
 					"S_id"=>$this->lang->line("regis_se_district"),
@@ -332,7 +298,7 @@ class Register extends CI_Controller
 			);
 			$se_subdistrict=array(
 					"LB_text"=>$this->lang->line("label_se_subdistrict"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"S_class"=>'',
 					"S_name"=>$this->lang->line("regis_se_subdistrict"),
 					"S_id"=>$this->lang->line("regis_se_subdistrict"),
@@ -343,35 +309,33 @@ class Register extends CI_Controller
 					"help_text"=>''
 			);
 			/*-*initial attr for create element with element_lib*/
-			
-			$pel=$this->page_element_lib;
 			$data=array(
-					"htmlopen"=>$pel->htmlopen(),
-					"head"=>$pel->head("สมัครสมาชิก"),
-					"bodyopen"=>$pel->bodyopen(),
-					"navbar"=>$pel->navbar(),
-					"js"=>$pel->js(),
-					"footer"=>$pel->footer(),
-					"bodyclose"=>$pel->bodyclose(),
-					"htmlclose"=>$pel->htmlclose(),
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("สมัครสมาชิก"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
 					
-					"in_username"=>$eml->form_input($in_username),
-					"in_password"=>$eml->form_input($in_password),
-					"in_password2"=>$eml->form_input($in_password2),
-					"in_email"=>$eml->form_input($in_email),
-					"in_firstname"=>$eml->form_input($in_firstname),
-					"in_lastname"=>$eml->form_input($in_lastname),
-					"in_occupation"=>$eml->form_input($in_occupation),
-					"in_phone"=>$eml->form_input($in_phone),
-					"in_house_no"=>$eml->form_input($in_house_no),
-					"in_village_no"=>$eml->form_input($in_village_no),
-					"in_alley"=>$eml->form_input($in_alley),
-					"in_road"=>$eml->form_input($in_road),
-					"se_titlename"=>$eml->form_select($se_titlename),
-					"se_occupation"=>$eml->form_select($se_occupation),
-					"se_province"=>$eml->form_select($se_province),
-					"se_district"=>$eml->form_select($se_district),
-					"se_subdistrict"=>$eml->form_select($se_subdistrict)
+					"in_username"=>$this->eml->form_input($in_username),
+					"in_password"=>$this->eml->form_input($in_password),
+					"in_password2"=>$this->eml->form_input($in_password2),
+					"in_email"=>$this->eml->form_input($in_email),
+					"in_firstname"=>$this->eml->form_input($in_firstname),
+					"in_lastname"=>$this->eml->form_input($in_lastname),
+					"in_occupation"=>$this->eml->form_input($in_occupation),
+					"in_phone"=>$this->eml->form_input($in_phone),
+					"in_house_no"=>$this->eml->form_input($in_house_no),
+					"in_village_no"=>$this->eml->form_input($in_village_no),
+					"in_alley"=>$this->eml->form_input($in_alley),
+					"in_road"=>$this->eml->form_input($in_road),
+					"se_titlename"=>$this->eml->form_select($se_titlename),
+					"se_occupation"=>$this->eml->form_select($se_occupation),
+					"se_province"=>$this->eml->form_select($se_province),
+					"se_district"=>$this->eml->form_select($se_district),
+					"se_subdistrict"=>$this->eml->form_select($se_subdistrict)
 			);
 			$this->load->view("register1",$data);
 		}
@@ -390,10 +354,10 @@ class Register extends CI_Controller
 		 Return district list as JSON 
 		 SELECT * FROM tb_district WHERE district_id LIKE 'province_id%' ORDER BY ....
 		###################################################*/
-		$this->load->model("element_model");
-		$emm=$this->element_model;
+		//$this->load->model("element_model");
+		//$emm=$this->element_model;
 		if($this->input->post("province_id")!=''):
-			$query=$emm->select_district($this->input->post("province_id"));
+			$query=$this->emm->select_district($this->input->post("province_id"));
 			$data='';
 			if($query>0):
 				foreach($query AS $ar):
@@ -410,10 +374,10 @@ class Register extends CI_Controller
 		Return subdistrict list as JSON
 		SELECT * FROM tb_subdistrict WHERE subdistrict_id LIKE 'district_id%' ORDER BY ....
 		###################################################*/
-		$this->load->model("element_model");
-		$emm=$this->element_model;
+		//$this->load->model("element_model");
+		//$emm=$this->element_model;
 		if($this->input->post("district_id")!=''):
-			$query=$emm->select_subdistrict($this->input->post("district_id"));
+			$query=$this->emm->select_subdistrict($this->input->post("district_id"));
 			$data='';
 			if($query>0):
 				foreach($query AS $ar):

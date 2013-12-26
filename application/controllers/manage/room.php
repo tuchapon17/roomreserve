@@ -1,37 +1,12 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class Room extends MY_Controller
 {
-	//element_model
-	private $emm;
-	
-	//element_lib
-	private $eml;
-	
-	//page_element_lib
-	private $pel;
-	
-	//form_validation
-	private $frm;
-	
+	private $rom;
 	function __construct()
 	{
 		parent::__construct();
-		//load and set
-		//$this->load->library('element_lib');
-		$this->eml=$this->element_lib;
-		//$this->load->library("form_validation");
-			$this->frm=$this->form_validation;
-			$this->pel=$this->page_element_lib;
-		$this->load->model("element_model");
-			$this->emm=$this->element_model;
-		$this->lang->load("help_text","thailand");
-		$this->lang->load("label_name","thailand");
-		
-		
-		$this->load->library('element_lib');
-		$this->load->library("form_validation");
 		$this->load->model("manage/room_model");
-		$this->load->model("element_model");
+		$this->rom=$this->room_model;
 	}
 	function add()
 	{
@@ -109,17 +84,15 @@ class Room extends MY_Controller
 					"IN_attr"=>'maxlength="7"',
 					"help_text"=>""
 			);
-			
-			$PEL=$this->page_element_lib;
 			$data=array(
-					"htmlopen"=>$PEL->htmlopen(),
-					"head"=>$PEL->head("เพิ่มห้อง"),
-					"bodyopen"=>$PEL->bodyopen(),
-					"navbar"=>$PEL->navbar(),
-					"js"=>$PEL->js(),
-					"footer"=>$PEL->footer(),
-					"bodyclose"=>$PEL->bodyclose(),
-					"htmlclose"=>$PEL->htmlclose(),
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("เพิ่มห้อง"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
 					"room_tab"=>$this->room_tab(),
 					"in_room_name"=>$this->eml->form_input($in_room_name),
 					"se_room_type"=>$this->eml->form_select($se_room_type),
@@ -132,9 +105,9 @@ class Room extends MY_Controller
 		else
 		{
 		
-			$rom=$this->room_model;
+			$this->rom=$this->room_model;
 			$data=array(
-					"room_id"=>$rom->get_maxid(2, "room_id", "tb_room"),
+					"room_id"=>$this->rom->get_maxid(2, "room_id", "tb_room"),
 					"room_name"=>$this->input->post("input_room_name"),
 					"tb_room_type_id"=>$this->input->post("select_room_type"),
 					"room_detail"=>$this->input->post("textarea_room_detail"),
@@ -142,17 +115,12 @@ class Room extends MY_Controller
 					"discount_percent"=>$this->input->post("input_discount_percent")
 			);
 			$redirect_link="?d=manage&c=room&m=add";
-			$rom->manage_add($data,"tb_room",$redirect_link,$redirect_link,"room","เพิ่มห้องสำเร็จ","เพิ่มห้องไม่สำเร็จ");
+			$this->rom->manage_add($data,"tb_room",$redirect_link,$redirect_link,"room","เพิ่มห้องสำเร็จ","เพิ่มห้องไม่สำเร็จ");
 		}
 	}
 	function edit()
 	{
-		$rom=$this->room_model;
-		
-		
-		
-	
-	
+		$this->rom=$this->room_model;
 		$config=array(
 				array(
 						"field"=>"input_room_name",
@@ -196,15 +164,15 @@ class Room extends MY_Controller
 			if($this->session->userdata("search_room"))
 			{
 				$liketext=$this->session->userdata("search_room");
-				$config['total_rows']=$rom->get_all_numrows("tb_room",$liketext,"room_name");
+				$config['total_rows']=$this->rom->get_all_numrows("tb_room",$liketext,"room_name");
 	
-				$get_room_list=$rom->get_room_list($config['per_page'],$this->getpage,$liketext);
+				$get_room_list=$this->rom->get_room_list($config['per_page'],$this->getpage,$liketext);
 			}
 			else
 			{
-				$config['total_rows']=$rom->get_all_numrows("tb_room",'',"room_name");
+				$config['total_rows']=$this->rom->get_all_numrows("tb_room",'',"room_name");
 	
-				$get_room_list=$rom->get_room_list($config['per_page'],$this->getpage);
+				$get_room_list=$this->rom->get_room_list($config['per_page'],$this->getpage);
 			}
 			$this->pagination->initialize($config);
 	
@@ -257,17 +225,15 @@ class Room extends MY_Controller
 					"IN_attr"=>'maxlength="7"',
 					"help_text"=>""
 			);
-				
-			$PEL=$this->page_element_lib;
 			$data=array(
-					"htmlopen"=>$PEL->htmlopen(),
-					"head"=>$PEL->head("แก้ไข/ลบ  ห้อง"),
-					"bodyopen"=>$PEL->bodyopen(),
-					"navbar"=>$PEL->navbar(),
-					"js"=>$PEL->js(),
-					"footer"=>$PEL->footer(),
-					"bodyclose"=>$PEL->bodyclose(),
-					"htmlclose"=>$PEL->htmlclose(),
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("แก้ไข/ลบ  ห้อง"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
 					"room_tab"=>$this->room_tab(),
 					"in_room_name"=>$this->eml->form_input($in_room_name),
 					"se_room_type"=>$this->eml->form_select($se_room_type),
@@ -276,7 +242,7 @@ class Room extends MY_Controller
 					"table_edit"=>$this->table_edit($get_room_list),
 					"session_search_room"=>$this->session->userdata("search_room"),
 					"pagination_num_rows"=>$config["total_rows"],
-					"manage_search_box"=>$PEL->manage_search_box($this->session->userdata("search_room"))
+					"manage_search_box"=>$this->pel->manage_search_box($this->session->userdata("search_room"))
 			);
 			$this->load->view("manage/room/edit_room",$data);
 		}
@@ -293,21 +259,21 @@ class Room extends MY_Controller
 			$where=array(
 					"room_id"=>$this->session->userdata($session_edit_id)
 			);
-			$rom->manage_edit($set, $where, "tb_room", $session_edit_id, "edit_room", "แก้ไขห้องสำเร็จ", "แก้ไขห้องไม่สำเร็จ", "?d=manage&c=room&m=edit", $prev_url);
+			$this->rom->manage_edit($set, $where, "tb_room", $session_edit_id, "edit_room", "แก้ไขห้องสำเร็จ", "แก้ไขห้องไม่สำเร็จ", "?d=manage&c=room&m=edit", $prev_url);
 		}
 	}
 	function delete()
 	{
-		$rom=$this->room_model;
-		$rom->manage_delete($this->input->post("del_room"), "tb_room", "room_id", "room_name", "edit_room", "?d=manage&c=room&m=edit");
+		$this->rom=$this->room_model;
+		$this->rom->manage_delete($this->input->post("del_room"), "tb_room", "room_id", "room_name", "edit_room", "?d=manage&c=room&m=edit");
 	}
 	function allow()
 	{
 		//$data = array
 		$allow_list=$this->input->post("allow_list");
 		$disallow_list=$this->input->post("disallow_list");
-		$rom=$this->room_model;
-		$rom->manage_allow($allow_list,$disallow_list, "tb_room", "room_id", "room_name", "edit_room", "?d=manage&c=room&m=edit");
+		$this->rom=$this->room_model;
+		$this->rom->manage_allow($allow_list,$disallow_list, "tb_room", "room_id", "room_name", "edit_room", "?d=manage&c=room&m=edit");
 	}
 	
 	function room_tab()
@@ -380,7 +346,8 @@ class Room extends MY_Controller
 				<td></td>
 				<td></td>
 				<td align="center">'.$this->eml->btn('submitcheck','onclick="show_allow_list();return false;"')." ".
-									$this->eml->btn('refreshcheck','onclick="location.reload(true);"').'</td>
+									$this->eml->btn('refreshcheck','onclick="location.reload(true);"').'
+				</td>
 				<td></td>
 				<td>'.$this->eml->btn('delete','onclick="show_del_list();return false;"').'</td>
 				</tr>
@@ -399,8 +366,8 @@ class Room extends MY_Controller
 	function load_room()
 	{
 	
-		$rom=$this->room_model;
-		$data=$rom->load_room($this->input->post("tid"))[0];
+		$this->rom=$this->room_model;
+		$data=$this->rom->load_room($this->input->post("tid"))[0];
 		//$data["room_detail"]=$this->reverse_escape($data["room_detail"]);
 		echo json_encode($data);
 	}

@@ -1,12 +1,9 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Calendar extends CI_Controller {
-	//page_element_lib
-	private $pel;
+class Calendar extends MY_Controller {
 	function __construct()
 	{
 		parent::__construct();
-		$this->pel=$this->page_element_lib;
 	}
 	function main($year=null,$month=null)
 	{

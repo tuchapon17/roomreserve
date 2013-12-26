@@ -1,22 +1,15 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class Occupation extends MY_Controller
 {
+	private $occ_model;
 	function __construct()
 	{
 		parent::__construct();
-		$this->load->library('element_lib');
-		$this->load->library("form_validation");
 		$this->load->model("manage/occupation_model");
-		$this->load->model("element_model");
-		$this->lang->load("help_text","thailand");
-		$this->lang->load("label_name","thailand");
+		$this->occ_model=$this->occupation_model;
 	}
 	function add()
 	{
-		$emm=$this->element_model;
-		$eml=$this->element_lib;
-		$frm=$this->form_validation;
-		
 		$config=array(
 				array(
 						"field"=>"input_occupation_name",
@@ -24,14 +17,14 @@ class Occupation extends MY_Controller
 						"rules"=>"required|max_length[30]|callback_call_lib[regex_lib,regex_charTHEN,%s - กรอกได้เฉพาะอักษรไทย/อังกฤษ]"
 				)
 		);
-		$frm->set_rules($config);
-		$frm->set_message("rule","message");
-		if($frm->run() == false)
+		$this->frm->set_rules($config);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
 		{
 			$in_occupation_name_name="input_occupation_name";
 			$in_occupation_name=array(
 					"LB_text"=>"อาชีพ",
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$in_occupation_name_name,
@@ -41,19 +34,17 @@ class Occupation extends MY_Controller
 					"IN_attr"=>'maxlength="30"',
 					"help_text"=>""
 			);
-
-			$PEL=$this->page_element_lib;
 			$data=array(
-					"htmlopen"=>$PEL->htmlopen(),
-					"head"=>$PEL->head("เพิ่มอาชีพ"),
-					"bodyopen"=>$PEL->bodyopen(),
-					"navbar"=>$PEL->navbar(),
-					"js"=>$PEL->js(),
-					"footer"=>$PEL->footer(),
-					"bodyclose"=>$PEL->bodyclose(),
-					"htmlclose"=>$PEL->htmlclose(),
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("เพิ่มอาชีพ"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
 					"occupation_tab"=>$this->occupation_tab(),
-					"in_occupation_name"=>$eml->form_input($in_occupation_name)
+					"in_occupation_name"=>$this->eml->form_input($in_occupation_name)
 			);
 		
 			$this->load->view("manage/occupation/add_occupation",$data);
@@ -61,24 +52,19 @@ class Occupation extends MY_Controller
 		else
 		{
 		
-			$dpm=$this->occupation_model;
+			$this->occ_model=$this->occupation_model;
 			$data=array(
-					"occupation_id"=>$dpm->get_maxid(2, "occupation_id", "tb_occupation"),
+					"occupation_id"=>$this->occ_model->get_maxid(2, "occupation_id", "tb_occupation"),
 					"occupation_name"=>$this->input->post("input_occupation_name"),
 					"checked"=>"1"
 			);
 			$redirect_link="?d=manage&c=occupation&m=add";
-			$dpm->manage_add($data,"tb_occupation",$redirect_link,$redirect_link,"occupation","เพิ่มอาชีพสำเร็จ","เพิ่มอาชีพไม่สำเร็จ");
+			$this->occ_model->manage_add($data,"tb_occupation",$redirect_link,$redirect_link,"occupation","เพิ่มอาชีพสำเร็จ","เพิ่มอาชีพไม่สำเร็จ");
 		}
 	}
 	function edit()
 	{
-		$dpm=$this->occupation_model;
-		$emm=$this->element_model;
-		$eml=$this->element_lib;
-		$frm=$this->form_validation;
-		
-		
+		$this->occ_model=$this->occupation_model;
 		$config=array(
 				array(
 						"field"=>"input_occupation_name",
@@ -86,14 +72,15 @@ class Occupation extends MY_Controller
 						"rules"=>"required|max_length[30]|callback_call_lib[regex_lib,regex_charTHEN,%s - กรอกได้เฉพาะอักษรไทย/อังกฤษ]"
 				)
 		);
-		$frm->set_rules($config);
-		$frm->set_message("rule","message");
-		if($frm->run() == false)
+		$this->frm->set_rules($config);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
 		{
 			if(!$this->session->userdata("orderby_occupation"))
 				$this->session->set_userdata("orderby_occupation",array("field"=>"occupation_name","type"=>"ASC"));
 			//pagination
 			$this->load->library("pagination");
+			$config['use_page_numbers'] = TRUE;
 			$config['base_url']=base_url()."?d=manage&c=occupation&m=edit";
 			//set per_page
 			if($this->session->userdata("set_per_page")) $config['per_page']=$this->session->userdata("set_per_page");
@@ -106,15 +93,15 @@ class Occupation extends MY_Controller
 			if($this->session->userdata("search_occupation"))
 			{
 				$liketext=$this->session->userdata("search_occupation");
-				$config['total_rows']=$dpm->get_all_numrows("tb_occupation",$liketext,"occupation_name");
+				$config['total_rows']=$this->occ_model->get_all_numrows("tb_occupation",$liketext,"occupation_name");
 				
-				$get_occupation_list=$dpm->get_occupation_list($config['per_page'],$this->getpage,$liketext);
+				$get_occupation_list=$this->occ_model->get_occupation_list($config['per_page'],$this->getpage,$liketext);
 			}
 			else
 			{
-				$config['total_rows']=$dpm->get_all_numrows("tb_occupation",'',"occupation_name");
+				$config['total_rows']=$this->occ_model->get_all_numrows("tb_occupation",'',"occupation_name");
 				
-				$get_occupation_list=$dpm->get_occupation_list($config['per_page'],$this->getpage);
+				$get_occupation_list=$this->occ_model->get_occupation_list($config['per_page'],$this->getpage);
 			}
 			$this->pagination->initialize($config);
 		
@@ -122,7 +109,7 @@ class Occupation extends MY_Controller
 			$in_occupation_name_name="input_occupation_name";
 			$in_occupation_name=array(
 					"LB_text"=>"อาชีพ",
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$in_occupation_name_name,
@@ -132,23 +119,21 @@ class Occupation extends MY_Controller
 					"IN_attr"=>'maxlength="30"',
 					"help_text"=>""
 			);
-			
-			$PEL=$this->page_element_lib;
 			$data=array(
-					"htmlopen"=>$PEL->htmlopen(),
-					"head"=>$PEL->head("แก้ไข/ลบ  อาชีพ"),
-					"bodyopen"=>$PEL->bodyopen(),
-					"navbar"=>$PEL->navbar(),
-					"js"=>$PEL->js(),
-					"footer"=>$PEL->footer(),
-					"bodyclose"=>$PEL->bodyclose(),
-					"htmlclose"=>$PEL->htmlclose(),
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("แก้ไข/ลบ  อาชีพ"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
 					"occupation_tab"=>$this->occupation_tab(),
-					"in_occupation_name"=>$eml->form_input($in_occupation_name),
+					"in_occupation_name"=>$this->eml->form_input($in_occupation_name),
 					"table_edit"=>$this->table_edit($get_occupation_list),
 					"session_search_occupation"=>$this->session->userdata("search_occupation"),
 					"pagination_num_rows"=>$config["total_rows"],
-					"manage_search_box"=>$PEL->manage_search_box($this->session->userdata("search_occupation"))
+					"manage_search_box"=>$this->pel->manage_search_box($this->session->userdata("search_occupation"))
 			);
 			$this->load->view("manage/occupation/edit_occupation",$data);
 		}
@@ -162,21 +147,21 @@ class Occupation extends MY_Controller
 			$where=array(
 					"occupation_id"=>$this->session->userdata($session_edit_id)
 			);
-			$dpm->manage_edit($set, $where, "tb_occupation", $session_edit_id, "edit_occupation", "แก้ไขอาชีพสำเร็จ", "แก้ไขอาชีพไม่สำเร็จ", "?d=manage&c=occupation&m=edit", $prev_url);
+			$this->occ_model->manage_edit($set, $where, "tb_occupation", $session_edit_id, "edit_occupation", "แก้ไขอาชีพสำเร็จ", "แก้ไขอาชีพไม่สำเร็จ", "?d=manage&c=occupation&m=edit", $prev_url);
 		}
 	}
 	function delete()
 	{
-		$dpm=$this->occupation_model;
-		$dpm->manage_delete($this->input->post("del_occupation"), "tb_occupation", "occupation_id", "occupation_name", "edit_occupation", "?d=manage&c=occupation&m=edit");
+		$this->occ_model=$this->occupation_model;
+		$this->occ_model->manage_delete($this->input->post("del_occupation"), "tb_occupation", "occupation_id", "occupation_name", "edit_occupation", "?d=manage&c=occupation&m=edit");
 	}
 	function allow()
 	{
 		//$data = array
 		$allow_list=$this->input->post("allow_list");
 		$disallow_list=$this->input->post("disallow_list");
-		$dpm=$this->occupation_model;
-		$dpm->manage_allow($allow_list,$disallow_list, "tb_occupation", "occupation_id", "occupation_name", "edit_occupation", "?d=manage&c=occupation&m=edit");
+		$this->occ_model=$this->occupation_model;
+		$this->occ_model->manage_allow($allow_list,$disallow_list, "tb_occupation", "occupation_id", "occupation_name", "edit_occupation", "?d=manage&c=occupation&m=edit");
 	}
 	
 	
@@ -241,7 +226,7 @@ class Occupation extends MY_Controller
 					<td>'.$dt["occupation_id"].'</td>
 					<td id="occupation'.$dt["occupation_id"].'">'.$dt["occupation_name"].'</td>
 					<td class="same_first_td">'.$checkbox.'</td>
-					<td class="same_first_td"><button type="button" class="btn btn-primary" onclick=load_occupation("'.$dt["occupation_id"].'")><img width="17" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_150_edit.png"></button></td>
+					<td class="same_first_td">'.$this->eml->btn('edit','onclick=load_occupation("'.$dt["occupation_id"].'")').'</td>
 					<td><input type="checkbox" value="'.$dt["occupation_id"].'" name="del_occupation[]" class="del_occupation"></td>
 			';
 			$html.='</tr>';
@@ -251,11 +236,11 @@ class Occupation extends MY_Controller
 		$html.='<tr>
 				<td></td>
 				<td></td>
-				<td align="center"><button type="button" class="btn btn-success" onclick="show_allow_list();return false;"><img width="12" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_206_ok_2.png"></button>
-									<button type="button" class="btn btn-warning" onclick="location.reload(true);"><img width="12" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_081_refresh.png"></button>
-						</td>
+				<td align="center">'.$this->eml->btn('submitcheck','onclick="show_allow_list();return false;"')." ".
+									$this->eml->btn('refreshcheck','onclick="location.reload(true);"').'
+				</td>
 				<td></td>
-				<td><button type="submit" class="btn btn-danger" onclick="show_del_list();return false;"><img width="12" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_016_bin.png"></button></td>
+				<td>'.$this->eml->btn('delete','onclick="show_del_list();return false;"').'</td>
 				</tr>
 				</table>
 				</form>';
@@ -272,8 +257,8 @@ class Occupation extends MY_Controller
 	function load_occupation()
 	{
 	
-		$dpm=$this->occupation_model;
-		echo json_encode($dpm->load_occupation($this->input->post("tid"))[0]);
+		$this->occ_model=$this->occupation_model;
+		echo json_encode($this->occ_model->load_occupation($this->input->post("tid"))[0]);
 	}
 	
 }

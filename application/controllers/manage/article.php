@@ -4,17 +4,14 @@ class Article extends MY_Controller
 	private $table_name	="tb_article";
 	private $field_name	=array();
 	var  $load_article_model;
+	
 	function __construct()
 	{
 		parent::__construct();
-		$this->load->library('element_lib');
-		$this->load->library("form_validation");
 		//set article model
 		$this->load->model("manage/article_model");
 		$this->load_article_model=$this->article_model;
-		
-		$this->load->model("element_model");
-		$this->lang->load("help_text","thailand");
+
 		$this->lang->load("article/article","thailand");
 		
 		$this->get_all_field();
@@ -47,10 +44,6 @@ class Article extends MY_Controller
 	 */
 	function add()
 	{
-		$emm=$this->element_model;
-		$eml=$this->element_lib;
-		$frm=$this->form_validation;
-		
 		$config=array(
 				array(
 						"field"=>$this->lang->line("input_article"),
@@ -78,14 +71,14 @@ class Article extends MY_Controller
 						"rules"=>"required"
 				)
 		);
-		$frm->set_rules($config);
-		//$frm->set_message("rule","message");
-		if($frm->run() == false)
+		$this->frm->set_rules($config);
+		//$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
 		{
 			
 			$in_article=array(
 					"LB_text"=>$this->lang->line("label_input_article"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$this->lang->line("input_article"),
@@ -98,7 +91,7 @@ class Article extends MY_Controller
 			
 			$in_fee_unit_hour=array(
 					"LB_text"=>$this->lang->line("label_input_fee_unit_hour"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$this->lang->line("input_fee_unit_hour"),
@@ -111,7 +104,7 @@ class Article extends MY_Controller
 
 			$in_fee_unit_lump_sum=array(
 					"LB_text"=>$this->lang->line("label_input_fee_unit_lump_sum"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$this->lang->line("input_fee_unit_lump_sum"),
@@ -124,7 +117,7 @@ class Article extends MY_Controller
 			
 			$in_fee_over_unit_lump_sum=array(
 					"LB_text"=>$this->lang->line("label_input_fee_over_unit_lump_sum"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$this->lang->line("input_fee_over_unit_lump_sum"),
@@ -137,32 +130,31 @@ class Article extends MY_Controller
 			
 			$se_article_type=array(
 					"LB_text"=>$this->lang->line("label_select_article_type"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"S_class"=>'',
 					"S_name"=>$this->lang->line("select_article_type"),
 					"S_id"=>$this->lang->line("select_article_type"),
 					"S_old_value"=>$this->input->post($this->lang->line("select_article_type")),
-					"S_data"=>$emm->select_article_type(),
+					"S_data"=>$this->emm->select_article_type(),
 					"S_id_field"=>"article_type_id",
 					"S_name_field"=>"article_type_name",
 					"help_text"=>''
 			);
-			$PEL=$this->page_element_lib;
 			$data=array(
-					"htmlopen"=>$PEL->htmlopen(),
-					"head"=>$PEL->head("เพิ่มครุภัณฑ์/อุปกรณ์"),
-					"bodyopen"=>$PEL->bodyopen(),
-					"navbar"=>$PEL->navbar(),
-					"js"=>$PEL->js(),
-					"footer"=>$PEL->footer(),
-					"bodyclose"=>$PEL->bodyclose(),
-					"htmlclose"=>$PEL->htmlclose(),
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("เพิ่มครุภัณฑ์/อุปกรณ์"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
 					"article_tab"=>$this->article_tab(),
-					"in_article"=>$eml->form_input($in_article),
-					"in_fee_unit_hour"=>$eml->form_input($in_fee_unit_hour),
-					"in_fee_unit_lump_sum"=>$eml->form_input($in_fee_unit_lump_sum),
-					"in_fee_over_unit_lump_sum"=>$eml->form_input($in_fee_over_unit_lump_sum),
-					"se_article_type"=>$eml->form_select($se_article_type)
+					"in_article"=>$this->eml->form_input($in_article),
+					"in_fee_unit_hour"=>$this->eml->form_input($in_fee_unit_hour),
+					"in_fee_unit_lump_sum"=>$this->eml->form_input($in_fee_unit_lump_sum),
+					"in_fee_over_unit_lump_sum"=>$this->eml->form_input($in_fee_over_unit_lump_sum),
+					"se_article_type"=>$this->eml->form_select($se_article_type)
 			);
 				
 			$this->load->view("manage/article/add_article",$data);
@@ -193,12 +185,6 @@ class Article extends MY_Controller
 	 */
 	function edit()
 	{
-		
-		$emm=$this->element_model;
-		$eml=$this->element_lib;
-		$frm=$this->form_validation;
-		
-		
 		$config=array(
 				array(
 						"field"=>$this->lang->line("input_article"),
@@ -226,14 +212,15 @@ class Article extends MY_Controller
 						"rules"=>"required"
 				)
 		);
-		$frm->set_rules($config);
-		//$frm->set_message("rule","message");
-		if($frm->run() == false)
+		$this->frm->set_rules($config);
+		//$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
 		{
 			if(!$this->session->userdata("orderby_article"))
 				$this->session->set_userdata("orderby_article",array("field"=>"article_name","type"=>"ASC"));
 			//pagination
 			$this->load->library("pagination");
+			$config['use_page_numbers'] = TRUE;
 			$config['base_url']=base_url()."?d=manage&c=article&m=edit";
 			//set per_page
 			if($this->session->userdata("set_per_page")) $config['per_page']=$this->session->userdata("set_per_page");
@@ -264,7 +251,7 @@ class Article extends MY_Controller
 			
 			$in_article=array(
 					"LB_text"=>$this->lang->line("label_input_article"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$this->lang->line("input_article"),
@@ -277,7 +264,7 @@ class Article extends MY_Controller
 			
 			$in_fee_unit_hour=array(
 					"LB_text"=>$this->lang->line("label_input_fee_unit_hour"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$this->lang->line("input_fee_unit_hour"),
@@ -290,7 +277,7 @@ class Article extends MY_Controller
 
 			$in_fee_unit_lump_sum=array(
 					"LB_text"=>$this->lang->line("label_input_fee_unit_lump_sum"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$this->lang->line("input_fee_unit_lump_sum"),
@@ -303,7 +290,7 @@ class Article extends MY_Controller
 			
 			$in_fee_over_unit_lump_sum=array(
 					"LB_text"=>$this->lang->line("label_input_fee_over_unit_lump_sum"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$this->lang->line("input_fee_over_unit_lump_sum"),
@@ -316,37 +303,35 @@ class Article extends MY_Controller
 			
 			$se_article_type=array(
 					"LB_text"=>$this->lang->line("label_select_article_type"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"S_class"=>'',
 					"S_name"=>$this->lang->line("select_article_type"),
 					"S_id"=>$this->lang->line("select_article_type"),
 					"S_old_value"=>$this->input->post($this->lang->line("select_article_type")),
-					"S_data"=>$emm->select_article_type(),
+					"S_data"=>$this->emm->select_article_type(),
 					"S_id_field"=>"article_type_id",
 					"S_name_field"=>"article_type_name",
 					"help_text"=>''
 			);
-			$PEL=$this->page_element_lib;
-				
 			$data=array(
-					"htmlopen"=>$PEL->htmlopen(),
-					"head"=>$PEL->head("แก้ไข/ลบ  ประเภทครุภัณฑ์/อุปกรณ์"),
-					"bodyopen"=>$PEL->bodyopen(),
-					"navbar"=>$PEL->navbar(),
-					"js"=>$PEL->js(),
-					"footer"=>$PEL->footer(),
-					"bodyclose"=>$PEL->bodyclose(),
-					"htmlclose"=>$PEL->htmlclose(),
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("แก้ไข/ลบ  ประเภทครุภัณฑ์/อุปกรณ์"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
 					"article_tab"=>$this->article_tab(),
-					"in_article"=>$eml->form_input($in_article),
-					"in_fee_unit_hour"=>$eml->form_input($in_fee_unit_hour),
-					"in_fee_unit_lump_sum"=>$eml->form_input($in_fee_unit_lump_sum),
-					"in_fee_over_unit_lump_sum"=>$eml->form_input($in_fee_over_unit_lump_sum),
-					"se_article_type"=>$eml->form_select($se_article_type),
+					"in_article"=>$this->eml->form_input($in_article),
+					"in_fee_unit_hour"=>$this->eml->form_input($in_fee_unit_hour),
+					"in_fee_unit_lump_sum"=>$this->eml->form_input($in_fee_unit_lump_sum),
+					"in_fee_over_unit_lump_sum"=>$this->eml->form_input($in_fee_over_unit_lump_sum),
+					"se_article_type"=>$this->eml->form_select($se_article_type),
 					"table_edit"=>$this->table_edit($get_article_list),
 					"session_search_article"=>$this->session->userdata("search_article"),
 					"pagination_num_rows"=>$config["total_rows"],
-					"manage_search_box"=>$PEL->manage_search_box($this->session->userdata("search_article"))
+					"manage_search_box"=>$this->pel->manage_search_box($this->session->userdata("search_article"))
 			);
 			$this->load->view("manage/article/edit_article",$data);
 		}
@@ -459,7 +444,7 @@ class Article extends MY_Controller
 					<td>'.$dt["fee_unit_hour"].'</td>
 					<td>'.$dt["fee_unit_lump_sum"].'</td>
 					<td>'.$dt["fee_over_unit_lump_sum"].'</td>
-					<td class="same_first_td"><button type="button" class="btn btn-primary" onclick=load_article("'.$dt["article_id"].'")>แก้ไข</button></td>
+					<td class="same_first_td">'.$this->eml->btn('edit','onclick=load_article("'.$dt["article_id"].'")').'</td>
 					<td><input type="checkbox" value="'.$dt["article_id"].'" name="del_article[]" class="del_article"></td>
 			';
 			$html.='</tr>';
@@ -474,7 +459,7 @@ class Article extends MY_Controller
 				<td></td>
 				<td></td>
 				<td></td>
-				<td><button type="submit" class="btn btn-danger" onclick="show_del_list();return false;">ลบ</button></td>
+				<td>'.$this->eml->btn('delete','onclick="show_del_list();return false;"').'</td>
 				</tr>
 				</table>
 				</form>';

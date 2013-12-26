@@ -3,32 +3,13 @@ class Room_has_article extends MY_Controller
 {
 	private $table_name	="tb_room_has_article";
 	private $field_name	=array();
-	
-	//element_model
-	private $emm;
-	
-	//element_lib
-	private $eml;
-	
-	//page_element_lib
-	private $pel;
-	
-	//form_validation
-	private $frm;
 	var  $load_rha_model;
 	
 	function __construct()
 	{
 		parent::__construct();
-		//load and set
-		$this->eml=$this->element_lib;
-		$this->frm=$this->form_validation;
-		$this->pel=$this->page_element_lib;
 		$this->load->model("manage/room_has_article_model");
 			$this->load_rha_model=$this->room_has_article_model;
-		$this->load->model("element_model");
-			$this->emm=$this->element_model;
-		$this->lang->load("help_text","thailand");
 		$this->lang->load("room_has_article/room_has_article","thailand");
 	
 		$this->get_all_field();
@@ -230,6 +211,7 @@ class Room_has_article extends MY_Controller
 				$this->session->set_userdata("orderby_room_has_article",array("field"=>"tb_room_id","type"=>"ASC"));
 			//pagination
 			$this->load->library("pagination");
+			$config['use_page_numbers'] = TRUE;
 			$config['base_url']=base_url()."?d=manage&c=room_has_article&m=edit";
 			//set per_page
 			if($this->session->userdata("set_per_page")) $config['per_page']=$this->session->userdata("set_per_page");
@@ -487,7 +469,7 @@ class Room_has_article extends MY_Controller
 					<td id="fee_type'.$dt["tb_fee_type_id"].'">'.$dt["fee_type_name"].'</td>
 					<td>'.$dt["unit_num"].'</td>
 					<td>'.$dt["lump_sum_base_unit"].'</td>
-					<td class="same_first_td"><button type="button" class="btn btn-primary" onclick=load_room_has_article("'.$dt["tb_room_id"].",".$dt["tb_article_id"].'")>แก้ไข</button></td>
+					<td class="same_first_td">'.$this->eml->btn('edit','onclick=load_room_has_article("'.$dt["tb_room_id"].",".$dt["tb_article_id"].'")').'</td>
 					<td><input type="checkbox" value="'.$dt["tb_room_id"].",".$dt["tb_article_id"].'" name="del_room_has_article[]" class="del_room_has_article"></td>
 			';
 			$html.='</tr>';
@@ -502,7 +484,7 @@ class Room_has_article extends MY_Controller
 				<td></td>
 				<td></td>
 				
-				<td><button type="submit" class="btn btn-danger" onclick="show_del_list();return false;">ลบ</button></td>
+				<td>'.$this->eml->btn('delete','onclick="show_del_list();return false;"').'</td>
 				</tr>
 				</table>
 				</form>';

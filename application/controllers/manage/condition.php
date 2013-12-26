@@ -1,24 +1,15 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class Condition extends MY_Controller
 {
+	private $cdm;
 	function __construct()
 	{
 		parent::__construct();
-		$this->load->library('element_lib');
-		$this->load->library("form_validation");
 		$this->load->model("manage/condition_model");
-		$this->load->model("element_model");
-		$this->lang->load("help_text","thailand");
-		$this->lang->load("label_name","thailand");
+		$this->cdm=$this->condition_model;
 	}
 	function edit()
 	{
-		$cdm=$this->condition_model;
-		$emm=$this->element_model;
-		$eml=$this->element_lib;
-		$frm=$this->form_validation;
-	
-	
 		$config=array(
 				array(
 						"field"=>"textarea_condition",
@@ -26,33 +17,31 @@ class Condition extends MY_Controller
 						"rules"=>""
 				)
 		);
-		$frm->set_rules($config);
-		$frm->set_message("rule","message");
-		if($frm->run() == false)
+		$this->frm->set_rules($config);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
 		{
 			$te_condition_name="textarea_condition";
 			$te_condition=array(
 					"LB_text"=>"condition",
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_class"=>'',
 					"IN_name"=>$te_condition_name,
 					"IN_id"=>$te_condition_name,
 					"IN_attr"=>'',
 					"help_text"=>""
 			);
-				
-			$PEL=$this->page_element_lib;
 			$data=array(
-					"htmlopen"=>$PEL->htmlopen(),
-					"head"=>$PEL->head("แก้ไขcondition"),
-					"bodyopen"=>$PEL->bodyopen(),
-					"navbar"=>$PEL->navbar(),
-					"js"=>$PEL->js(),
-					"footer"=>$PEL->footer(),
-					"bodyclose"=>$PEL->bodyclose(),
-					"htmlclose"=>$PEL->htmlclose(),
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("แก้ไขcondition"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
 					"condition_tab"=>$this->condition_tab(),
-					"te_condition"=>$eml->form_textarea($te_condition)
+					"te_condition"=>$this->eml->form_textarea($te_condition)
 			);
 			$this->load->view("manage/condition/edit_condition",$data);
 		}
@@ -67,7 +56,7 @@ class Condition extends MY_Controller
 			$where=array(
 					"condition_id"=>$this->session->userdata($session_edit_id)
 			);
-			$cdm->manage_edit($set, $where, "tb_condition", $session_edit_id, "edit_condition", "แก้ไขconditionสำเร็จ", "แก้ไขconditionไม่สำเร็จ", "?d=manage&c=condition&m=edit", $prev_url);
+			$this->cdm->manage_edit($set, $where, "tb_condition", $session_edit_id, "edit_condition", "แก้ไขconditionสำเร็จ", "แก้ไขconditionไม่สำเร็จ", "?d=manage&c=condition&m=edit", $prev_url);
 		}
 	}
 	function condition_tab()
@@ -84,7 +73,6 @@ class Condition extends MY_Controller
 	}
 	function load_condition()
 	{
-		$cdm=$this->condition_model;
-		echo json_encode($cdm->load_condition($this->input->post("tid"))[0]);
+		echo json_encode($this->cdm->load_condition($this->input->post("tid"))[0]);
 	}
 }

@@ -1,24 +1,15 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class Auth_log extends MY_Controller
 {
+	var $al_model;
 	function __construct()
 	{
 		parent::__construct();
-		$this->load->library('element_lib');
-		$this->load->library("form_validation");
 		$this->load->model("manage/auth_log_model");
-		$this->load->model("element_model");
-		$this->lang->load("help_text","thailand");
-		$this->lang->load("label_name","thailand");
+		$this->al_model=$this->auth_log_model;
 	}
 	function edit()
 	{
-		$model=$this->auth_log_model;
-		$emm=$this->element_model;
-		$eml=$this->element_lib;
-		$frm=$this->form_validation;
-	
-	
 		$config=array(
 				array(
 						"field"=>"",
@@ -26,14 +17,15 @@ class Auth_log extends MY_Controller
 						"rules"=>""
 				)
 		);
-		$frm->set_rules($config);
-		$frm->set_message("rule","message");
-		if($frm->run() == false)
+		$this->frm->set_rules($config);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
 		{
 			if(!$this->session->userdata("orderby_auth_log"))
 				$this->session->set_userdata("orderby_auth_log",array("field"=>"auth_log_id","type"=>"ASC"));
 			//pagination
 			$this->load->library("pagination");
+			$config['use_page_numbers'] = TRUE;
 			$config['base_url']=base_url()."?d=manage&c=auth_log&m=edit";
 			//set per_page
 			if($this->session->userdata("set_per_page")) $config['per_page']=$this->session->userdata("set_per_page");
@@ -50,37 +42,34 @@ class Auth_log extends MY_Controller
 			if($this->session->userdata("search_auth_log"))
 			{
 				$liketext=$this->session->userdata("search_auth_log");
-				$config['total_rows']=$model->get_all_numrows("tb_auth_log",$liketext,$searchfield);
+				$config['total_rows']=$this->al_model->get_all_numrows("tb_auth_log",$liketext,$searchfield);
 	
-				$get_auth_log_list=$model->get_auth_log_list($config['per_page'],$this->getpage,$liketext);
+				$get_auth_log_list=$this->al_model->get_auth_log_list($config['per_page'],$this->getpage,$liketext);
 			}
 			else
 			{
-				$config['total_rows']=$model->get_all_numrows("tb_auth_log",'',$searchfield);
+				$config['total_rows']=$this->al_model->get_all_numrows("tb_auth_log",'',$searchfield);
 	
-				$get_auth_log_list=$model->get_auth_log_list($config['per_page'],$this->getpage);
+				$get_auth_log_list=$this->al_model->get_auth_log_list($config['per_page'],$this->getpage);
 			}
 			$this->pagination->initialize($config);
 	
 			//..pagination
-			
-				
-			$PEL=$this->page_element_lib;
 			$data=array(
-					"htmlopen"=>$PEL->htmlopen(),
-					"head"=>$PEL->head("แก้ไข/ลบ  สาขาวิชา/งาน"),
-					"bodyopen"=>$PEL->bodyopen(),
-					"navbar"=>$PEL->navbar(),
-					"js"=>$PEL->js(),
-					"footer"=>$PEL->footer(),
-					"bodyclose"=>$PEL->bodyclose(),
-					"htmlclose"=>$PEL->htmlclose(),
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("แก้ไข/ลบ  สาขาวิชา/งาน"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
 					"auth_log_tab"=>$this->auth_log_tab(),
 					
 					"table_edit"=>$this->table_edit($get_auth_log_list),
 					"session_search_auth_log"=>$this->session->userdata("search_auth_log"),
 					"pagination_num_rows"=>$config["total_rows"],
-					"manage_search_box"=>$PEL->manage_search_box($this->session->userdata("search_auth_log"))
+					"manage_search_box"=>$this->pel->manage_search_box($this->session->userdata("search_auth_log"))
 			);
 			$this->load->view("manage/auth_log/edit_auth_log",$data);
 		}
@@ -94,7 +83,7 @@ class Auth_log extends MY_Controller
 			$where=array(
 					"auth_log_id"=>$this->session->userdata($session_edit_id)
 			);
-			$model->manage_edit($set, $where, "tb_auth_log", $session_edit_id, "edit_auth_log", "แก้ไขสาขาวิชา/งานสำเร็จ", "แก้ไขสาขาวิชา/งานไม่สำเร็จ", "?d=manage&c=auth_log&m=edit", $prev_url);
+			$this->al_model->manage_edit($set, $where, "tb_auth_log", $session_edit_id, "edit_auth_log", "แก้ไขสาขาวิชา/งานสำเร็จ", "แก้ไขสาขาวิชา/งานไม่สำเร็จ", "?d=manage&c=auth_log&m=edit", $prev_url);
 		}
 	}
 	
@@ -147,8 +136,6 @@ class Auth_log extends MY_Controller
 					<td id="auth_log'.$dt["auth_log_id"].'">'.$dt["tb_user_username"].'</td>
 					<td>'.$dt["ip_address"].'</td>
 					<td>'.$dt["login_on"].'</td>
-					
-					
 			';
 			$html.='</tr>';
 			$num_row++;

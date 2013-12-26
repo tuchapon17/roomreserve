@@ -115,6 +115,10 @@ class Element_lib
 		{
 			$html='<button type="submit" class="btn btn-default"><i class="fa fa-check-square-o fa-lg fa-white"></i></button>';
 		}
+		else if($btntype=="view")
+		{
+			$html='<button type="button" class="btn btn-primary" '.$other_attr.'><i class="fa fa-eye"></i></button>';
+		}
 		return $html;
 	}
 }

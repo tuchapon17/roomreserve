@@ -3,34 +3,14 @@ class Reserve extends MY_Controller
 {
 	private $table_name	="tb_reserve";
 	private $field_name	=array();
-	
-	//element_model
-	private $emm;
-	
-	//element_lib
-	private $eml;
-	
-	//page_element_lib
-	private $pel;
-	
-	//form_validation
-	private $frm;
+
 	var  $load_reserve_model;
 	
 	function __construct()
 	{
 		parent::__construct();
-		//load and set
-		//$this->load->library('element_lib');
-			$this->eml=$this->element_lib;
-		//$this->load->library("form_validation");
-			$this->frm=$this->form_validation;
-			$this->pel=$this->page_element_lib;
 		$this->load->model("manage/reserve_model");
 			$this->load_reserve_model=$this->reserve_model;
-		$this->load->model("element_model");
-			$this->emm=$this->element_model;
-		$this->lang->load("help_text","thailand");
 		$this->lang->load("reserve/reserve","thailand");
 		
 		//$this->get_all_field();
@@ -935,5 +915,159 @@ class Reserve extends MY_Controller
 			$return = 1;
 		}
 		return $return;
+	}
+	function edit()
+	{
+		$config=array(
+				array(
+						"field"=>"input_reserve_name",
+						"label"=>"ชื่อห้อง",
+						"rules"=>"required|max_length[50]"
+				)
+		);
+		$this->frm->set_rules($config);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
+		{
+			if(!$this->session->userdata("orderby_reserve"))
+				$this->session->set_userdata("orderby_reserve",array("field"=>"reserve_id","type"=>"ASC"));
+			//pagination
+			$this->load->library("pagination");
+			$config['use_page_numbers'] = TRUE;
+			$config['base_url']=base_url()."?d=manage&c=reserve&m=edit";
+			//set per_page
+			if($this->session->userdata("set_per_page")) $config['per_page']=$this->session->userdata("set_per_page");
+			else $config['per_page']=3;
+		
+			if(isset($_GET['page']) && preg_match('/^[\d]$/',$_GET['page'])) $this->getpage=$_GET['page'];
+			else $this->getpage=0;
+		
+		
+			if($this->session->userdata("search_reserve"))
+			{
+				$liketext=$this->session->userdata("search_reserve");
+				$config['total_rows']=$this->load_reserve_model->get_all_numrows("tb_reserve",$liketext,"reserve_id");
+		
+				$get_reserve_list=$this->load_reserve_model->get_reserve_list($config['per_page'],$this->getpage,$liketext);
+			}
+			else
+			{
+				$config['total_rows']=$this->load_reserve_model->get_all_numrows("tb_reserve",'',"reserve_id");
+		
+				$get_reserve_list=$this->load_reserve_model->get_reserve_list($config['per_page'],$this->getpage);
+			}
+			$this->pagination->initialize($config);
+		
+			//..pagination
+			$data=array(
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("แก้ไข/ลบ  ห้อง"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
+					"reserve_tab"=>$this->reserve_tab(),
+					"table_edit"=>$this->table_edit($get_reserve_list),
+					"session_search_reserve"=>$this->session->userdata("search_reserve"),
+					"pagination_num_rows"=>$config["total_rows"],
+					"manage_search_box"=>$this->pel->manage_search_box($this->session->userdata("search_reserve"))
+			);
+			$this->load->view("manage/reserve/edit_reserve",$data);
+		}
+		else
+		{
+			/*$prev_url=$_SERVER['HTTP_REFERER'];
+			$session_edit_id="edit_reserve_id";
+			$set=array(
+					"reserve_id"=>$this->input->post("input_reserve_name"),
+					"tb_reserve_type_id"=>$this->input->post("select_reserve_type"),
+					"reserve_detail"=>$this->input->post("textarea_reserve_detail"),
+					"discount_percent"=>$this->input->post("input_discount_percent")
+			);
+			$where=array(
+					"reserve_id"=>$this->session->userdata($session_edit_id)
+			);
+			$this->load_reserve_model->manage_edit($set, $where, "tb_reserve", $session_edit_id, "edit_reserve", "แก้ไขห้องสำเร็จ", "แก้ไขห้องไม่สำเร็จ", "?d=manage&c=reserve&m=edit", $prev_url);
+			*/
+		}
+	}
+	function table_edit($data)
+	{
+		if($this->session->userdata("orderby_reserve")["type"]=="ASC") $img='<img width="9" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_212_down_arrow.png">';
+		else if($this->session->userdata("orderby_reserve")["type"]=="DESC") $img='<img width="9" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_213_up_arrow.png">';
+		$num_row=$this->getpage+1;
+		$html='
+				<table class="table table-striped table-bordered fixed-table" id="tabel_data_list">';
+		$html.='<thead>
+				<th>รหัส</th>
+				<th>ชื่อโครงการ</th>
+
+				<th class="same_first_td">สถานะ<br/><button type="button" class="cbtn cbtn-green" id="allow-all"><button type="button" class="cbtn cbtn-red" id="disallow-all"></th>
+				<th class="same_first_td">แก้ไข</th>
+				<th>ลบ<br/><input type="checkbox" id="del_all_reserve"></th>
+		';
+		$html.='</thead>
+		<form method="post" action="'.base_url().'?d=manage&c=reserve&m=delete" id="form_del_reserve">';
+		if(!empty($data))
+		{
+			foreach ($data AS $dt):
+			if($dt['approve']==0)$checkbox='<span class="checkboxFour">
+									  		<input type="checkbox" value="'.$dt["reserve_id"].'" id="checkboxFourInput'.$dt["reserve_id"].'" name="allow_reserve0[]" class="allow_reserve0"/>
+										  	<label for="checkboxFourInput'.$dt["reserve_id"].'"></label>
+									  		</span>';
+			else $checkbox='<span class="checkboxFour">
+					  		<input type="checkbox" value="'.$dt["reserve_id"].'" id="checkboxFourInput'.$dt["reserve_id"].'" name="allow_reserve1[]" class="allow_reserve1" checked/>
+						  	<label for="checkboxFourInput'.$dt["reserve_id"].'"></label>
+					  		</span>';
+			$html.='<tr>
+					<td>'.$dt["reserve_id"].'</td>
+					<td id="reserve'.$dt["reserve_id"].'">'.$dt["project_name"].'</td>
+					<td class="same_first_td">'.$checkbox.'</td>
+					<td class="same_first_td">'.$this->eml->btn('view','onclick=show_all_data("'.$dt["reserve_id"].'")').'</td>
+					<td><input type="checkbox" value="'.$dt["reserve_id"].'" name="del_reserve[]" class="del_reserve"></td>
+			';
+			$html.='</tr>';
+			$num_row++;
+			endforeach;
+		}
+		$html.='<tr>
+				<td></td>
+				<td></td>
+				<td align="center">'.$this->eml->btn('submitcheck','onclick="show_allow_list();return false;"')." ".
+					$this->eml->btn('refreshcheck','onclick="location.reload(true);"').'
+				</td>
+				<td></td>
+				<td>'.$this->eml->btn('delete','onclick="show_del_list();return false;"').'</td>
+				</tr>
+				</table>
+				</form>';
+		$html.=$this->pagination->create_links();
+		return $html;
+	}
+	function reserve_tab()
+	{
+		$html='
+		<ul class="nav nav-tabs" id="manage_tab">
+			<!-- data-toggle มี pill/tab -->
+			<li><a href="#"  id="add">เพิ่มห้อง</a></li>';
+		$html.='
+			<li><a href="#"  id="edit">แก้ไข/ลบห้อง</a></li>
+			';
+		$html.='</ul>';
+		return $html;
+	}
+	function allow()
+	{
+		//$data = array
+		$allow_list=$this->input->post("allow_list");
+		$disallow_list=$this->input->post("disallow_list");
+		$this->load_reserve_model->manage_allow($allow_list,$disallow_list, "tb_reserve", "reserve_id", "project_name", "edit_reserve", "?d=manage&c=reserve&m=edit");
+	}
+	function show_all_data()
+	{
+		$a=json_encode($this->load_reserve_model->get_all_data($this->input->post("reserve_id"))[0]);
+		echo $this->db->last_query();
 	}
 }

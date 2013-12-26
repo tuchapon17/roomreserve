@@ -1,22 +1,15 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class Faculty extends MY_Controller
 {
+	private $fc_model;
 	function __construct()
 	{
 		parent::__construct();
-		$this->load->library('element_lib');
-		$this->load->library("form_validation");
 		$this->load->model("manage/faculty_model");
-		$this->load->model("element_model");
-		$this->lang->load("help_text","thailand");
-		$this->lang->load("label_name","thailand");
+		$this->fc_model=$this->faculty_model;
 	}
 	function add()
 	{
-		$emm=$this->element_model;
-		$eml=$this->element_lib;
-		$frm=$this->form_validation;
-		
 		$config=array(
 				array(
 						"field"=>"input_faculty_name",
@@ -24,14 +17,14 @@ class Faculty extends MY_Controller
 						"rules"=>"required|max_length[30]|callback_call_lib[regex_lib,regex_charTHEN,%s - กรอกได้เฉพาะอักษรไทย/อังกฤษ]"
 				)
 		);
-		$frm->set_rules($config);
-		$frm->set_message("rule","message");
-		if($frm->run() == false)
+		$this->frm->set_rules($config);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
 		{
 			$in_faculty_name_name="input_faculty_name";
 			$in_faculty_name=array(
 					"LB_text"=>"คณะ/กอง",
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$in_faculty_name_name,
@@ -41,44 +34,34 @@ class Faculty extends MY_Controller
 					"IN_attr"=>'maxlength="30"',
 					"help_text"=>""
 			);
-
-			$PEL=$this->page_element_lib;
 			$data=array(
-					"htmlopen"=>$PEL->htmlopen(),
-					"head"=>$PEL->head("เพิ่มคณะ/กอง"),
-					"bodyopen"=>$PEL->bodyopen(),
-					"navbar"=>$PEL->navbar(),
-					"js"=>$PEL->js(),
-					"footer"=>$PEL->footer(),
-					"bodyclose"=>$PEL->bodyclose(),
-					"htmlclose"=>$PEL->htmlclose(),
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("เพิ่มคณะ/กอง"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
 					"faculty_tab"=>$this->faculty_tab(),
-					"in_faculty_name"=>$eml->form_input($in_faculty_name)
+					"in_faculty_name"=>$this->eml->form_input($in_faculty_name)
 			);
 		
 			$this->load->view("manage/faculty/add_faculty",$data);
 		}
 		else
 		{
-		
-			$fcm=$this->faculty_model;
 			$data=array(
-					"faculty_id"=>$fcm->get_maxid(2, "faculty_id", "tb_faculty"),
+					"faculty_id"=>$this->fc_model->get_maxid(2, "faculty_id", "tb_faculty"),
 					"faculty_name"=>$this->input->post("input_faculty_name"),
 					"checked"=>"1"
 			);
 			$redirect_link="?d=manage&c=faculty&m=add";
-			$fcm->manage_add($data,"tb_faculty",$redirect_link,$redirect_link,"faculty","เพิ่มคณะ/กองสำเร็จ","เพิ่มคณะ/กองไม่สำเร็จ");
+			$this->fc_model->manage_add($data,"tb_faculty",$redirect_link,$redirect_link,"faculty","เพิ่มคณะ/กองสำเร็จ","เพิ่มคณะ/กองไม่สำเร็จ");
 		}
 	}
 	function edit()
 	{
-		$fcm=$this->faculty_model;
-		$emm=$this->element_model;
-		$eml=$this->element_lib;
-		$frm=$this->form_validation;
-		
-		
 		$config=array(
 				array(
 						"field"=>"input_faculty_name",
@@ -86,14 +69,15 @@ class Faculty extends MY_Controller
 						"rules"=>"required|max_length[30]|callback_call_lib[regex_lib,regex_charTHEN,%s - กรอกได้เฉพาะอักษรไทย/อังกฤษ]"
 				)
 		);
-		$frm->set_rules($config);
-		$frm->set_message("rule","message");
-		if($frm->run() == false)
+		$this->frm->set_rules($config);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
 		{
 			if(!$this->session->userdata("orderby_faculty"))
 				$this->session->set_userdata("orderby_faculty",array("field"=>"faculty_name","type"=>"ASC"));
 			//pagination
 			$this->load->library("pagination");
+			$config['use_page_numbers'] = TRUE;
 			$config['base_url']=base_url()."?d=manage&c=faculty&m=edit";
 			//set per_page
 			if($this->session->userdata("set_per_page")) $config['per_page']=$this->session->userdata("set_per_page");
@@ -106,15 +90,15 @@ class Faculty extends MY_Controller
 			if($this->session->userdata("search_faculty"))
 			{
 				$liketext=$this->session->userdata("search_faculty");
-				$config['total_rows']=$fcm->get_all_numrows("tb_faculty",$liketext,"faculty_name");
+				$config['total_rows']=$this->fc_model->get_all_numrows("tb_faculty",$liketext,"faculty_name");
 				
-				$get_faculty_list=$fcm->get_faculty_list($config['per_page'],$this->getpage,$liketext);
+				$get_faculty_list=$this->fc_model->get_faculty_list($config['per_page'],$this->getpage,$liketext);
 			}
 			else
 			{
-				$config['total_rows']=$fcm->get_all_numrows("tb_faculty",'',"faculty_name");
+				$config['total_rows']=$this->fc_model->get_all_numrows("tb_faculty",'',"faculty_name");
 				
-				$get_faculty_list=$fcm->get_faculty_list($config['per_page'],$this->getpage);
+				$get_faculty_list=$this->fc_model->get_faculty_list($config['per_page'],$this->getpage);
 			}
 			$this->pagination->initialize($config);
 		
@@ -122,7 +106,7 @@ class Faculty extends MY_Controller
 			$in_faculty_name_name="input_faculty_name";
 			$in_faculty_name=array(
 					"LB_text"=>"คณะ/กอง",
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$in_faculty_name_name,
@@ -132,23 +116,21 @@ class Faculty extends MY_Controller
 					"IN_attr"=>'maxlength="30"',
 					"help_text"=>""
 			);
-			
-			$PEL=$this->page_element_lib;
 			$data=array(
-					"htmlopen"=>$PEL->htmlopen(),
-					"head"=>$PEL->head("แก้ไข/ลบ  คณะ/กอง"),
-					"bodyopen"=>$PEL->bodyopen(),
-					"navbar"=>$PEL->navbar(),
-					"js"=>$PEL->js(),
-					"footer"=>$PEL->footer(),
-					"bodyclose"=>$PEL->bodyclose(),
-					"htmlclose"=>$PEL->htmlclose(),
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("แก้ไข/ลบ  คณะ/กอง"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
 					"faculty_tab"=>$this->faculty_tab(),
-					"in_faculty_name"=>$eml->form_input($in_faculty_name),
+					"in_faculty_name"=>$this->eml->form_input($in_faculty_name),
 					"table_edit"=>$this->table_edit($get_faculty_list),
 					"session_search_faculty"=>$this->session->userdata("search_faculty"),
 					"pagination_num_rows"=>$config["total_rows"],
-					"manage_search_box"=>$PEL->manage_search_box($this->session->userdata("search_faculty"))
+					"manage_search_box"=>$this->pel->manage_search_box($this->session->userdata("search_faculty"))
 			);
 			$this->load->view("manage/faculty/edit_faculty",$data);
 		}
@@ -162,21 +144,19 @@ class Faculty extends MY_Controller
 			$where=array(
 					"faculty_id"=>$this->session->userdata($session_edit_id)
 			);
-			$fcm->manage_edit($set, $where, "tb_faculty", $session_edit_id, "edit_faculty", "แก้ไขคณะ/กองสำเร็จ", "แก้ไขคณะ/กองไม่สำเร็จ", "?d=manage&c=faculty&m=edit", $prev_url);
+			$this->fc_model->manage_edit($set, $where, "tb_faculty", $session_edit_id, "edit_faculty", "แก้ไขคณะ/กองสำเร็จ", "แก้ไขคณะ/กองไม่สำเร็จ", "?d=manage&c=faculty&m=edit", $prev_url);
 		}
 	}
 	function delete()
 	{
-		$fcm=$this->faculty_model;
-		$fcm->manage_delete($this->input->post("del_faculty"), "tb_faculty", "faculty_id", "faculty_name", "edit_faculty", "?d=manage&c=faculty&m=edit");
+		$this->fc_model->manage_delete($this->input->post("del_faculty"), "tb_faculty", "faculty_id", "faculty_name", "edit_faculty", "?d=manage&c=faculty&m=edit");
 	}
 	function allow()
 	{
 		//$data = array
 		$allow_list=$this->input->post("allow_list");
 		$disallow_list=$this->input->post("disallow_list");
-		$fcm=$this->faculty_model;
-		$fcm->manage_allow($allow_list,$disallow_list, "tb_faculty", "faculty_id", "faculty_name", "edit_faculty", "?d=manage&c=faculty&m=edit");
+		$this->fc_model->manage_allow($allow_list,$disallow_list, "tb_faculty", "faculty_id", "faculty_name", "edit_faculty", "?d=manage&c=faculty&m=edit");
 	}
 	
 	
@@ -241,7 +221,7 @@ class Faculty extends MY_Controller
 					<td>'.$dt["faculty_id"].'</td>
 					<td id="faculty'.$dt["faculty_id"].'">'.$dt["faculty_name"].'</td>
 					<td class="same_first_td">'.$checkbox.'</td>
-					<td class="same_first_td"><button type="button" class="btn btn-primary" onclick=load_faculty("'.$dt["faculty_id"].'")><img width="17" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_150_edit.png"></button></td>
+					<td class="same_first_td">'.$this->eml->btn('edit','onclick=load_faculty("'.$dt["faculty_id"].'")').'</td>
 					<td><input type="checkbox" value="'.$dt["faculty_id"].'" name="del_faculty[]" class="del_faculty"></td>
 			';
 			$html.='</tr>';
@@ -251,11 +231,11 @@ class Faculty extends MY_Controller
 		$html.='<tr>
 				<td></td>
 				<td></td>
-				<td align="center"><button type="button" class="btn btn-success" onclick="show_allow_list();return false;"><img width="12" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_206_ok_2.png"></button>
-									<button type="button" class="btn btn-warning" onclick="location.reload(true);"><img width="12" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_081_refresh.png"></button>
+				<td align="center">'.$this->eml->btn('submitcheck','onclick="show_allow_list();return false;"')." ".
+									$this->eml->btn('refreshcheck','onclick="location.reload(true);"').'
 						</td>
 				<td></td>
-				<td><button type="submit" class="btn btn-danger" onclick="show_del_list();return false;"><img width="12" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_016_bin.png"></button></td>
+				<td>'.$this->eml->btn('delete','onclick="show_del_list();return false;"').'</td>
 				</tr>
 				</table>
 				</form>';
@@ -271,9 +251,7 @@ class Faculty extends MY_Controller
 	}
 	function load_faculty()
 	{
-	
-		$fcm=$this->faculty_model;
-		echo json_encode($fcm->load_faculty($this->input->post("tid"))[0]);
+		echo json_encode($this->fc_model->load_faculty($this->input->post("tid"))[0]);
 	}
 	
 }

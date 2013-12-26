@@ -1,36 +1,30 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class Titlename extends MY_Controller
 {
+	private $tn_model;
 	function __construct()
 	{
 		parent::__construct();
-		$this->load->library('element_lib');
-		$this->load->library("form_validation");
 		$this->load->model("manage/titlename_model");
-		$this->lang->load("help_text","thailand");
-		$this->lang->load("label_name","thailand");
+		$this->tn_model=$this->titlename_model;
 	}
 	function add()
 	{
-		$eml=$this->element_lib;
-		$frm=$this->form_validation;
-		
 		$config=array(
-		
 				array(
 						"field"=>"input_titlename",
 						"label"=>"คำนำหน้าชื่อ",
 						"rules"=>"required|max_length[30]|callback_call_lib[regex_lib,regex_charTHEN,%s - กรอกได้เฉพาะอักษรไทย/อังกฤษ]"
 				)
 		);	
-		$frm->set_rules($config);
-		$frm->set_message("rule","message");
-		if($frm->run() == false)
+		$this->frm->set_rules($config);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
 		{
 			$in_titlename_name="input_titlename";
 			$in_titlename=array(
 					"LB_text"=>"คำนำหน้าชื่อ",
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$in_titlename_name,
@@ -40,40 +34,32 @@ class Titlename extends MY_Controller
 					"IN_attr"=>'maxlength="30"',
 					"help_text"=>""
 			);
-			$PEL=$this->page_element_lib;
 			$data=array(
-					"htmlopen"=>$PEL->htmlopen(),
-					"head"=>$PEL->head("เพิ่มคำนำหน้าชื่อ"),
-					"bodyopen"=>$PEL->bodyopen(),
-					"navbar"=>$PEL->navbar(),
-					"js"=>$PEL->js(),
-					"footer"=>$PEL->footer(),
-					"bodyclose"=>$PEL->bodyclose(),
-					"htmlclose"=>$PEL->htmlclose(),
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("เพิ่มคำนำหน้าชื่อ"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
 					"titlename_tab"=>$this->titlename_tab(),
-					"in_titlename"=>$eml->form_input($in_titlename)
+					"in_titlename"=>$this->eml->form_input($in_titlename)
 			);
-			
 			$this->load->view("manage/titlename/add_titlename",$data);
 		}
 		else
 		{
-			
-			$tnm=$this->titlename_model;
 			$data=array(
-					"titlename_id"=>$tnm->get_maxid(2, "titlename_id", "tb_titlename"),
+					"titlename_id"=>$this->tn_model->get_maxid(2, "titlename_id", "tb_titlename"),
 					"titlename"=>$this->input->post("input_titlename")
 			);
-			$tnm->add_titlename($data);
+			$this->tn_model->add_titlename($data);
 		}
 	}
 	var $getpage;
 	function edit()
 	{
-		$tnm=$this->titlename_model;
-		$eml=$this->element_lib;
-		$frm=$this->form_validation;
-		
 		$config=array(
 				array(
 						"field"=>"input_titlename",
@@ -81,9 +67,9 @@ class Titlename extends MY_Controller
 						"rules"=>"required|max_length[30]|callback_call_lib[regex_lib,regex_charTHEN,%s - กรอกได้เฉพาะอักษรไทย/อังกฤษ]"
 				)
 		);
-		$frm->set_rules($config);
-		$frm->set_message("rule","message");
-		if($frm->run() == false)
+		$this->frm->set_rules($config);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
 		{
 			if(!$this->session->userdata("orderby_titlename")) 
 				$this->session->set_userdata("orderby_titlename",array("field"=>"titlename","type"=>"ASC"));
@@ -101,13 +87,13 @@ class Titlename extends MY_Controller
 			if($this->session->userdata("search_titlename"))
 			{
 				$liketext=$this->session->userdata("search_titlename");
-				$config['total_rows']=$tnm->get_all_numrows("tb_titlename",$liketext,"titlename");
-				$get_titlename_list=$tnm->get_titlename_list($config['per_page'],$this->getpage,$liketext);
+				$config['total_rows']=$this->tn_model->get_all_numrows("tb_titlename",$liketext,"titlename");
+				$get_titlename_list=$this->tn_model->get_titlename_list($config['per_page'],$this->getpage,$liketext);
 			}
 			else
 			{
-				$config['total_rows']=$tnm->get_all_numrows("tb_titlename",'',"titlename");
-				$get_titlename_list=$tnm->get_titlename_list($config['per_page'],$this->getpage);
+				$config['total_rows']=$this->tn_model->get_all_numrows("tb_titlename",'',"titlename");
+				$get_titlename_list=$this->tn_model->get_titlename_list($config['per_page'],$this->getpage);
 			}
 			$this->pagination->initialize($config);
 			
@@ -116,7 +102,7 @@ class Titlename extends MY_Controller
 			$in_titlename_name="input_titlename";
 			$in_titlename=array(
 					"LB_text"=>"คำนำหน้าชื่อ",
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$in_titlename_name,
@@ -126,25 +112,23 @@ class Titlename extends MY_Controller
 					"IN_attr"=>'maxlength="30"',
 					"help_text"=>""
 			);
-			$PEL=$this->page_element_lib;
-			
 			$data=array(
-					"htmlopen"=>$PEL->htmlopen(),
-					"head"=>$PEL->head("แก้ไข/ลบคำนำหน้าชื่อ"),
-					"bodyopen"=>$PEL->bodyopen(),
-					"navbar"=>$PEL->navbar(),
-					"js"=>$PEL->js(),
-					"footer"=>$PEL->footer(),
-					"bodyclose"=>$PEL->bodyclose(),
-					"htmlclose"=>$PEL->htmlclose(),
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("แก้ไข/ลบคำนำหน้าชื่อ"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
 					"titlename_tab"=>$this->titlename_tab(),
-					"in_titlename"=>$eml->form_input($in_titlename),
+					"in_titlename"=>$this->eml->form_input($in_titlename),
 					"table_edit"=>$this->table_edit($get_titlename_list),
 					"session_search_titlename"=>$this->session->userdata("search_titlename"),
 					"pagination_num_rows"=>$config["total_rows"],
-					"manage_search_box"=>$PEL->manage_search_box($this->session->userdata("search_titlename"))
+					"manage_search_box"=>$this->pel->manage_search_box($this->session->userdata("search_titlename"))
 			);
-			//print_r($tnm->get_titlename_list($config['per_page'],$this->getpage));break;
+			//print_r($this->tn_model->get_titlename_list($config['per_page'],$this->getpage));break;
 			$this->load->view("manage/titlename/edit_titlename",$data);
 		}
 		else
@@ -153,13 +137,12 @@ class Titlename extends MY_Controller
 			$set=array(
 					"titlename"=>$this->input->post("input_titlename")
 			);			
-			$tnm->edit_titlename($set,$prev_url);
+			$this->tn_model->edit_titlename($set,$prev_url);
 		}
 	}
 	function delete()
 	{
-		$tnm=$this->titlename_model;
-		$tnm->delete_titlename($this->input->post("del_titlename"));
+		$this->tn_model->delete_titlename($this->input->post("del_titlename"));
 	}
 	
 	function titlename_tab()
@@ -195,7 +178,7 @@ class Titlename extends MY_Controller
 			$html.='<tr>
 					<td>'.$dt["titlename_id"].'</td>
 					<td id="titlename'.$dt["titlename_id"].'">'.$dt["titlename"].'</td>
-					<td class="same_first_td"><button type="button" class="btn btn-primary" onclick=load_titlename("'.$dt["titlename_id"].'")>แก้ไข</button></td>
+					<td class="same_first_td">'.$this->eml->btn('edit','onclick=load_titlename("'.$dt["titlename_id"].'")').'</td>
 					<td><input type="checkbox" value="'.$dt["titlename_id"].'" name="del_titlename[]" class="del_titlename"></td>
 			';
 			$html.='</tr>';
@@ -206,7 +189,7 @@ class Titlename extends MY_Controller
 				<td></td>
 				<td></td>
 				<td></td>
-				<td><button type="submit" class="btn btn-danger" onclick="show_del_list();return false;">ลบ</button></td>
+				<td>'.$this->eml->btn('delete','onclick="show_del_list();return false;"').'</td>
 				</tr>
 				</table>
 				</form>';
@@ -215,9 +198,7 @@ class Titlename extends MY_Controller
 	}
 	function load_titlename()
 	{
-		
-		$tnm=$this->titlename_model;
-		echo json_encode($tnm->load_titlename($this->input->post("tid"))[0]);
+		echo json_encode($this->tn_model->load_titlename($this->input->post("tid"))[0]);
 	}
 	function search()
 	{
