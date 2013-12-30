@@ -351,52 +351,77 @@ echo $js;
 	{
 		$.ajax({
 			url:"?d=manage&c=reserve&m=show_all_data",
-			data:"reserve_id="+reserve_id,
+			data:{reserve_id:reserve_id,get:"article"},
 			type:"POST",
 			dataType:"json",
-			success:function(r){
-				var text='<dl class="dl-horizontal">';
-				text+='<dt>ชื่อผู้ใช้</dt>';
-					text+='<dd>'+r["username"]+'</dd>';
-				text+='<dt>อีเมล</dt>';
-					text+='<dd>'+r["email"]+'</dd>';
-				text+='<dt>วัน/เวลาที่ลงทะเบียน</dt>';
-					text+='<dd>'+r["regis_on"]+'</dd>';
-				text+='<dt>IP ที่ลงทะเบียน</dt>';
-					text+='<dd>'+r["regis_ip"]+'</dd>';
-				text+='<dt>กลุ่มผู้ใช้</dt>';
-					text+='<dd>'+r["group_name"]+'</dd>';
-				text+='<dt>คำนำหน้าชื่อ</dt>';
-					text+='<dd>'+r["titlename"]+'</dd>';
-				text+='<dt>ชื่อ</dt>';
-					text+='<dd>'+r["firstname"]+'</dd>';
-				text+='<dt>นามสกุล</dt>';
-					text+='<dd>'+r["lastname"]+'</dd>';
-				text+='<dt>อาชีพ</dt>';
-					text+='<dd>'+r["occupation_name"]+'</dd>';
-				text+='<dt>เบอร์โทรศัพท์</dt>';
-					text+='<dd>'+r["phone"]+'</dd>';
-				text+='<dt>บ้านเลขที่</dt>';
-					text+='<dd>'+r["house_no"]+'</dd>';
-				text+='<dt>หมู่ที่</dt>';
-					text+='<dd>'+r["village_no"]+'</dd>';
-				text+='<dt>ตรอก/ซอย</dt>';
-					text+='<dd>'+r["alley"]+'</dd>';
-				text+='<dt>ถนน</dt>';
-					text+='<dd>'+r["road"]+'</dd>';
-				text+='<dt>ตำบล</dt>';
-					text+='<dd>'+r["subdistrict_name"]+'</dd>';
-				text+='<dt>อำเภอ</dt>';
-					text+='<dd>'+r["district_name"]+'</dd>';
-				text+='<dt>จังหวัด</dt>';
-					text+='<dd>'+r["province_name"]+'</dd>';
-				text+='</dl>';
-				bootbox.alert(text);
+			success:function(r1){
+				$.ajax({
+					url:"?d=manage&c=reserve&m=show_all_data",
+					data:{reserve_id:reserve_id,get:"datetime"},
+					type:"POST",
+					dataType:"json",
+					success:function(r2){
+						$.ajax({
+							url:"?d=manage&c=reserve&m=show_all_data",
+							data:{reserve_id:reserve_id,get:"file"},
+							type:"POST",
+							dataType:"json",
+							success:function(r3){
+								$.ajax({
+									url:"?d=manage&c=reserve&m=show_all_data",
+									data:{reserve_id:reserve_id,get:"reserve"},
+									type:"POST",
+									dataType:"json",
+									success:function(r4){
+										var text='\
+											<strong>ข้อมูลการจอง</strong>\
+											<dl class="dl-horizontal">\
+												<dt>รหัสการจอง</dt>\
+												<dd>'+r4.reserve_id+'</dd>\
+												<dt>ชื่อโครงการ</dt>\
+												<dd>'+r4.project_name+'</dd>\
+												<dt>ห้องที่จอง</dt>\
+												<dd>'+r4.room_name+'</dd>\
+												<dt>จำนวนคนเข้าใช้</dt>\
+												<dd>'+r4.num_of_people+'</dd>\
+												<dt>วันที่จอง</dt>\
+												<dd>'+r4.reserve_on+'</dd>\
+												<dt>วัตถุประสงค์การใช้งาน</dt>\
+												<dd>'+r4.for_use+'</dd>\
+												<dt>ผู้จอง</dt>\
+												<dd>'+r4.tb_user_username+'</dd>\
+												<dt>ส่วนลด</dt>\
+												<dd>'+r4.discount+'</dd>\
+												<dt>การอนุมัติ</dt>\
+												<dd>'+r4.approve+'</dd>\
+												<dt>อนุมัติเมื่อ</dt>\
+												<dd>'+r4.approve_on+'</dd>\
+												<dt>อนุมัติโดย</dt>\
+												<dd>'+r4.approve_by+'</dd>\
+											</dl>\
+											';
+										bootbox.alert(text);
+										
+									},
+									error:function(error){
+										alert("Error : "+error);
+									}
+								});//ajax4
+							},
+							error:function(error){
+								alert("Error : "+error);
+							}
+						});//ajax3
+					},
+					error:function(error){
+						alert("Error : "+error);
+					}
+				});//ajax2
 			},
 			error:function(error){
 				alert("Error : "+error);
 			}
-		});
+		});//ajax1
 	}
 	//-->
 	

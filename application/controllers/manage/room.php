@@ -5,6 +5,7 @@ class Room extends MY_Controller
 	function __construct()
 	{
 		parent::__construct();
+		$this->check_group_privilege(array("02"));
 		$this->load->model("manage/room_model");
 		$this->rom=$this->room_model;
 	}

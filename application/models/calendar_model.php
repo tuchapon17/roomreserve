@@ -34,7 +34,7 @@ class Calendar_Model extends CI_Model
 	   	{cal_cell_start}<td>{/cal_cell_start}
 
 	   	{cal_cell_content}
-				<a href="'.base_url().'?c=calendar&m=bydate&cdate='.$this->year.'-'.$this->month.'-{day}"><span class="date" id="'.$this->year.'-'.$this->month.'-{day}">{day}</span></a>
+				{day}
 				{content}
 		{/cal_cell_content}
 	   	{cal_cell_content_today}
@@ -57,33 +57,30 @@ class Calendar_Model extends CI_Model
 	   	{table_close}</table>{/table_close}
 		';
 	}
-	function get_calendar($year,$month)
+	function get_calendar($year,$month,$reserve_id,$room_id)
 	{
-		$query=$this->db->select()->from("tb_reserve_has_datetime")
-		->join("tb_reserve","tb_reserve_has_datetime.tb_reserve_id=tb_reserve.reserve_id")
-		->where("tb_reserve.approve",1)
-		->like("reserve_datetime_begin","$year-$month","after")->get();
+		$this->db->select()->from("tb_reserve_has_datetime");
+		$this->db->join("tb_reserve","tb_reserve_has_datetime.tb_reserve_id=tb_reserve.reserve_id");
+		$where=array("tb_reserve.approve"=>1);
+		if($reserve_id!=null)$where["tb_reserve.reserve_id"]=$reserve_id;
+		if($room_id!=null && $room_id!='all')$where['tb_reserve.tb_room_id']=$room_id;
+		$this->db->where($where);
+		$this->db->like("reserve_datetime_begin","$year-$month","after");
+		$query=$this->db->get();
 		$cal_data=array();
-		
 		foreach ($query->result_array() as $row)
 		{
 			//$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)]="<i class='fa fa-info-circle'></i>";
-			
-			
-			
 			if(!array_key_exists((int)substr($row["reserve_datetime_begin"],8,2), $cal_data))
 				//$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)]="<div class='text-left' onclick='alert(\"$row[reserve_datetime_begin].$row[reserve_datetime_end]\");'>".$row["project_name"]."</div>";
 				$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)]="<div class='time-small-begin'><small><a href=''>".substr($row["reserve_datetime_begin"],11,5)."</a></small></div>";
-			else 
+			else
 				//$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)].="<div class='text-left' onclick='alert(\"$row[reserve_datetime_begin].$row[reserve_datetime_end]\");'>".$row["project_name"]."</div>";
 				$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)].="<div class='time-small-begin'><small><a href=''>".substr($row["reserve_datetime_begin"],11,5)."</a></small></div>";
-			
 		}
-		//print_r($cal_data);
-		//echo $this->db->last_query();
 		return $cal_data;
 	}
-	function generate($year,$month)
+	function generate($year,$month,$reserve_id,$room_id)
 	{
 		
 		$this->load->library("calendar",$this->conf);
@@ -91,7 +88,7 @@ class Calendar_Model extends CI_Model
 				10=>'?c=test&m=calen&year=2013&month=10',
 				11=>'bar'
 		);*/
-		$cal_data=$this->get_calendar($year, $month);
+		$cal_data=$this->get_calendar($year, $month,$reserve_id,$room_id);
 		return $this->calendar->generate($year,$month,$cal_data);
 	}
 }

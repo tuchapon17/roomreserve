@@ -9,8 +9,15 @@
 |	http://codeigniter.com/user_guide/general/hooks.html
 |
 */
-
-
+/*
+$hook['post_controller']=array(
+		'class'=>'MY_Hook',
+		'function'=>'test',
+		'filename'=>'MY_Hook.php',
+		'filepath' => 'hooks',
+		'params'   => array()
+);
+*/
 
 /* End of file hooks.php */
 /* Location: ./application/config/hooks.php */

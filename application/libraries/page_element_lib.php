@@ -109,6 +109,9 @@ class Page_element_lib
 		      		i.fa-white{
 		      			color:white;
 		      		}
+		      		.wordw{
+		      			word-wrap: break-word;
+		      		}
 		      		</style>
 		  </head>
 		';
@@ -151,6 +154,7 @@ class Page_element_lib
 						  <li><a href="?d=manage&c=room&m=add">ห้อง</a></li>
 						  <li><a href="?d=manage&c=auth_log&m=edit">บันทึกการเข้าสู่ระบบ</a></li>
 						  <li><a href="?d=manage&c=room_has_article&m=add">ครุภัณฑ์/อุปกรณ์สำหรับห้อง</a></li>
+						  <li><a href="?d=manage&c=reserve&m=edit">จัดการการจอง</a></li>
 				        </ul>
 			      	</li>
 		';
@@ -171,7 +175,7 @@ class Page_element_lib
 			      	</li>
 		';
 		}
-		
+		$html.='<li><a href="?c=calendar&m=main">ปฏิทิน</a></li>';
 		$html.='</ul>
 	        </div><!--/.nav-collapse -->
 	      </div>

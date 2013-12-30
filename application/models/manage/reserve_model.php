@@ -35,49 +35,53 @@ class Reserve_model extends MY_Model
 		}
 		else return false;
 	}
-	function get_all_data($reserve_id)
+	function get_article_data($reserve_id)
 	{
-		$this->db->select()->from("tb_reserve");
+		$this->db->select(
+				"tb_reserve.reserve_id,
+				tb_reserve_has_article.*,
+				tb_article.*"
+		)->from("tb_reserve");
 		$this->db->join("tb_reserve_has_article","tb_reserve_has_article.tb_reserve_id=tb_reserve.reserve_id");
 		$this->db->join("tb_article","tb_article.article_id=tb_reserve_has_article.tb_article_id");
+		$this->db->where("tb_reserve.reserve_id",$reserve_id);
+		$query=$this->db->get()->result_array();
+		return $query;
+	}
+	function get_datetime_data($reserve_id)
+	{
+		$this->db->select(
+				"tb_reserve.reserve_id,
+				tb_reserve_has_datetime.*"
+		)->from("tb_reserve");
 		$this->db->join("tb_reserve_has_datetime","tb_reserve_has_datetime.tb_reserve_id=tb_reserve.reserve_id");
+		$this->db->where("tb_reserve.reserve_id",$reserve_id);
+		$query=$this->db->get()->result_array();
+		return $query;
+	}
+	function get_file_data($reserve_id)
+	{
+		$this->db->select(
+				"tb_reserve.reserve_id,
+				tb_reserve_has_file.*"
+		)->from("tb_reserve");
 		$this->db->join("tb_reserve_has_file","tb_reserve_has_file.tb_reserve_id=tb_reserve.reserve_id");
+		$this->db->where("tb_reserve.reserve_id",$reserve_id);
+		$query=$this->db->get()->result_array();
+		return $query;
+	}
+	function get_reserve_data($reserve_id)
+	{
+		$this->db->select()->from("tb_reserve");
+		$this->db->join("tb_room","tb_room.room_id=tb_reserve.tb_room_id");
 		$this->db->join("tb_reserve_has_person","tb_reserve_has_person.tb_reserve_id=tb_reserve.reserve_id");
 		$this->db->join("tb_person","tb_person.person_id=tb_reserve_has_person.tb_person_id");
-		
-		/*
-		$this->db->select("	tb_user.username,
-							tb_user.email,
-							DATE_FORMAT(tb_user.regis_on,'%d/%m/%Y %H:%i:%s') AS regis_on,
-							tb_user.regis_ip,
-							tb_user.tb_usergroup_id,
-							tb_user.tb_titlename_id,
-							tb_user.firstname,
-							tb_user.lastname,
-							tb_user.tb_occupation_id,
-							tb_user.phone,
-							tb_user.house_no,
-							tb_user.village_no,
-							tb_user.alley,
-							tb_user.road,
-							tb_user.tb_province_id,
-							tb_user.tb_district_id,
-							tb_user.tb_subdistrict_id,
-							tb_usergroup.group_name,
-							tb_titlename.titlename,
-							tb_occupation.occupation_name,
-							tb_province.province_name,
-							tb_district.district_name,
-							tb_subdistrict.subdistrict_name",FALSE)->from("tb_user");
-		$this->db->join("tb_usergroup","tb_usergroup.usergroup_id=tb_user.tb_usergroup_id");
-		$this->db->join("tb_titlename","tb_titlename.titlename_id=tb_user.tb_titlename_id");
-		$this->db->join("tb_occupation","tb_occupation.occupation_id=tb_user.tb_occupation_id");
-		$this->db->join("tb_province","tb_province.province_id=tb_user.tb_province_id");
-		$this->db->join("tb_district","tb_district.district_id=tb_user.tb_district_id");
-		$this->db->join("tb_subdistrict","tb_subdistrict.subdistrict_id=tb_user.tb_subdistrict_id");
-		$this->db->where("username",$username)->limit(1);
-		*/
-		$this->db->where("tb_reserve.reserve_id",$reserve_id)->limit(1);
+		$this->db->join("tb_person_type","tb_person_type.person_type_id=tb_person.tb_person_type_id");
+		$this->db->join("tb_job_position","tb_job_position.job_position_id=tb_reserve_has_person.tb_job_position_id","left");
+		$this->db->join("tb_office","tb_office.office_id=tb_reserve_has_person.tb_office_id","left");
+		$this->db->join("tb_department","tb_department.department_id=tb_reserve_has_person.tb_department_id","left");
+		$this->db->join("tb_faculty","tb_faculty.faculty_id=tb_reserve_has_person.tb_faculty_id","left");
+		$this->db->where("tb_reserve.reserve_id",$reserve_id);
 		$query=$this->db->get()->result_array();
 		return $query;
 	}

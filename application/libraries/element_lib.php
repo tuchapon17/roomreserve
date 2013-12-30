@@ -91,7 +91,7 @@ class Element_lib
 		}
 		else if($btntype=="perpage")
 		{
-			$html='<button type="button" title="จำนวนแถว" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+			$html='<button type="button" title="จำนวนแถว" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" '.$other_attr.'>
 			<i class="fa fa-list-ol fa-white"></i> <span class="caret"></span>
 			</button>';
 		}
@@ -105,15 +105,15 @@ class Element_lib
 		}
 		else if($btntype=="search")
 		{
-			$html='<button type="submit" title="ค้นหา" class="btn btn-primary"><i class="fa fa-search"></i></button>';
+			$html='<button type="submit" title="ค้นหา" class="btn btn-primary" '.$other_attr.'><i class="fa fa-search"></i></button>';
 		}
 		else if($btntype=="clear_search")
 		{
-			$html='<button type="button" title="ยกเลิกการค้นหา" class="btn btn-danger" id="clearSearch"><i class="fa fa-times"></i></button>';
+			$html='<button type="button" title="ยกเลิกการค้นหา" class="btn btn-danger" id="clearSearch" '.$other_attr.'><i class="fa fa-times"></i></button>';
 		}
 		else if($btntype=="submit")
 		{
-			$html='<button type="submit" class="btn btn-default"><i class="fa fa-check-square-o fa-lg fa-white"></i></button>';
+			$html='<button type="submit" class="btn btn-default" '.$other_attr.'><i class="fa fa-check-square-o fa-lg fa-white"></i></button>';
 		}
 		else if($btntype=="view")
 		{

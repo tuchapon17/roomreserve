@@ -5,6 +5,7 @@ class Office extends MY_Controller
 	function __construct()
 	{
 		parent::__construct();
+		$this->check_group_privilege(array("02"));
 		$this->load->model("manage/office_model");
 		$this->off_model=$this->office_model;
 	}

@@ -43,6 +43,7 @@ class Reserve extends MY_Controller
 	 */
 	function add()
 	{
+		$this->check_group_privilege(array("07"));
 		$config=array(
 				array(
 						"field"=>$this->lang->line("input_std_id"),
@@ -582,7 +583,8 @@ class Reserve extends MY_Controller
 					$name = $_FILES["project_file"]["name"][$i];
 					$ext = end(explode(".", $name));
 					$file_detail=array(
-							"new_name"=>str_replace(".", "_", microtime(true)).".".end(explode(".", $files["project_file"]["name"][$i])),
+							//1388212969.8946 to 1388212969_8946
+							"new_name"=>str_replace(".", "_",microtime(true)).rand(100,999).".".end(explode(".", $files["project_file"]["name"][$i])),
 							"old_name"=>$files["project_file"]["name"][$i],
 							"ext"=>end(explode(".", $files["project_file"]["name"][$i])),
 							"type"=>$files["project_file"]["type"][$i],
@@ -918,6 +920,7 @@ class Reserve extends MY_Controller
 	}
 	function edit()
 	{
+		$this->check_group_privilege(array("01"));
 		$config=array(
 				array(
 						"field"=>"input_reserve_name",
@@ -1025,9 +1028,10 @@ class Reserve extends MY_Controller
 					<td>'.$dt["reserve_id"].'</td>
 					<td id="reserve'.$dt["reserve_id"].'">'.$dt["project_name"].'</td>
 					<td class="same_first_td">'.$checkbox.'</td>
-					<td class="same_first_td">'.$this->eml->btn('view','onclick=show_all_data("'.$dt["reserve_id"].'")').'</td>
+					<td class="same_first_td">'.$this->eml->btn('view','onclick=window.open("'.base_url().'?d=manage&c=reserve&m=view&id='.$dt["reserve_id"].'","_blank")').'</td>
 					<td><input type="checkbox" value="'.$dt["reserve_id"].'" name="del_reserve[]" class="del_reserve"></td>
 			';
+			//<td class="same_first_td">'.$this->eml->btn('view','onclick=show_all_data("'.$dt["reserve_id"].'")').'</td>
 			$html.='</tr>';
 			$num_row++;
 			endforeach;
@@ -1067,7 +1071,49 @@ class Reserve extends MY_Controller
 	}
 	function show_all_data()
 	{
-		$a=json_encode($this->load_reserve_model->get_all_data($this->input->post("reserve_id"))[0]);
-		echo $this->db->last_query();
+		if($this->input->post("get")=="article")
+		{
+			echo json_encode($this->load_reserve_model->get_article_data($this->input->post("reserve_id")));
+		}
+		else if($this->input->post("get")=="datetime")
+		{
+			echo json_encode($this->load_reserve_model->get_datetime_data($this->input->post("reserve_id")));
+		}
+		else if($this->input->post("get")=="file")
+		{
+			echo json_encode($this->load_reserve_model->get_file_data($this->input->post("reserve_id")));
+		}
+		else if($this->input->post("get")=="reserve")
+		{
+			echo json_encode($this->load_reserve_model->get_reserve_data($this->input->post("reserve_id"))[0]);
+		}
+		
+	}
+	function view()
+	{
+		if(isset($_GET["id"]))
+		{
+			$article_data=$this->load_reserve_model->get_article_data($_GET["id"]);
+			$datetime_data=$this->load_reserve_model->get_datetime_data($_GET["id"]);
+			$file_data=$this->load_reserve_model->get_file_data($_GET["id"]);
+			$reserve_data=$this->load_reserve_model->get_reserve_data($_GET["id"])[0];
+			
+			$data=array(
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("แก้ไข/ลบ  ห้อง"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
+					"article_data"=>$article_data,
+					"datetime_data"=>$datetime_data,
+					"file_data"=>$file_data,
+					"reserve_data"=>$reserve_data
+			);
+			$this->load->view("manage/reserve/view_reserve",$data);
+		}
+		
 	}
 }

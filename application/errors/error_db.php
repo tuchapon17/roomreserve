@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
+<meta charset="utf-8">
 <title>Database Error</title>
 <style type="text/css">
 

@@ -5,6 +5,7 @@ class Titlename extends MY_Controller
 	function __construct()
 	{
 		parent::__construct();
+		$this->check_group_privilege(array("02"));
 		$this->load->model("manage/titlename_model");
 		$this->tn_model=$this->titlename_model;
 	}

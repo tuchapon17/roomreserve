@@ -139,8 +139,11 @@ echo $head;
       		<div class="col-lg-10 col-lg-offset-1" id="loginform">
 				
       		 	<h2>ปฏิทิน</h2>
-      		 	<div class="alert-danger" id="login-alert">
+      		 	<?php if(isset($_GET['resid'])) echo "<h4>รหัสการจอง ".$_GET['resid']."</h4>";?>
+      		 	<?php echo $customviewbox;?>
       		 	
+      		 	
+      		 	<div class="alert-danger" id="login-alert">
       			</div>
       			<?php echo $calendar;?>
       		</div>
@@ -158,6 +161,30 @@ echo $js;
 	<script type="text/javascript">
 	<!--
 	$(function(){
+		//ทำเป็นเรียงอยู่บรรทัดเดียวกัน
+		$("#ct-room,#ct-year,#ct-month").css({width:"auto"});
+
+		$("#ct-room").val(getURLParameter("rmid"));
+		$("#ct-year").val(getURLParameter("year"));
+		$("#ct-month").val(getURLParameter("month"));
+		$("#ct-btn").click(function(){
+			var room=$("#ct-room").find(":selected").val();
+			var year=$("#ct-year").find(":selected").val();
+			var month=$("#ct-month").find(":selected").val();
+			var url="<?php echo base_url();?>?c=calendar&m=main&year="+year+"&month="+month+"&rmid="+room;
+			if(getURLParameter("resid")!="null") url+="&resid="+getURLParameter("resid");
+			window.location=url;
+		});
+		if(getURLParameter("resid")!="null")
+		{
+			$(".date").each(function(){
+				var a = $(this).parent();
+				var href=a.attr("href");
+				//a.attr("href",href+"&resid="+getURLParameter("resid"));
+				//http://localhost/roomreserve/?c=calendar&m=bydate&cdate=2013-12-2
+			});
+		}
+		
 
 		/*$(".table-calendar td").on("mouseover",function(){
 			$(this).css("background-color","red");
@@ -172,8 +199,10 @@ echo $js;
 		$(".table-calendar tr:not(:nth-child(2)) td").hover(function(){
 			$(this).css("background-color","#ACD7FC");
 		},function(){
+			
 			$(this).css("background-color","");
 		});
+		
 		/*$("span.date").parent().click(function(){
 			var get_date=$(this).children("span.date").attr("id");
 			var ym=get_date.substr(0,8);

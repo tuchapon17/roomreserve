@@ -61,7 +61,18 @@ class Test extends CI_Controller {
 		
 		
 		}*/
-		$this->load->view("test");
+		//$this->load->view("test");
+		$fields = $this->db->field_data("tb_reserve");
+		foreach($fields as $f)
+		{
+			echo "<p>";
+			echo $f->type;
+			echo $f->max_length;
+			echo $f->name;
+			echo $f->primary_key;
+			echo "</p>";
+		}
+		
 	}
 	public function calen($year=null,$month=null)
 	{
@@ -71,6 +82,22 @@ class Test extends CI_Controller {
 		$this->load->model('test_model');
 		$data["calendar"]=$this->test_model->generate($year,$month);
 		$this->load->view("test",$data);
+	}
+	function random()
+	{	echo str_pad(9,5,9,STR_PAD_RIGHT);
+		$arr=array();
+		for($i=1;$i<=15;$i++)
+		{
+			$r=rand(1,9);
+			if(in_array($r,$arr))
+			{
+				//echo $r."exist";
+				//print_r($arr);
+				//echo "<br>";
+			}
+			else array_push($arr,$r);
+		}
+		
 	}
 }
 

@@ -96,6 +96,10 @@ class MY_Calendar extends CI_Calendar {
 		$out .= $this->temp['heading_row_start'];
 		$out .= "\n";
 
+		//reserve id , room id
+		$param='';
+		if(isset($_GET['resid']))$param.='&resid='.$_GET['resid'];
+		if(isset($_GET['rmid']))$param.='&rmid='.$_GET['rmid'];
 		// "previous" month link
 		if ($this->show_next_prev == TRUE)
 		{
@@ -104,7 +108,10 @@ class MY_Calendar extends CI_Calendar {
 
 			$adjusted_date = $this->adjust_date($month - 1, $year);
 			//$out .= str_replace('{previous_url}', $this->next_prev_url.$adjusted_date['year'].'/'.$adjusted_date['month'], $this->temp['heading_previous_cell']);
-			$out .= str_replace('{previous_url}', $this->next_prev_url.'&year='.$adjusted_date['year'].'&month='.$adjusted_date['month'], $this->temp['heading_previous_cell']);
+			
+			$out .= str_replace('{previous_url}', $this->next_prev_url.'&year='.$adjusted_date['year'].'&month='.$adjusted_date['month'].$param, $this->temp['heading_previous_cell']);
+			//else
+			//$out .= str_replace('{previous_url}', $this->next_prev_url.'&year='.$adjusted_date['year'].'&month='.$adjusted_date['month'], $this->temp['heading_previous_cell']);
 			$out .= "\n";
 		}
 
@@ -122,7 +129,10 @@ class MY_Calendar extends CI_Calendar {
 		{
 			$adjusted_date = $this->adjust_date($month + 1, $year);
 			//$out .= str_replace('{next_url}', $this->next_prev_url.$adjusted_date['year'].'/'.$adjusted_date['month'], $this->temp['heading_next_cell']);
-			$out .= str_replace('{next_url}', $this->next_prev_url.'&year='.$adjusted_date['year'].'&month='.$adjusted_date['month'], $this->temp['heading_next_cell']);
+			//if(isset($_GET['resid']))
+			$out .= str_replace('{next_url}', $this->next_prev_url.'&year='.$adjusted_date['year'].'&month='.$adjusted_date['month'].$param, $this->temp['heading_next_cell']);
+			//else
+			//$out .= str_replace('{next_url}', $this->next_prev_url.'&year='.$adjusted_date['year'].'&month='.$adjusted_date['month'], $this->temp['heading_next_cell']);
 		}
 
 		$out .= "\n";
@@ -158,15 +168,23 @@ class MY_Calendar extends CI_Calendar {
 
 				if ($day > 0 AND $day <= $total_days)
 				{
+					if(strlen($day)==1)$day2="0".$day;
+					else $day2=$day;
+					$reserve_id=(isset($_GET['resid'])) ? $_GET['resid'] : null;
 					if (isset($data[$day]))
 					{
 						// Cells with content
+						
+						$day2="<a href='".base_url()."?c=calendar&m=bydate&cdate=".$year."-".$month."-".$day2."&resid=".$reserve_id."'>".$day."</a>";
 						$temp = ($is_current_month == TRUE AND $day == $cur_day) ? $this->temp['cal_cell_content_today'] : $this->temp['cal_cell_content'];
-						$out .= str_replace('{day}', $day, str_replace('{content}', $data[$day], $temp));
+						$out .= str_replace('{day}', $day2, str_replace('{content}', $data[$day], $temp));
 					}
 					else
 					{
 						// Cells with no content
+						//if(strlen($day)==1)$day2="0".$day;
+						//else $day2=$day;
+						//$day2="<a href='".base_url()."?c=calendar&m=bydate&cdate=".$year."-".$month."-".$day2."'>".$day."</a>";
 						$temp = ($is_current_month == TRUE AND $day == $cur_day) ? $this->temp['cal_cell_no_content_today'] : $this->temp['cal_cell_no_content'];
 						$out .= str_replace('{day}', $day, $temp);
 					}
