@@ -5,7 +5,7 @@ class Department extends MY_Controller
 	function __construct()
 	{
 		parent::__construct();
-		$this->check_group_privilege(array("02"));
+		$this->fl->check_group_privilege(array("02"));
 		$this->load->model("manage/department_model");
 		$this->dpm_model=$this->department_model;
 	}

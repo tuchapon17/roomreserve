@@ -1,5 +1,7 @@
 <?php 
-
+$ci=&get_instance();
+$ci->load->library("element_lib");
+$eml=$ci->element_lib;
 echo $htmlopen;
 echo $head;
 ?>
@@ -38,7 +40,7 @@ echo $head;
       	<div class="col-lg-12">
       	<?php echo $condition_tab;?>
       		<div class="col-lg-12" id="loginform">
-      		 	<h2>แก้ไข condition</h2>
+      		 	<h2>แก้ไขระเบียบการใช้งานระบบ</h2>
 
       		 	<div class="alert-danger" id="login-alert">
       		 	<?php 
@@ -57,7 +59,7 @@ echo $head;
 						echo "<span id='".$em_name["te_condition"]."_error' class='hidden'>".form_error($em_name["te_condition"])."</span>";
 						?>	
 					</fieldset>
-					<button type="submit" class="btn btn-default">แก้ไข</button>
+					<?php echo $eml->btn('submit','');?>
 				</form>
       		</div>
         </div>

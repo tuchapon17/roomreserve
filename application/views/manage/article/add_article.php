@@ -1,4 +1,7 @@
 <?php 
+$ci=&get_instance();
+$ci->load->library("element_lib");
+$eml=$ci->element_lib;
 
 echo $htmlopen;
 echo $head;
@@ -55,7 +58,7 @@ echo $head;
       		 		echo form_error($em_name["in_fee_over_unit_lump_sum"]);
       		 	?>
       			</div>
-      			<form role="form" action="?d=manage&c=article&m=add" method="post">
+      			<form role="form" action="?d=manage&c=article&m=add" method="post" autocomplete="off">
 	      			<fieldset class="scheduler-border">
 						<legend class="scheduler-border"></legend>
 						<?php 
@@ -70,11 +73,9 @@ echo $head;
 						echo "<span id='".$em_name["in_fee_unit_lump_sum"]."_error' class='hidden'>".form_error($em_name["in_fee_unit_lump_sum"])."</span>";
 						echo $in_fee_over_unit_lump_sum;
 						echo "<span id='".$em_name["in_fee_over_unit_lump_sum"]."_error' class='hidden'>".form_error($em_name["in_fee_over_unit_lump_sum"])."</span>";
-						
-						
 						?>	
 					</fieldset>
-					<button type="submit" class="btn btn-default">เพิ่ม</button>
+					<?php echo $eml->btn('submit','');?>
 				</form>
       		</div>
         </div>

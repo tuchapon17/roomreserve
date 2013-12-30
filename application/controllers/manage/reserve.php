@@ -9,6 +9,7 @@ class Reserve extends MY_Controller
 	function __construct()
 	{
 		parent::__construct();
+		$this->fl->check_group_privilege(array("01","02","07"),false,"OR");
 		$this->load->model("manage/reserve_model");
 			$this->load_reserve_model=$this->reserve_model;
 		$this->lang->load("reserve/reserve","thailand");
@@ -43,7 +44,7 @@ class Reserve extends MY_Controller
 	 */
 	function add()
 	{
-		$this->check_group_privilege(array("07"));
+		$this->fl->check_group_privilege(array("07"));
 		$config=array(
 				array(
 						"field"=>$this->lang->line("input_std_id"),
@@ -283,6 +284,7 @@ class Reserve extends MY_Controller
 					"in_job_position"=>$this->eml->form_input($in_job_position),
 					"in_office"=>$this->eml->form_input($in_office)
 			);
+			$data["reserve_tab"]=(!$this->fl->check_group_privilege(array("07"),true)) ? $this->reserve_tab() : '';
 			$this->load->view("manage/reserve/add_reserve",$data);
 		}
 		else
@@ -920,7 +922,7 @@ class Reserve extends MY_Controller
 	}
 	function edit()
 	{
-		$this->check_group_privilege(array("01"));
+		$this->fl->check_group_privilege(array("01"));
 		$config=array(
 				array(
 						"field"=>"input_reserve_name",
@@ -964,7 +966,7 @@ class Reserve extends MY_Controller
 			//..pagination
 			$data=array(
 					"htmlopen"=>$this->pel->htmlopen(),
-					"head"=>$this->pel->head("แก้ไข/ลบ  ห้อง"),
+					"head"=>$this->pel->head("จัดการการจอง"),
 					"bodyopen"=>$this->pel->bodyopen(),
 					"navbar"=>$this->pel->navbar(),
 					"js"=>$this->pel->js(),
@@ -1055,9 +1057,9 @@ class Reserve extends MY_Controller
 		$html='
 		<ul class="nav nav-tabs" id="manage_tab">
 			<!-- data-toggle มี pill/tab -->
-			<li><a href="#"  id="add">เพิ่มห้อง</a></li>';
+			<li><a href="#"  id="add">จองห้อง</a></li>';
 		$html.='
-			<li><a href="#"  id="edit">แก้ไข/ลบห้อง</a></li>
+			<li><a href="#"  id="edit">จัดการการจอง</a></li>
 			';
 		$html.='</ul>';
 		return $html;
@@ -1114,6 +1116,12 @@ class Reserve extends MY_Controller
 			);
 			$this->load->view("manage/reserve/view_reserve",$data);
 		}
-		
+	}
+	function set_orderby()
+	{
+		if($this->input->post("field") && $this->input->post("type"))
+		{
+			$this->session->set_userdata("orderby_reserve",array("field"=>$this->input->post("field"),"type"=>$this->input->post("type")));
+		}
 	}
 }

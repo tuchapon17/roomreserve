@@ -1,16 +1,16 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class User_profile extends CI_Controller
+class User_profile extends MY_Controller
 {
+	private $upm;
 	function __construct()
 	{
 		parent::__construct();
-		$this->lang->load("help_text","thailand");
-		$this->lang->load("label_name","thailand");
-		$this->load->library("page_element_lib");
+		$this->load->model("user_profile_model");
+		$this->upm=$this->user_profile_model;
 	}
 	function view_profile()
 	{
-		$this->check_loggedin();
+		$this->fl->check_loggedin();
 		/*#################################################
 		 * access rules for view user profile
 		#################################################*/
@@ -20,52 +20,33 @@ class User_profile extends CI_Controller
 		//If not set $_GET["vuser"] or not logged in
 		if(!isset($_GET["vuser"]) || !$this->session->userdata("rs_username")) show_404();		
 		
-		$this->load->library('element_lib');
-		$eml=$this->element_lib;
-		
-		$PEL=$this->page_element_lib;
 		$data=array(
-				"htmlopen"=>$PEL->htmlopen(),
-				"head"=>$PEL->head("ข้อมูลส่วนตัว"),
-				"bodyopen"=>$PEL->bodyopen(),
-				"navbar"=>$PEL->navbar(),
-				"js"=>$PEL->js(),
-				"footer"=>$PEL->footer(),
-				"bodyclose"=>$PEL->bodyclose(),
-				"htmlclose"=>$PEL->htmlclose(),
+				"htmlopen"=>$this->pel->htmlopen(),
+				"head"=>$this->pel->head("ข้อมูลส่วนตัว"),
+				"bodyopen"=>$this->pel->bodyopen(),
+				"navbar"=>$this->pel->navbar(),
+				"js"=>$this->pel->js(),
+				"footer"=>$this->pel->footer(),
+				"bodyclose"=>$this->pel->bodyclose(),
+				"htmlclose"=>$this->pel->htmlclose(),
 				"profile_tab"=>$this->profile_tab()
 		);
-		
-		$this->load->model("user_profile_model");
-		$upm=$this->user_profile_model;
-		//print_r($upm->user_profile());
-		//echo $this->db->last_query();
-		//break;
 
 		/*#################################################
 		Check query result if no result(count=0) will show 404 page
 		###################################################*/
-		if(count($upm->user_profile($_GET["vuser"])) == 0)  show_404();
-		else $data=array_merge($data,$upm->user_profile($_GET["vuser"])[0]);
+		if(count($this->upm->user_profile($_GET["vuser"])) == 0)  show_404();
+		else $data=array_merge($data,$this->upm->user_profile($_GET["vuser"])[0]);
 		
 		$this->load->view("view_profile",$data);
 		
 	}
 	function edit_profile1()
 	{
-		$this->check_loggedin();
+		$this->fl->check_loggedin();
 		/*
 		 * check ต้องมี session rs_username
-		* */
-		$this->load->library('element_lib');
-		$eml=$this->element_lib;
-		
-		$this->load->model("user_profile_model");
-		$upm=$this->user_profile_model;
-		
-		$this->load->library("form_validation");
-		$frm=$this->form_validation;
-		
+		* */				
 		$config=array(
 				
 				array(
@@ -97,9 +78,9 @@ class User_profile extends CI_Controller
 			$config=array_merge($config,$config2);
 		}
 		
-		$frm->set_rules($config);
-		$frm->set_message("rule","message");
-		if($frm->run() == false)
+		$this->frm->set_rules($config);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
 		{
 			/*initial  create element with element_lib*/
 			$in_username_name="input_username";
@@ -118,7 +99,7 @@ class User_profile extends CI_Controller
 			$in_password_name0="input_password0";
 			$in_password0=array(
 					"LB_text"=>$this->lang->line("label_password0"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'password',
 					"IN_class"=>'',
 					"IN_name"=>$in_password_name0,
@@ -131,7 +112,7 @@ class User_profile extends CI_Controller
 			$in_password_name="input_password";
 			$in_password=array(
 					"LB_text"=>$this->lang->line("label_password"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'password',
 					"IN_class"=>'',
 					"IN_name"=>$in_password_name,
@@ -144,7 +125,7 @@ class User_profile extends CI_Controller
 			$in_password_name2="input_password2";
 			$in_password2=array(
 					"LB_text"=>$this->lang->line("label_password2"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'password',
 					"IN_class"=>'',
 					"IN_name"=>$in_password_name2,
@@ -157,43 +138,41 @@ class User_profile extends CI_Controller
 			$in_email_name="input_email";
 			$in_email=array(
 					"LB_text"=>$this->lang->line("label_email"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$in_email_name,
 					"IN_id"=>$in_email_name,
 					"IN_PH"=>'',
 					//get current email from user_profile_model->user_email()
-					"IN_value"=>$upm->user_email($this->session->userdata("rs_username"))[0]["email"],
+					"IN_value"=>$this->upm->user_email($this->session->userdata("rs_username"))[0]["email"],
 					"IN_attr"=>'maxlength="128"',
 					"help_text"=>'เช่น example@hotmail.com, example@gmail.com'
 			);
 			/*-*initial attr for create element with element_lib*/
-			
-			$pel=$this->page_element_lib;
 			$data=array(
-					"htmlopen"=>$pel->htmlopen(),
-					"head"=>$pel->head("แก้ไขข้อมูลการเข้าใช้ระบบ"),
-					"bodyopen"=>$pel->bodyopen(),
-					"navbar"=>$pel->navbar(),
-					"js"=>$pel->js(),
-					"footer"=>$pel->footer(),
-					"bodyclose"=>$pel->bodyclose(),
-					"htmlclose"=>$pel->htmlclose(),
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("แก้ไขข้อมูลการเข้าใช้ระบบ"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
 					"profile_tab"=>$this->profile_tab(),
 					
-					"in_username"=>$eml->form_input($in_username),
-					"in_password0"=>$eml->form_input($in_password0),
-					"in_password"=>$eml->form_input($in_password),
-					"in_password2"=>$eml->form_input($in_password2),
-					"in_email"=>$eml->form_input($in_email)
+					"in_username"=>$this->eml->form_input($in_username),
+					"in_password0"=>$this->eml->form_input($in_password0),
+					"in_password"=>$this->eml->form_input($in_password),
+					"in_password2"=>$this->eml->form_input($in_password2),
+					"in_email"=>$this->eml->form_input($in_email)
 					
 			);
 			$this->load->view("edit_profile1",$data);
 		}
 		else 
 		{	
-			//$upm->
+			//$this->upm->
 			$set=array(
 					"email"=>$this->input->post("input_email")
 			);
@@ -204,28 +183,15 @@ class User_profile extends CI_Controller
 				);
 				$set=array_merge($set,$set2);
 			}
-			$upm->update_edit_profile1($set,$this->session->userdata("rs_username"));
+			$this->upm->update_edit_profile1($set,$this->session->userdata("rs_username"));
 		}
 	}
 	function edit_profile2()
 	{
-		$this->check_loggedin();
+		$this->fl->check_loggedin();
 		/*
 		 * check ต้องมี session rs_username
 		 * */
-			
-		$this->load->library('element_lib');
-		$eml=$this->element_lib;
-	
-		$this->load->model("user_profile_model");
-		$upm=$this->user_profile_model;
-
-		$this->load->model("element_model");
-		$emm=$this->element_model;
-		
-		$this->load->library("form_validation");
-		$frm=$this->form_validation;
-	
 		$config=array(
 				array(
 						"field"=>"select_titlename",
@@ -254,23 +220,23 @@ class User_profile extends CI_Controller
 				)
 		);
 
-		$frm->set_rules($config);
-		$frm->set_message("rule","message");
-		if($frm->run() == false)
+		$this->frm->set_rules($config);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
 		{
-			$current_data=$upm->get_edit_profile2($this->session->userdata("rs_username"))[0];
+			$current_data=$this->upm->get_edit_profile2($this->session->userdata("rs_username"))[0];
 			//set session for occupation_id
 			$this->session->set_userdata("update_profile2_occupation_id",$current_data["tb_occupation_id"]);
 			/*initial  create element with element_lib*/
 			$se_titlename_name="select_titlename";
 			$se_titlename=array(
 					"LB_text"=>$this->lang->line("label_se_titlename"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"S_class"=>'',
 					"S_name"=>$se_titlename_name,
 					"S_id"=>$se_titlename_name,
 					"S_old_value"=>$current_data["tb_titlename_id"],
-					"S_data"=>$emm->select_titlename(),
+					"S_data"=>$this->emm->select_titlename(),
 					"S_id_field"=>"titlename_id",
 					"S_name_field"=>"titlename",
 					"help_text"=>''
@@ -278,7 +244,7 @@ class User_profile extends CI_Controller
 			$in_firstname_name="input_firstname";
 			$in_firstname=array(
 					"LB_text"=>$this->lang->line("label_firstname"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$in_firstname_name,
@@ -291,7 +257,7 @@ class User_profile extends CI_Controller
 			$in_lastname_name="input_lastname";
 			$in_lastname=array(
 					"LB_text"=>$this->lang->line("label_lastname"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$in_lastname_name,
@@ -318,12 +284,12 @@ class User_profile extends CI_Controller
 			$se_occupation_name="select_occupation";
 			$se_occupation=array(
 					"LB_text"=>$this->lang->line("label_se_occupation"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"S_class"=>'',
 					"S_name"=>$se_occupation_name,
 					"S_id"=>$se_occupation_name,
 					"S_old_value"=>$current_data["tb_occupation_id"],
-					"S_data"=>$emm->select_occupation(),
+					"S_data"=>$this->emm->select_occupation(),
 					"S_id_field"=>"occupation_id",
 					"S_name_field"=>"occupation_name",
 					"help_text"=>''
@@ -334,24 +300,23 @@ class User_profile extends CI_Controller
 				$se_occupation["S_old_value"]=00;
 			}
 			/*-*initial attr for create element with element_lib*/
-				
-			$pel=$this->page_element_lib;
+
 			$data=array(
-					"htmlopen"=>$pel->htmlopen(),
-					"head"=>$pel->head("แก้ไขข้อมูลส่วนตัว"),
-					"bodyopen"=>$pel->bodyopen(),
-					"navbar"=>$pel->navbar(),
-					"js"=>$pel->js(),
-					"footer"=>$pel->footer(),
-					"bodyclose"=>$pel->bodyclose(),
-					"htmlclose"=>$pel->htmlclose(),
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("แก้ไขข้อมูลส่วนตัว"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
 					"profile_tab"=>$this->profile_tab(),
 						
-					"se_titlename"=>$eml->form_select($se_titlename),
-					"in_firstname"=>$eml->form_input($in_firstname),
-					"in_lastname"=>$eml->form_input($in_lastname),
-					"in_occupation"=>$eml->form_input($in_occupation),
-					"se_occupation"=>$eml->form_select($se_occupation)
+					"se_titlename"=>$this->eml->form_select($se_titlename),
+					"in_firstname"=>$this->eml->form_input($in_firstname),
+					"in_lastname"=>$this->eml->form_input($in_lastname),
+					"in_occupation"=>$this->eml->form_input($in_occupation),
+					"se_occupation"=>$this->eml->form_select($se_occupation)
 			);
 			$this->load->view("edit_profile2",$data);
 		}
@@ -369,30 +334,18 @@ class User_profile extends CI_Controller
 				$set_occupation=array(
 						"occupation_name"=>$this->input->post("input_occupation")
 				);
-				$upm->update_occupation($set_occupation,$this->session->userdata("update_profile2_occupation_id"));
+				$this->upm->update_occupation($set_occupation,$this->session->userdata("update_profile2_occupation_id"));
 			}
 			
-			$upm->update_edit_profile2($set,$this->session->userdata("rs_username"));	
+			$this->upm->update_edit_profile2($set,$this->session->userdata("rs_username"));	
 		}
 	}
 	function edit_profile3()
 	{
-		$this->check_loggedin();
+		$this->fl->check_loggedin();
 		/*
 		 * check session rs_username
 		 * */
-		$this->load->library('element_lib');
-		$eml=$this->element_lib;
-	
-		$this->load->model("user_profile_model");
-		$upm=$this->user_profile_model;
-
-		$this->load->model("element_model");
-		$emm=$this->element_model;
-		
-		$this->load->library("form_validation");
-		$frm=$this->form_validation;
-		
 		$config=array(
 				array(
 						"field"=>$this->lang->line("regis_in_house_no"),
@@ -431,17 +384,17 @@ class User_profile extends CI_Controller
 				)
 		);
 		
-		$frm->set_rules($config);
-		$frm->set_message("rule","message");
-		if($frm->run() == false)
+		$this->frm->set_rules($config);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
 		{
-			$current_data=$upm->get_edit_profile3($this->session->userdata("rs_username"))[0];
+			$current_data=$this->upm->get_edit_profile3($this->session->userdata("rs_username"))[0];
 			//set session for occupation_id
 			//$this->session->set_userdata("update_profile2_occupation_id",$current_data["tb_occupation_id"]);
 			/*initial  create element with element_lib*/
 			$in_house_no=array(
 					"LB_text"=>$this->lang->line("label_house_no"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
 					"IN_name"=>$this->lang->line("regis_in_house_no"),
@@ -490,19 +443,19 @@ class User_profile extends CI_Controller
 			);
 			$se_province=array(
 					"LB_text"=>$this->lang->line("label_se_province"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"S_class"=>'',
 					"S_name"=>$this->lang->line("regis_se_province"),
 					"S_id"=>$this->lang->line("regis_se_province"),
 					"S_old_value"=>$current_data["tb_province_id"],
-					"S_data"=>$emm->select_province(),
+					"S_data"=>$this->emm->select_province(),
 					"S_id_field"=>"province_id",
 					"S_name_field"=>"province_name",
 					"help_text"=>''
 			);
 			$se_district=array(
 					"LB_text"=>$this->lang->line("label_se_district"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"S_class"=>'',
 					"S_name"=>$this->lang->line("regis_se_district"),
 					"S_id"=>$this->lang->line("regis_se_district"),
@@ -514,7 +467,7 @@ class User_profile extends CI_Controller
 			);
 			$se_subdistrict=array(
 					"LB_text"=>$this->lang->line("label_se_subdistrict"),
-					"LB_attr"=>$eml->span_redstar(),
+					"LB_attr"=>$this->eml->span_redstar(),
 					"S_class"=>'',
 					"S_name"=>$this->lang->line("regis_se_subdistrict"),
 					"S_id"=>$this->lang->line("regis_se_subdistrict"),
@@ -525,26 +478,24 @@ class User_profile extends CI_Controller
 					"help_text"=>''
 			);
 			/*-*initial attr for create element with element_lib*/
-		
-			$pel=$this->page_element_lib;
 			$data=array(
-					"htmlopen"=>$pel->htmlopen(),
-					"head"=>$pel->head("แก้ไขข้อมูลส่วนตัว"),
-					"bodyopen"=>$pel->bodyopen(),
-					"navbar"=>$pel->navbar(),
-					"js"=>$pel->js(),
-					"footer"=>$pel->footer(),
-					"bodyclose"=>$pel->bodyclose(),
-					"htmlclose"=>$pel->htmlclose(),
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("แก้ไขข้อมูลส่วนตัว"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
 					"profile_tab"=>$this->profile_tab(),
 		
-					"in_house_no"=>$eml->form_input($in_house_no),
-					"in_village_no"=>$eml->form_input($in_village_no),
-					"in_alley"=>$eml->form_input($in_alley),
-					"in_road"=>$eml->form_input($in_road),
-					"se_province"=>$eml->form_select($se_province),
-					"se_district"=>$eml->form_select($se_district),
-					"se_subdistrict"=>$eml->form_select($se_subdistrict),
+					"in_house_no"=>$this->eml->form_input($in_house_no),
+					"in_village_no"=>$this->eml->form_input($in_village_no),
+					"in_alley"=>$this->eml->form_input($in_alley),
+					"in_road"=>$this->eml->form_input($in_road),
+					"se_province"=>$this->eml->form_select($se_province),
+					"se_district"=>$this->eml->form_select($se_district),
+					"se_subdistrict"=>$this->eml->form_select($se_subdistrict),
 					
 					"current_district_id"=>$current_data["tb_district_id"],
 					"current_subdistrict_id"=>$current_data["tb_subdistrict_id"]
@@ -562,7 +513,7 @@ class User_profile extends CI_Controller
 					"tb_district_id"=>$this->input->post("select_district"),
 					"tb_subdistrict_id"=>$this->input->post("select_subdistrict")
 			);
-			$upm->update_edit_profile3($set,$this->session->userdata("rs_username"));	
+			$this->upm->update_edit_profile3($set,$this->session->userdata("rs_username"));	
 		}
 	}
 	function profile_tab()
@@ -585,9 +536,7 @@ class User_profile extends CI_Controller
 	function check_current_password($data)
 	{
 		$this->form_validation->set_message("check_current_password","%s - รหัสผ่านเดิมไม่ถูกต้อง");
-		$this->load->model("user_profile_model");
-		$upm=$this->user_profile_model;
-		return $upm->check_current_password($data);
+		return $this->upm->check_current_password($data);
 	}
 
 	function selected_other($data)
@@ -618,13 +567,5 @@ class User_profile extends CI_Controller
 		$this->load->library($param_value[0]);
 		//send $data to method in library
 		return $this->$param_value[0]->$param_value[1]($data);
-	}
-	function check_loggedin()
-	{
-		if(!$this->session->userdata("rs_username"))
-		{
-			//return false;
-			redirect(base_url()."?c=login&m=auth");
-		}
 	}
 }

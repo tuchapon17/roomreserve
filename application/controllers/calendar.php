@@ -4,7 +4,7 @@ class Calendar extends MY_Controller {
 	function __construct()
 	{
 		parent::__construct();
-		//$this->check_group_privilege("03");
+		//$this->fl->check_group_privilege("03");
 	}
 	function main($year=null,$month=null)
 	{

@@ -13,12 +13,15 @@ class MY_Controller extends CI_Controller
 	//form_validation
 	public $frm;
 	
+	//function library
+	public $fl;
 	function __construct()
 	{
 		parent::__construct();
 		$this->eml=$this->element_lib;
 		$this->frm=$this->form_validation;
 		$this->pel=$this->page_element_lib;
+		$this->fl=$this->function_lib;
 		$this->load->model("element_model");
 		$this->emm=$this->element_model;
 		$this->lang->load("help_text","thailand");

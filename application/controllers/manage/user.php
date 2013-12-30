@@ -5,7 +5,7 @@ class User extends MY_Controller
 	function __construct()
 	{
 		parent::__construct();
-		$this->check_group_privilege(array("06"));
+		$this->fl->check_group_privilege(array("06"));
 		$this->load->model("manage/user_model");
 		$this->us_model=$this->user_model;
 	}

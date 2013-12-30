@@ -41,7 +41,7 @@ echo $head;
       	<div class="col-lg-12">
       	<?php echo $reserve_tab;?>
       		<div class="col-lg-12" id="loginform">
-      		 	<h2>แก้ไข ห้อง</h2>
+      		 	<h2>จัดการการจอง</h2>
       		 	<form role="form" class="form-inline" action="?d=manage&c=reserve&m=search" method="post">
       		 		<?php echo $manage_search_box;?>
       		 	</form>
@@ -247,7 +247,7 @@ echo $js;
 	function select_orderby()
 	{
 		var select_field='<select id="orderby" class="form-control">';
-		select_field+='<option value="reserve_id">รหัส ห้อง</option>';
+		select_field+='<option value="reserve_id">รหัสการจอง</option>';
 		select_field+='</select>';
 		var select_type='<select id="ordertype" class="form-control">';
 		select_type+='<option value="ASC">น้อยไปหามาก</option>';

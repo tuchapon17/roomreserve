@@ -1,5 +1,7 @@
 <?php 
-
+$ci=&get_instance();
+$ci->load->library("element_lib");
+$eml=$ci->element_lib;
 echo $htmlopen;
 echo $head;
 ?>
@@ -39,7 +41,7 @@ echo $head;
     <div class="container">
       <div class="row">
       	<div class="col-lg-12">
-      	<?php //echo $article_tab;?>
+      	<?php echo $reserve_tab;?>
       		<div class="col-lg-8 col-lg-offset-2" id="loginform">
 				
       		 	<h2>จองห้อง</h2>
@@ -208,7 +210,7 @@ echo $head;
 		                </fieldset>
 		                </span>
 		              </fieldset>
-					<button type="submit" class="btn btn-default">เพิ่ม</button>
+					<?php echo $eml->btn('submit','');?>
 				</form>
       		</div>
         </div>

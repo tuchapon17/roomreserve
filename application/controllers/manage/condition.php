@@ -5,7 +5,7 @@ class Condition extends MY_Controller
 	function __construct()
 	{
 		parent::__construct();
-		$this->check_group_privilege(array("02"));
+		$this->fl->check_group_privilege(array("02"));
 		$this->load->model("manage/condition_model");
 		$this->cdm=$this->condition_model;
 	}
@@ -67,7 +67,7 @@ class Condition extends MY_Controller
 			<!-- data-toggle มี pill/tab -->
 			';
 		$html.='
-			<li><a href="#"  id="edit">แก้ไขcondition</a></li>
+			<li><a href="#"  id="edit">แก้ไขระเบียบการใช้งานระบบ</a></li>
 			';
 		$html.='</ul>';
 		return $html;

@@ -3,11 +3,14 @@ class Page_element_lib
 {
 	var $ci;
 	private $eml;
+	private $fl;
 	function __construct()
 	{
 		$this->ci =& get_instance();
 		$this->ci->load->library('element_lib');
 			$this->eml=$this->ci->element_lib;
+		$this->ci->load->library('function_lib');
+			$this->fl=$this->ci->function_lib;
 	}
 	function htmlopen()
 	{
@@ -137,27 +140,45 @@ class Page_element_lib
 		';
 		//<li class="active">
 		$html.='<li><a href="?d=manage&c=reserve&m=add">จองห้อง</a></li>';
-		$html.='<li class="dropdown">
-				        <a href="#" class="dropdown-toggle" data-toggle="dropdown">จัดการข้อมูล<b class="caret"></b></a>
-				        <ul class="dropdown-menu">
-				          <li><a href="?d=manage&c=titlename&m=add">คำนำหน้าชื่อ</a></li>
-						  <li><a href="?d=manage&c=article_type&m=add">ประเภทครุภัณฑ์/อุปกรณ์</a></li>
-						  <li><a href="?d=manage&c=article&m=add">ครุภัณฑ์/อุปกรณ์</a></li>
-                          <li><a href="?d=manage&c=department&m=add">สาขาวิชา/งาน</a></li>
-						  <li><a href="?d=manage&c=faculty&m=add">คณะ/กอง</a></li>
-				          <li><a href="?d=manage&c=occupation&m=add">อาชีพ</a></li>
-						  <li><a href="?d=manage&c=room_type&m=add">ประเภทห้อง</a></li>
-						  <li><a href="?d=manage&c=office&m=add">หน่วยงาน</a></li>
-						  <li><a href="?d=manage&c=job_position&m=add">ตำแหน่งงาน</a></li>
-						  <li><a href="?d=manage&c=user&m=edit">ผู้ใช้งาน</a></li>
-						  <li><a href="?d=manage&c=condition&m=edit">condition</a></li>
-						  <li><a href="?d=manage&c=room&m=add">ห้อง</a></li>
-						  <li><a href="?d=manage&c=auth_log&m=edit">บันทึกการเข้าสู่ระบบ</a></li>
-						  <li><a href="?d=manage&c=room_has_article&m=add">ครุภัณฑ์/อุปกรณ์สำหรับห้อง</a></li>
-						  <li><a href="?d=manage&c=reserve&m=edit">จัดการการจอง</a></li>
-				        </ul>
-			      	</li>
-		';
+		if($this->fl->check_group_privilege(array("02","05","06"),true,"OR"))
+		{
+			$html.='<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown">จัดการข้อมูล<b class="caret"></b></a>
+					<ul class="dropdown-menu">';
+			if($this->fl->check_group_privilege(array("02"),true))
+			{
+				$html.='<li><a href="?d=manage&c=article_type&m=add">ประเภทครุภัณฑ์/อุปกรณ์</a></li>';
+				$html.='<li><a href="?d=manage&c=article&m=add">ครุภัณฑ์/อุปกรณ์</a></li>';
+				$html.='<li><a href="?d=manage&c=room_has_article&m=add">ครุภัณฑ์/อุปกรณ์สำหรับห้อง</a></li>';
+				$html.='<li class="divider"></li>';
+				$html.='<li><a href="?d=manage&c=room_type&m=add">ประเภทห้อง</a></li>';
+				$html.='<li><a href="?d=manage&c=room&m=add">ห้อง</a></li>';
+				$html.='<li class="divider"></li>';
+				$html.='<li><a href="?d=manage&c=titlename&m=add">คำนำหน้าชื่อ</a></li>';
+				$html.='<li><a href="?d=manage&c=condition&m=edit">ระเบียบการใช้งานระบบ</a></li>';
+				$html.='<li><a href="?d=manage&c=reserve&m=edit">การจอง</a></li>';
+				$html.='<li class="divider"></li>';
+				$html.='<li><a href="?d=manage&c=faculty&m=add">คณะ/กอง</a></li>';
+				$html.='<li><a href="?d=manage&c=job_position&m=add">ตำแหน่งงาน</a></li>';
+				$html.='<li><a href="?d=manage&c=department&m=add">สาขาวิชา/งาน</a></li>';
+				$html.='<li><a href="?d=manage&c=office&m=add">หน่วยงาน</a></li>';
+				$html.='<li><a href="?d=manage&c=occupation&m=add">อาชีพ</a></li>';
+			}
+			
+			if($this->fl->check_group_privilege(array("06"),true))
+				$html.='<li><a href="?d=manage&c=user&m=edit">ผู้ใช้งาน</a></li>';
+			if($this->fl->check_group_privilege(array("05"),true))
+				$html.='<li><a href="?d=manage&c=auth_log&m=edit">บันทึกการเข้าสู่ระบบ</a></li>';
+			$html.='<li class="divider"></li>';
+			
+			$html.='</ul>
+				</li>
+			';
+		}
+		if($this->fl->check_group_privilege(array("04"),true))
+		{
+			$html.='<li><a href="?d=manage&c=reserve&m=edit">การจอง</a></li>';
+		}
 		
 		if(!$this->ci->session->userdata("rs_username"))
 		{

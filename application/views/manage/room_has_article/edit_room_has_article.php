@@ -1,5 +1,7 @@
 <?php 
-
+$ci=&get_instance();
+$ci->load->library("element_lib");
+$eml=$ci->element_lib;
 echo $htmlopen;
 echo $head;
 ?>
@@ -78,7 +80,7 @@ echo $head;
 						echo "<span id='".$em_name["input_lump_sum_base_unit"]."_error' class='hidden'>".form_error($em_name["input_lump_sum_base_unit"])."</span>";
 						?>	
 					</fieldset>
-					<button type="submit" class="btn btn-default">แก้ไข</button>
+					<?php echo $eml->btn('submit','');?>
 				</form>
       		</div>
         </div>

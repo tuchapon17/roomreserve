@@ -30,7 +30,7 @@ echo $navbar;
       				if($this->session->flashdata("login_message")) echo $this->session->flashdata("login_message");
       			?>
       			</div>    
-	          	<form role="form" action="?c=login&m=auth" method="post">
+	          	<form role="form" action="?c=login&m=auth" method="post" autocomplete="off">
 	          	<?php 
 	          		echo $in_username;
 	          		echo $in_password;
@@ -65,7 +65,7 @@ echo $js;
 	<script type="text/javascript">
 	<!--
 	$(function(){
-		
+		$("#input_username").focus();
 	});
 	//-->
 	</script>

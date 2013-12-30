@@ -5,7 +5,7 @@ class Auth_log extends MY_Controller
 	function __construct()
 	{
 		parent::__construct();
-		$this->check_group_privilege(array("05"));
+		$this->fl->check_group_privilege(array("05"));
 		$this->load->model("manage/auth_log_model");
 		$this->al_model=$this->auth_log_model;
 	}

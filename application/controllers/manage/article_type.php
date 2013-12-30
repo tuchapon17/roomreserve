@@ -5,7 +5,7 @@ class Article_type extends MY_Controller
 	function __construct()
 	{
 		parent::__construct();
-		$this->check_group_privilege(array("02"));
+		$this->fl->check_group_privilege(array("02"));
 		$this->load->model("manage/article_type_model");
 		$this->actm=$this->article_type_model;
 	}

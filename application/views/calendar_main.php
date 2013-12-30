@@ -140,6 +140,7 @@ echo $head;
 				
       		 	<h2>ปฏิทิน</h2>
       		 	<?php if(isset($_GET['resid'])) echo "<h4>รหัสการจอง ".$_GET['resid']."</h4>";?>
+      		 	
       		 	<?php echo $customviewbox;?>
       		 	
       		 	
@@ -162,7 +163,7 @@ echo $js;
 	<!--
 	$(function(){
 		//ทำเป็นเรียงอยู่บรรทัดเดียวกัน
-		$("#ct-room,#ct-year,#ct-month").css({width:"auto"});
+		//$("#ct-room,#ct-year,#ct-month").css({width:"auto"});
 
 		$("#ct-room").val(getURLParameter("rmid"));
 		$("#ct-year").val(getURLParameter("year"));

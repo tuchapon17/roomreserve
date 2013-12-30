@@ -1,5 +1,7 @@
 <?php 
-
+$ci=&get_instance();
+$ci->load->library("element_lib");
+$eml=$ci->element_lib;
 echo $htmlopen;
 echo $head;
 ?>
@@ -55,7 +57,7 @@ echo $head;
 						echo "<span id='".$em_name["in_occupation_name"]."_error' class='hidden'>".form_error($em_name["in_occupation_name"])."</span>";
 						?>
 					</fieldset>
-					<button type="submit" class="btn btn-default">เพิ่ม</button>
+					<?php echo $eml->btn('submit','');?>
 				</form>
       		</div>
         </div>
