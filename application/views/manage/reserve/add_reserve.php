@@ -67,8 +67,8 @@ echo $head;
       		 		echo form_error($em_name["in_fee_over_unit_lump_sum"]);*/
       		 	?>
       			</div>
-      			<form role="form" action="?d=manage&c=reserve&m=add" method="post" id="reserve_add" enctype="multipart/form-data">  
-      			<!--<form role="form" action="?c=test" method="post" id="reserve_add" enctype="multipart/form-data">-->
+      			<form role="form" action="?d=manage&c=reserve&m=add" method="post" id="reserve_add" enctype="multipart/form-data" autocomplete="off">  
+      			<!--<form role="form" action="?c=test" method="post" id="reserve_add" enctype="multipart/form-data" autocomplete="off">-->
       			
       				<fieldset class="scheduler-border">
 						<legend class="scheduler-border">ข้อมูลผู้จอง</legend>

@@ -50,7 +50,7 @@ echo $head;
       		 		echo form_error($em_name["in_article_type"]);
       		 	?>
       			</div>
-      			<form role="form" action="?d=manage&c=article_type&m=add" method="post">
+      			<form role="form" action="?d=manage&c=article_type&m=add" method="post" autocomplete="off">
 	      			<fieldset class="scheduler-border">
 						<legend class="scheduler-border"></legend>
 						<?php 

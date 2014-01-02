@@ -51,7 +51,7 @@ echo $head;
       		 	?>
       			</div>
       			
-      			<form role="form" action="?d=manage&c=condition&m=edit" method="post">
+      			<form role="form" action="?d=manage&c=condition&m=edit" method="post" autocomplete="off">
 	      			<fieldset class="scheduler-border">
 						<legend class="scheduler-border"></legend>
 						<?php

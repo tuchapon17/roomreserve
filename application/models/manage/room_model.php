@@ -32,4 +32,16 @@ class Room_model extends MY_Model
 		$this->db->select()->from("tb_room")->where("room_id",$id)->limit(1);
 		return $this->db->get()->result_array();
 	}
+	function room_pic($per_page,$page)
+	{
+		$this->db->select()->from("tb_room_has_pic");
+		$this->db->where(array("tb_room_id"=>$_GET['rmid']))->order_by("room_pic_id")->limit($per_page,$page);
+		return $query = $this->db->get()->result_array();
+	}
+	function get_room_data($room_id)
+	{
+		$this->db->select()->from("tb_room");
+		$this->db->where("room_id",$room_id)->limit(1);
+		return $this->db->get()->result_array();
+	}
 }

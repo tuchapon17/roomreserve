@@ -17,7 +17,7 @@ echo $head;
       	<div class="col-lg-12">
 			<div class="jumbotron">
 			  <div class="container">
-			    ...
+			    Page not found.
 			  </div>
 			</div>
 			

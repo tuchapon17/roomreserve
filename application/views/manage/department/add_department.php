@@ -49,7 +49,7 @@ echo $head;
       		 		echo form_error($em_name["in_department_name"]);
       		 	?>
       			</div>
-      			<form role="form" action="?d=manage&c=department&m=add" method="post">
+      			<form role="form" action="?d=manage&c=department&m=add" method="post" autocomplete="off">
 	      			<fieldset class="scheduler-border">
 						<legend class="scheduler-border"></legend>
 						<?php

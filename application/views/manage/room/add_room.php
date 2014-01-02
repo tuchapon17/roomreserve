@@ -55,7 +55,7 @@ echo $head;
       		 		echo form_error($em_name["in_discount_percent"]);
       		 	?>
       			</div>
-      			<form role="form" action="?d=manage&c=room&m=add" method="post">
+      			<form role="form" action="?d=manage&c=room&m=add" method="post" autocomplete="off">
 	      			<fieldset class="scheduler-border">
 						<legend class="scheduler-border"></legend>
 						<?php

@@ -105,8 +105,6 @@ class Room extends MY_Controller
 		}
 		else
 		{
-		
-			$this->rom=$this->room_model;
 			$data=array(
 					"room_id"=>$this->rom->get_maxid(2, "room_id", "tb_room"),
 					"room_name"=>$this->input->post("input_room_name"),
@@ -121,7 +119,6 @@ class Room extends MY_Controller
 	}
 	function edit()
 	{
-		$this->rom=$this->room_model;
 		$config=array(
 				array(
 						"field"=>"input_room_name",
@@ -265,7 +262,6 @@ class Room extends MY_Controller
 	}
 	function delete()
 	{
-		$this->rom=$this->room_model;
 		$this->rom->manage_delete($this->input->post("del_room"), "tb_room", "room_id", "room_name", "edit_room", "?d=manage&c=room&m=edit");
 	}
 	function allow()
@@ -273,7 +269,6 @@ class Room extends MY_Controller
 		//$data = array
 		$allow_list=$this->input->post("allow_list");
 		$disallow_list=$this->input->post("disallow_list");
-		$this->rom=$this->room_model;
 		$this->rom->manage_allow($allow_list,$disallow_list, "tb_room", "room_id", "room_name", "edit_room", "?d=manage&c=room&m=edit");
 	}
 	
@@ -314,6 +309,7 @@ class Room extends MY_Controller
 				<th>ห้อง</th>
 				<th>ส่วนลด(%)</th>
 				<th class="same_first_td">สถานะ<br/><button type="button" class="cbtn cbtn-green" id="allow-all"><button type="button" class="cbtn cbtn-red" id="disallow-all"></th>
+				<th class="same_first_td">จัดการรูป</th>
 				<th class="same_first_td">แก้ไข</th>
 				<th>ลบ<br/><input type="checkbox" id="del_all_room"></th>
 		';
@@ -334,8 +330,9 @@ class Room extends MY_Controller
 					<td>'.$dt["room_id"].'</td>
 					<td id="room'.$dt["room_id"].'">'.$dt["room_name"].'</td>
 					<td>'.$dt["discount_percent"].'</td>
-					<td class="same_first_td">'.$checkbox.'</td>
-					<td class="same_first_td">'.$this->eml->btn('edit','onclick=load_room("'.$dt["room_id"].'")').'</td>
+					<td class="text-center">'.$checkbox.'</td>
+					<td class="text-center">'.$this->eml->btn('picture','onclick=window.open("'.base_url().'?d=manage&c=room&m=pic&rmid='.$dt['room_id'].'","_blank")').'</td>
+					<td class="text-center">'.$this->eml->btn('edit','onclick=load_room("'.$dt["room_id"].'")').'</td>
 					<td><input type="checkbox" value="'.$dt["room_id"].'" name="del_room[]" class="del_room"></td>
 			';
 			$html.='</tr>';
@@ -349,6 +346,7 @@ class Room extends MY_Controller
 				<td align="center">'.$this->eml->btn('submitcheck','onclick="show_allow_list();return false;"')." ".
 									$this->eml->btn('refreshcheck','onclick="location.reload(true);"').'
 				</td>
+				<td></td>											
 				<td></td>
 				<td>'.$this->eml->btn('delete','onclick="show_del_list();return false;"').'</td>
 				</tr>
@@ -366,8 +364,6 @@ class Room extends MY_Controller
 	}
 	function load_room()
 	{
-	
-		$this->rom=$this->room_model;
 		$data=$this->rom->load_room($this->input->post("tid"))[0];
 		//$data["room_detail"]=$this->reverse_escape($data["room_detail"]);
 		echo json_encode($data);
@@ -378,5 +374,121 @@ class Room extends MY_Controller
 		{
 			$this->session->set_userdata("searchfield_room",$this->input->post("searchfield"));
 		}
+	}
+	function pic()
+	{
+		
+		$config2=array(
+				array(
+						"field"=>"test",
+						"label"=>"",
+						"rules"=>""
+				)
+		);
+		$this->frm->set_rules($config2);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
+		{
+			if(isset($_GET['rmid']))
+			{
+				//pagination
+				$this->load->library("pagination");
+				$config_pg['use_page_numbers'] = TRUE;
+				$config_pg['base_url']=base_url()."?d=manage&c=room&m=pic&rmid=".$_GET['rmid'];
+				//set per_page
+				$config_pg['per_page']=5;
+				$getpage;
+				if(isset($_GET['page']) && preg_match('/^[\d]$/',$_GET['page'])) $getpage=(($_GET['page']-1)*$config_pg['per_page']);
+				else $getpage=0;
+				$config_pg['total_rows']=$this->rom->get_all_numrows("tb_room_has_pic",'',"room_pic_id");
+				$this->pagination->initialize($config_pg);
+				//..pagination
+				
+				$this->session->set_userdata("room_has_pic_id",$_GET['rmid']);
+				$data=array(
+						"htmlopen"=>$this->pel->htmlopen(),
+						"head"=>$this->pel->head("เพิ่มรูป"),
+						"bodyopen"=>$this->pel->bodyopen(),
+						"navbar"=>$this->pel->navbar(),
+						"js"=>$this->pel->js(),
+						"footer"=>$this->pel->footer(),
+						"bodyclose"=>$this->pel->bodyclose(),
+						"htmlclose"=>$this->pel->htmlclose(),
+						"pic_table"=>$this->rom->room_pic($config_pg['per_page'],$getpage),
+						"pagination_link"=>$this->pagination->create_links(),
+						"room_data"=>$this->rom->get_room_data($_GET['rmid'])
+				);
+				$this->load->view("manage/room/upload_pic",$data);
+			}
+		}
+		else
+		{
+			$this->load->library('upload'); // Load Library
+			$files = $_FILES;
+			$cpt = count($_FILES['pic_file']['name']);
+			$config = array();
+			$config['upload_path'] = './upload/';
+			$config['allowed_types'] = 'jpg|jpeg|png';
+			$config['max_size']      = '0';
+			$config['overwrite']     = FALSE;
+			$this->upload->initialize($config); // These are just my options. Also keep in mind with PDF's YOU MUST TURN OFF xss_clean
+			
+			for($i=0; $i<$cpt; $i++)
+			{
+				echo $i;
+				$name = $_FILES["pic_file"]["name"][$i];
+				$ext = end(explode(".", $name));
+				$file_detail=array(
+					//1388212969.8946 to 1388212969_8946
+					"new_name"=>str_replace(".", "_",microtime(true)).rand(100,999).".".end(explode(".", $files["pic_file"]["name"][$i])),
+					"old_name"=>$files["pic_file"]["name"][$i],
+					"ext"=>end(explode(".", $files["pic_file"]["name"][$i])),
+					"type"=>$files["pic_file"]["type"][$i],
+					"error"=>$files["pic_file"]["error"][$i],
+					"size"=>$files["pic_file"]["size"][$i]
+				);
+				print_r($file_detail);
+				$_FILES['pic_file']['name']= $file_detail["new_name"];
+				$_FILES['pic_file']['type']= $files['pic_file']['type'][$i];
+				$_FILES['pic_file']['tmp_name']= $files['pic_file']['tmp_name'][$i];
+				$_FILES['pic_file']['error']= $files['pic_file']['error'][$i];
+				$_FILES['pic_file']['size']= $files['pic_file']['size'][$i];
+				//echo "<hr>";print_r($_FILES);
+				if($this->upload->do_upload('pic_file'))
+				{
+					//upload success
+					$data5=array(
+						"room_pic_id"=>$this->rom->get_maxid(5,"room_pic_id","tb_room_has_pic"),
+						"pic_name"=>$file_detail["new_name"],
+						"tb_room_id"=>$this->session->userdata("room_has_pic_id")
+					);
+					
+					$this->rom->manage_add2($data5,"tb_room_has_pic");
+				}
+				else
+				{
+					echo $this->upload->display_errors('<p>', '</p>');
+				}
+			}
+			$s = "?d=manage&c=room&m=pic&rmid=".$this->session->userdata("room_has_pic_id");
+			redirect(base_url().$s);
+		}
+	}//function pic()
+	function del_room_pic()
+	{
+		$this->rom->manage_delete($this->input->post("del_room_pic"), "tb_room_has_pic", "room_pic_id", "room_pic_id", "del_room_pic", "?d=manage&c=room&m=pic&rmid=".$this->session->userdata("room_has_pic_id"));
+	}
+	function update_pic_descript()
+	{
+		$set=array("pic_descript"=>$this->input->post("pic_descript"));
+		$where=array("room_pic_id"=>$this->input->post("room_pic_id"));
+		$this->db->trans_begin();
+		$this->db->update("tb_room_has_pic",$set,$where);
+		if($this->db->trans_status()===FALSE):
+			$this->db->trans_rollback();
+		else:
+			$this->db->trans_commit();
+			echo json_encode(array("commit"));
+		endif;
 	}
 }

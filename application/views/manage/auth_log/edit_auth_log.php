@@ -39,7 +39,7 @@ echo $head;
       	<?php echo $auth_log_tab;?>
       		<div class="col-lg-12" id="loginform">
       		 	<h2>จัดการบันทึกการเข้าสู่ระบบ</h2>
-      		 	<form role="form" class="form-inline" action="?d=manage&c=auth_log&m=search" method="post">
+      		 	<form role="form" class="form-inline" action="?d=manage&c=auth_log&m=search" method="post" autocomplete="off">
       		 		<?php echo $manage_search_box;?>
       		 	</form>
       		 	<?php echo $table_edit;?>

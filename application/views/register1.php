@@ -1,5 +1,7 @@
 <?php 
-
+$ci=&get_instance();
+$ci->load->library("element_lib");
+$eml=$ci->element_lib;
 echo $htmlopen;
 echo $head;
 ?>
@@ -41,7 +43,7 @@ echo $navbar;
       	<div class="col-lg-12">
       		<div class="col-lg-6 col-lg-offset-3" id="loginform">
       			
-      		 	<h2>สมัครสมาชิก</h2>
+      		 	<h2>ลงทะเบียน</h2>
       		 	<?php /*
       		 	<ul class="nav nav-tabs" id="steptab">
       		 	  <!-- data-toggle มี pill/tab -->
@@ -90,7 +92,7 @@ echo $navbar;
       				echo form_error($em_name["subdistrict"]);
       			?>
       			</div>    
-	          	<form role="form" action="?c=register&m=step1" method="post">
+	          	<form role="form" action="?c=register&m=step1" method="post" autocomplete="off">
 					<fieldset class="scheduler-border">
 					<legend class="scheduler-border">ข้อมูลการเข้าใช้ระบบ</legend>
 					<?php 
@@ -140,7 +142,7 @@ echo $navbar;
 						echo "<span id='".$em_name["subdistrict"]."_error' class='hidden'>".form_error($em_name["subdistrict"])."</span>";
 					?>
 					</fieldset>
-				  <button type="submit" class="btn btn-default">ยืนยัน</button>
+				  <?php echo $eml->btn('submit','');?>
 				</form>
       		</div>
           

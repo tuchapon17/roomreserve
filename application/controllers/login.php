@@ -87,4 +87,8 @@ class Login extends MY_Controller
 		$this->session->sess_destroy();
 		redirect(base_url()."?c=login&m=auth");
 	}
+	function forgot_password()
+	{
+		
+	}
 }

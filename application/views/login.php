@@ -43,9 +43,11 @@ echo $navbar;
 				    <label for="input_password">รหัสผ่าน<span class="red-text"> *</span></label>
 				    <input type="password" class="form-control" name="input_password" id="input_password" placeholder="">
 				  </div> -->
+				  <div class="text-center">ยังไม่มีบัญชีใช่หรือไม่ <a href="<?php echo base_url();?>?c=register&m=step1">ลงทะเบียน</a></div>
 				  <button type="submit" class="btn btn-default">เข้าสู่ระบบ</button>
 				</form>
       		</div>
+      		
           
         </div>
       </div>

@@ -164,7 +164,7 @@ class Page_element_lib
 				$html.='<li><a href="?d=manage&c=office&m=add">หน่วยงาน</a></li>';
 				$html.='<li><a href="?d=manage&c=occupation&m=add">อาชีพ</a></li>';
 			}
-			
+
 			if($this->fl->check_group_privilege(array("06"),true))
 				$html.='<li><a href="?d=manage&c=user&m=edit">ผู้ใช้งาน</a></li>';
 			if($this->fl->check_group_privilege(array("05"),true))
@@ -182,7 +182,7 @@ class Page_element_lib
 		
 		if(!$this->ci->session->userdata("rs_username"))
 		{
-			$html.='<li><a href="?c=register&m=step1">สมัครสมาชิก</a></li>
+			$html.='<li><a href="?c=register&m=step1">ลงทะเบียน</a></li>
 					<li><a href="?c=login&m=auth">ลงชื่อเข้าใช้</a></li>';
 		}
 		else

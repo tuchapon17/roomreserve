@@ -57,7 +57,7 @@ echo $head;
       		 		echo form_error($em_name["input_lump_sum_base_unit"]);
       		 	?>
       			</div>
-      			<form role="form" action="?d=manage&c=room_has_article&m=add" method="post">
+      			<form role="form" action="?d=manage&c=room_has_article&m=add" method="post" autocomplete="off">
       			
       				<fieldset class="scheduler-border">
 						<legend class="scheduler-border"></legend>

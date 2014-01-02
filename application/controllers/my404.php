@@ -18,6 +18,6 @@ class my404 extends MY_Controller
 				"bodyclose"=>$this->pel->bodyclose(),
 				"htmlclose"=>$this->pel->htmlclose()
 		);
-		$this->load->view("error/error_privilege",$data);
+		$this->load->view("error/error_404",$data);
 	}
 }

@@ -43,10 +43,10 @@ echo $head;
       	<?php echo $titlename_tab;?>
       		<div class="col-lg-12" id="loginform">
       		 	<h2>แก้ไขคำนำหน้าชื่อ</h2>
-      		 	<form role="form" class="form-inline" action="?d=manage&c=titlename&m=search" method="post">
+      		 	<form role="form" class="form-inline" action="?d=manage&c=titlename&m=search" method="post" autocomplete="off">
       		 		<?php echo $manage_search_box;?>
       		 	</form>
-      		 	<!--<form role="form" class="form-inline" action="?d=manage&c=titlename&m=search" method="post">
+      		 	<!--<form role="form" class="form-inline" action="?d=manage&c=titlename&m=search" method="post" autocomplete="off">
 				<div class="input-group col-lg-6 col-lg-offset-6 search-box" id="search_titlename_div">
 					<span class="input-group-btn">
 						<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
@@ -78,7 +78,7 @@ echo $head;
       		 	?>
       			</div>
       			
-      			<form role="form" action="?d=manage&c=titlename&m=edit" method="post">
+      			<form role="form" action="?d=manage&c=titlename&m=edit" method="post" autocomplete="off">
 	      			<fieldset class="scheduler-border">
 						<legend class="scheduler-border"></legend>
 						<?php

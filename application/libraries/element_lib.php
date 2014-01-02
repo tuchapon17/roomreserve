@@ -119,6 +119,18 @@ class Element_lib
 		{
 			$html='<button type="button" class="btn btn-primary" '.$other_attr.'><i class="fa fa-eye"></i></button>';
 		}
+		else if($btntype=="upload-submit")
+		{
+			$html='<button type="submit" class="btn btn-success" '.$other_attr.' title="Upload"><i class="fa fa-upload fa-lg"></i></button>';
+		}
+		else if($btntype=="save")
+		{
+			$html='<button type="button" class="btn btn-primary" '.$other_attr.' title="Upload"><i class="fa fa-save fa-lg"></i></button>';
+		}
+		else if($btntype=="picture")
+		{
+			$html='<button type="button" class="btn btn-primary" '.$other_attr.' title="จัดการรูป"><i class="fa fa-picture-o fa-lg"></i></button>';
+		}
 		return $html;
 	}
 }

@@ -39,7 +39,7 @@ echo $head;
       	<?php echo $user_tab;?>
       		<div class="col-lg-12" id="loginform">
       		 	<h2>จัดการผู้ใช้</h2>
-      		 	<form role="form" class="form-inline" action="?d=manage&c=user&m=search" method="post">
+      		 	<form role="form" class="form-inline" action="?d=manage&c=user&m=search" method="post" autocomplete="off">
       		 		<?php echo $manage_search_box;?>
       		 	</form>
       		 	<?php echo $table_edit;?>

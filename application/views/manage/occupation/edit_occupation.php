@@ -41,7 +41,7 @@ echo $head;
       	<?php echo $occupation_tab;?>
       		<div class="col-lg-12" id="loginform">
       		 	<h2>แก้ไข อาชีพ</h2>
-      		 	<form role="form" class="form-inline" action="?d=manage&c=occupation&m=search" method="post">
+      		 	<form role="form" class="form-inline" action="?d=manage&c=occupation&m=search" method="post" autocomplete="off">
       		 		<?php echo $manage_search_box;?>
       		 	</form>
       		 	<?php echo $table_edit;?>
@@ -54,7 +54,7 @@ echo $head;
       		 	?>
       			</div>
       			
-      			<form role="form" action="?d=manage&c=occupation&m=edit" method="post">
+      			<form role="form" action="?d=manage&c=occupation&m=edit" method="post" autocomplete="off">
 	      			<fieldset class="scheduler-border">
 						<legend class="scheduler-border"></legend>
 						<?php
