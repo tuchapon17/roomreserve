@@ -24,6 +24,9 @@ class Room_model extends MY_Model
 		}
 		else return false;
 	}
+	/*
+	 * หน้า edit ข้อมูลห้อง
+	 */
 	function load_room($id)
 	{
 		//for json
@@ -38,10 +41,19 @@ class Room_model extends MY_Model
 		$this->db->where(array("tb_room_id"=>$_GET['rmid']))->order_by("room_pic_id")->limit($per_page,$page);
 		return $query = $this->db->get()->result_array();
 	}
+	/*
+	 * หน้าจัดการรูป
+	 */
 	function get_room_data($room_id)
 	{
 		$this->db->select()->from("tb_room");
 		$this->db->where("room_id",$room_id)->limit(1);
+		return $this->db->get()->result_array();
+	}
+	function get_pic_file_name($room_pic_id)
+	{
+		$this->db->select()->from("tb_room_has_pic");
+		$this->db->where("room_pic_id",$room_pic_id)->limit(1);
 		return $this->db->get()->result_array();
 	}
 }

@@ -19,7 +19,8 @@ class Function_lib
 			if(!is_array($privilege))$privilege=array($privilege);
 			if($this->ci->session->userdata("rs_username"))
 			{
-				foreach($lm->get_group_privilege() as $gp)
+				//foreach($lm->get_group_privilege() as $gp)
+				foreach($lm->get_user_privilege() as $gp)
 				{
 					array_push($privilege_array, $gp['tb_privilege_id']);
 				}
@@ -39,7 +40,7 @@ class Function_lib
 						{
 							show_error("
 							<p>ขออภัย คุณไม่มีสิทธิ์เข้าใช้หน้านี้</p>
-							<p><a href='".base_url()."'>หน้าแรก</a>".nbs(4)."<a href='".$_SERVER['HTTP_REFERER']."'>ย้อนกลับ</a></p>
+							<p><a href='".base_url()."'>หน้าแรก</a>".nbs(4)."<a href='".@$_SERVER['HTTP_REFERER']."'>ย้อนกลับ</a></p>
 							");
 						}
 					}
@@ -64,7 +65,7 @@ class Function_lib
 						{
 							show_error("
 							<p>ขออภัย คุณไม่มีสิทธิ์เข้าใช้หน้านี้</p>
-							<p><a href='".base_url()."'>หน้าแรก</a>".nbs(4)."<a href='".$_SERVER['HTTP_REFERER']."'>ย้อนกลับ</a></p>
+							<p><a href='".base_url()."'>หน้าแรก</a>".nbs(4)."<a href='".@$_SERVER['HTTP_REFERER']."'>ย้อนกลับ</a></p>
 							");
 						}
 					}

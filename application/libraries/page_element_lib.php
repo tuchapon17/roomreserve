@@ -179,7 +179,10 @@ class Page_element_lib
 		{
 			$html.='<li><a href="?d=manage&c=reserve&m=edit">การจอง</a></li>';
 		}
-		
+		if($this->fl->check_group_privilege(array("01","02","03","04","05","06"),true,"OR"))
+		{
+			$html.='<li><a href="?d=privilege&c=assign&m=add">โอนสิทธิ์</a></li>';
+		}
 		if(!$this->ci->session->userdata("rs_username"))
 		{
 			$html.='<li><a href="?c=register&m=step1">ลงทะเบียน</a></li>

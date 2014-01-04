@@ -81,4 +81,14 @@ class Login_model extends MY_Model
 			return $this->db->get()->result_array();
 		}
 	}
+	
+	function get_user_privilege()
+	{
+		if($this->session->userdata("rs_username"))
+		{
+			$this->db->select()->from("tb_user_has_privilege");
+			$this->db->where("tb_user_username",$this->session->userdata("rs_username"));
+			return $this->db->get()->result_array();
+		}
+	}
 }

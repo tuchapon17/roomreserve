@@ -43,7 +43,7 @@ echo $head;
       <div class="row">
       	<div class="col-lg-12">
       		<div class="col-lg-12">
-      			<h3>ห้อง<?php echo $room_data[0]['room_name'];?></h3>
+      			<h3>จัดการรูป ห้อง<?php echo $room_data[0]['room_name'];?></h3>
 	      		<div class="panel panel-default">
 					<div class="panel-heading">
 						<h3 class="panel-title">เพิ่มรูป</h3>
@@ -79,7 +79,7 @@ echo $head;
 	      		 	{
 	      		 		echo "<tr>";
 	      		 		echo "<td>".$pt['room_pic_id']."</td>";
-	      		 		echo "<td><img src='".base_url()."upload/".$pt['pic_name']."' width='110' height='110' class='img-rounded'></td>";
+	      		 		echo "<td><img src='".base_url()."upload/pic/".$pt['pic_name']."' width='110' height='110' class='img-rounded'></td>";
 	      		 		echo "<td><textarea id='textarea-".$pt['room_pic_id']."' class='form-control'>".$pt['pic_descript']."</textarea></td>";
 	      		 		echo "<td>".$eml->btn('save','id="save-'.$pt['room_pic_id'].'" onclick=\'update_pic_descript("'.$pt['room_pic_id'].'")\'')."</td>";
 	      		 		echo "<td><input type='checkbox' name='del_room_pic[]' class='del_room_pic' value='".$pt['room_pic_id']."'></td>";

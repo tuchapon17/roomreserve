@@ -427,7 +427,7 @@ class Room extends MY_Controller
 			$files = $_FILES;
 			$cpt = count($_FILES['pic_file']['name']);
 			$config = array();
-			$config['upload_path'] = './upload/';
+			$config['upload_path'] = './upload/pic/';
 			$config['allowed_types'] = 'jpg|jpeg|png';
 			$config['max_size']      = '0';
 			$config['overwrite']     = FALSE;
@@ -476,6 +476,21 @@ class Room extends MY_Controller
 	}//function pic()
 	function del_room_pic()
 	{
+		$arr_room_pic_id = $this->input->post("del_room_pic");
+		foreach($arr_room_pic_id as $rp)
+		{
+			$pic_name = $this->rom->get_pic_file_name($rp)[0]['pic_name'];
+			
+			$file_path = "upload/pic/".$pic_name;
+			//echo $file_path;
+			if(file_exists($file_path))
+			{
+				if(unlink($file_path))
+				{
+					//echo "unlinked";
+				}
+			}
+		}
 		$this->rom->manage_delete($this->input->post("del_room_pic"), "tb_room_has_pic", "room_pic_id", "room_pic_id", "del_room_pic", "?d=manage&c=room&m=pic&rmid=".$this->session->userdata("room_has_pic_id"));
 	}
 	function update_pic_descript()
