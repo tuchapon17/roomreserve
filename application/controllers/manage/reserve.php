@@ -624,6 +624,8 @@ class Reserve extends MY_Controller
 			else
 			{
 				$this->db->trans_commit();
+				
+				
 			}
 			
 			
@@ -900,7 +902,7 @@ class Reserve extends MY_Controller
 				$html='';
 				$html.='<div class="checkbox del-checkbox">
 				<label>
-				<input type="checkbox" name="article[]" value="'.$q["tb_article_id"].'">'.$q["article_name"].' <span>('.$q["unit_num"].')</span></label>
+				<input type="checkbox" name="article[]" value="'.$q["tb_article_id"].'">'.$q["article_name"].' <span>('.$q["article_num"].')</span></label>
 				</div>';
 				array_push($arr,$html);
 			}
@@ -944,7 +946,7 @@ class Reserve extends MY_Controller
 			if($this->session->userdata("set_per_page")) $config['per_page']=$this->session->userdata("set_per_page");
 			else $config['per_page']=3;
 		
-			if(isset($_GET['page']) && preg_match('/^[\d]$/',$_GET['page'])) $this->getpage=$_GET['page'];
+			if(isset($_GET['page']) && preg_match('/^[\d]+$/',$_GET['page'])) $this->getpage=(($_GET['page']-1)*$config['per_page']);
 			else $this->getpage=0;
 		
 		
@@ -1095,10 +1097,133 @@ class Reserve extends MY_Controller
 	{
 		if(isset($_GET["id"]))
 		{
+			
 			$article_data=$this->load_reserve_model->get_article_data($_GET["id"]);
 			$datetime_data=$this->load_reserve_model->get_datetime_data($_GET["id"]);
 			$file_data=$this->load_reserve_model->get_file_data($_GET["id"]);
 			$reserve_data=$this->load_reserve_model->get_reserve_data($_GET["id"])[0];
+			
+			/*
+			 * test
+			*/
+
+			$this->db->select("tb_person_type.*")->from("tb_reserve_has_person");
+			$this->db->join("tb_person","tb_person.person_id=tb_reserve_has_person.tb_person_id");
+			$this->db->join("tb_person_type","tb_person_type.person_type_id=tb_person.tb_person_type_id");
+			$this->db->where("tb_reserve_has_person.tb_reserve_id",$_GET["id"])->limit(1);
+			$person_type = $this->db->get()->result_array();
+			
+			$this->db->select()->from("tb_reserve_has_article");
+			$this->db->join("tb_article","tb_article.article_id=tb_reserve_has_article.tb_article_id");
+			$this->db->where("tb_reserve_id",$_GET["id"]);
+			$used_article = $this->db->get()->result_array();
+			
+			$this->db->select("tb_article.article_id")->from("tb_reserve_has_article");
+			$this->db->join("tb_article","tb_article.article_id=tb_reserve_has_article.tb_article_id");
+			$this->db->where("tb_reserve_id",$_GET["id"]);
+			$used_article_query = $this->db->get()->result_array();
+			$where_in=array();
+			foreach($used_article_query as $u)
+			{
+				array_push($where_in,$u['article_id']);
+			}
+			
+			$this->db->select("
+					tb_room.*,tb_room.tb_fee_type_id AS room_fee_type,
+					tb_room_has_article.*,tb_room_has_article.tb_fee_type_id AS rha_fee_type,
+					tb_fee_type.*,
+					tb_article.*,
+					tb_reserve_has_article.*,
+					tb_reserve.*,
+					tb_reserve_has_datetime.*
+					")->from("tb_room");
+			$this->db->join("tb_room_has_article","tb_room_has_article.tb_room_id=tb_room.room_id");
+			$this->db->join("tb_fee_type","tb_fee_type.fee_type_id=tb_room_has_article.tb_fee_type_id");
+			$this->db->join("tb_article","tb_article.article_id=tb_room_has_article.tb_article_id");
+			$this->db->join("tb_reserve_has_article","tb_reserve_has_article.tb_article_id=tb_article.article_id");
+			$this->db->join("tb_reserve","tb_reserve.reserve_id=tb_reserve_has_article.tb_reserve_id");
+			$this->db->join("tb_reserve_has_datetime","tb_reserve_has_datetime.tb_reserve_id=tb_reserve_has_article.tb_reserve_id");
+			//$this->db->join("tb_reserve_has_person","tb_reserve_has_person.tb_reserve_id=tb_reserve_has_article.tb_reserve_id");
+			$this->db->where("tb_room.room_id",$reserve_data['tb_room_id']);
+			$this->db->where_in("tb_room_has_article.tb_article_id",$where_in);
+			$used_room = $this->db->get()->result_array();
+			echo $this->db->last_query();
+			//print_r($used_room);
+			$total_price=0;
+			foreach($used_room as $u)
+			{
+				//ค่าบริการของ อุปกรณ์
+				//หา fee_type_id $u['fee_type_id'];
+				//fee_type อยู่ใน tb_room_has_article
+				if($u['fee_type_id']=="01")//เหมา
+				{
+					$price01 = ($u['fee_unit_lump_sum']*$u['lump_sum_base_unit']);
+					if($u['unit_num'] > $u['lump_sum_base_unit']) 
+						$price01 + (($u['unit_num']-$u['lump_sum_base_unit'])*$u['fee_over_unit_lump_sum']);
+					//echo "ค่าบริการต่อหน่วย:".$u['fee_unit_lump_sum']."จำนวนพื้นฐาน(เหมา):".$u['lump_sum_base_unit'];
+					echo "<hr>";
+					echo "อุปกรณ์ :".$u['article_name'];
+					echo "ประเภทค่าบริการ:".$u['fee_type_name'];
+					echo "อัตราค่าบริการแบบเหมา  = จำนวนอุปกรณ์ :".$u['lump_sum_base_unit']." คิดเป็นเงิน :".($u['fee_unit_lump_sum']*$u['lump_sum_base_unit'])." บาท";
+					echo "หากเกิน ".$u['lump_sum_base_unit']."หน่วย จะคิดหน่วยละ ".$u['fee_over_unit_lump_sum']." บาท";
+					echo "<br>";
+					echo "คิดเป็นเงิน : ".$price01." บาท";
+					$total_price+=$price01;
+				}
+				else if($u['fee_type_id']=="02")//ชม.
+				{
+					//หาความต่างของเวลา จาก วัน/เวลาเริ่มต้น  - วัน/เวลาสิ้นสุด
+					$datetime_diff=$this->datetime_diff($u['reserve_datetime_begin'], $u['reserve_datetime_end']);
+					//ถ้านาทีเกิน 30 นาที ให้ บวกชม.เพิ่ม 1 และให้นาทีรีเซตเป็น 0
+					if($datetime_diff['minute'] > 10)
+					{
+						$datetime_diff['minute']=0;
+						$datetime_diff['hour']++;
+					}
+					$price02 = ($u['fee_unit_hour']*$datetime_diff['hour'])*$u['unit_num'];
+					echo "<hr>";
+					echo "อุปกรณ์:".$u['article_name'];
+					echo "ค่าบริการ : ".$u['fee_unit_hour']." บาท/ชั่วโมง จำนวนอุปกรณ์ที่จอง : ".$u['unit_num'];
+					echo "ประเภทค่าบริการ:".$u['fee_type_name'];
+					echo "จำนวนเวลาที่จอง : ".$datetime_diff['hour']." ชั่วโมง";
+					echo "คิดเป็นเงิน : ".$price02." บาท";
+					
+					$total_price+=$price02;
+				}
+			}
+			//ค่าบริการของห้อง
+			$this->db->select("COUNT(tb_reserve_id) AS count_tb_reserve_id")->from("tb_reserve_has_datetime");
+			$count_day = $this->db->where("tb_reserve_id",$_GET['id'])->get()->result_array();
+			
+			
+			if($used_room[0]['room_fee_type']=="01")//เหมา
+			{
+				echo "<hr>";
+				echo "ค่าบริการห้อง ".$u['room_name']." : ".$u['room_fee_lump_sum']." บาท/วัน.";
+				echo "คิดเป็นเงิน : ".($u['room_fee_lump_sum']*$count_day[0]['count_tb_reserve_id'])." บาท";
+			}
+			else if($used_room[0]['room_fee_type']=="02")//ชม.
+			{
+				echo "<hr>";
+				echo "ค่าบริการห้อง ".$u['room_name']." : ".$u['room_fee_hour']." บาท/ชม.";
+				echo "จำนวนเวลาที่จอง : ".$datetime_diff['hour']." ชั่วโมง";
+				echo "คิดเป็นเงิน : ".($datetime_diff['hour']*$u['room_fee_hour'])." บาท";
+			}
+			
+			echo "<hr>total".$total_price;
+			if($person_type[0]['person_type_id']=="01")//ภายใน
+			{
+				
+			}
+			else if($person_type[0]['person_type_id']=="02")//ภายนอก
+			{
+					
+			}
+				
+			/*
+			 * test
+			*/
+			
 			
 			$data=array(
 					"htmlopen"=>$this->pel->htmlopen(),
@@ -1112,7 +1237,8 @@ class Reserve extends MY_Controller
 					"article_data"=>$article_data,
 					"datetime_data"=>$datetime_data,
 					"file_data"=>$file_data,
-					"reserve_data"=>$reserve_data
+					"reserve_data"=>$reserve_data,
+					"total_price"=>$total_price
 			);
 			$this->load->view("manage/reserve/view_reserve",$data);
 		}
@@ -1123,5 +1249,19 @@ class Reserve extends MY_Controller
 		{
 			$this->session->set_userdata("orderby_reserve",array("field"=>$this->input->post("field"),"type"=>$this->input->post("type")));
 		}
+	}
+	function datetime_diff($datetimebegin,$datetimeend)
+	{
+		$start_date = new DateTime($datetimebegin);
+		$end_date = new DateTime($datetimeend);
+		$interval = $start_date->diff($end_date);
+		return array(
+				"year"=>$interval->y,
+				"month"=>$interval->m,
+				"day"=>$interval->d,
+				"hour"=>$interval->h,
+				"minute"=>$interval->i,
+				"second"=>$interval->s
+		);
 	}
 }

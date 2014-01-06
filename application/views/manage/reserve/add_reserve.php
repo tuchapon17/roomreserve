@@ -170,7 +170,9 @@ echo $head;
 			                    <span class="input-group-addon"><span class=""></span>
 			                    </span>
 			                </div>
+			            
 			            <span id="span-day-time2">
+			            	<p><strong>ระบุวันที่ต้องการจอง</strong></p>
 		                	<div class="checkbox">
 								<label>
 							    	<input type="checkbox" name="day-time2[]" value="0">อาทิตย์

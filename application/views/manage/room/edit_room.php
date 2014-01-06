@@ -52,12 +52,20 @@ echo $head;
 	      		 			"in_room_name"=>"input_room_name",
 							"se_room_type"=>"select_room_type",
 							"te_room_detail"=>"textarea_room_detail",
-							"in_discount_percent"=>"input_discount_percent"
+							"in_discount_percent"=>"input_discount_percent",
+							//"in_room_fee"=>"input_room_fee",
+							"se_fee_type"=>"select_fee_type",
+							"in_room_fee_hour"=>"input_room_fee_hour",
+							"in_room_fee_lump_sum"=>"input_room_fee_lump_sum"
 	      		 	);
       		 		echo form_error($em_name["in_room_name"]);
       		 		echo form_error($em_name["se_room_type"]);
       		 		echo form_error($em_name["te_room_detail"]);
       		 		echo form_error($em_name["in_discount_percent"]);
+      		 		//echo form_error($em_name["in_room_fee"]);
+      		 		echo form_error($em_name["se_fee_type"]);
+      		 		echo form_error($em_name["in_room_fee_hour"]);
+      		 		echo form_error($em_name["in_room_fee_lump_sum"]);
       		 	?>
       			</div>
       			
@@ -72,6 +80,15 @@ echo $head;
 						echo $te_room_detail;
 						echo $in_discount_percent;
 						echo "<span id='".$em_name["in_discount_percent"]."_error' class='hidden'>".form_error($em_name["in_discount_percent"])."</span>";
+						//echo $in_room_fee;
+						//echo "<span id='".$em_name["in_room_fee"]."_error' class='hidden'>".form_error($em_name["in_room_fee"])."</span>";
+						echo $se_fee_type;
+						echo "<span id='".$em_name["se_fee_type"]."_error' class='hidden'>".form_error($em_name["se_fee_type"])."</span>";
+						echo $in_room_fee_hour;
+						echo "<span id='".$em_name["in_room_fee_hour"]."_error' class='hidden'>".form_error($em_name["in_room_fee_hour"])."</span>";
+						echo $in_room_fee_lump_sum;
+						echo "<span id='".$em_name["in_room_fee_lump_sum"]."_error' class='hidden'>".form_error($em_name["in_room_fee_lump_sum"])."</span>";
+						
 						?>	
 					</fieldset>
 					<?php echo $eml->btn('submit','');?>
@@ -216,6 +233,10 @@ echo $js;
 				$("#select_room_type").val(resp.tb_room_type_id);
 				tinymce.get('textarea_room_detail').setContent(htmlUnescape(resp.room_detail));
 				$("#input_discount_percent").val(resp.discount_percent);
+				//$("#input_room_fee").val(resp.room_fee);
+				$("#select_fee_type").val(resp.tb_fee_type_id);
+				$("#input_room_fee_hour").val(resp.room_fee_hour);
+				$("#input_room_fee_lump_sum").val(resp.room_fee_lump_sum);
 			},
 			error:function(error){
 				alert("Error : "+error);

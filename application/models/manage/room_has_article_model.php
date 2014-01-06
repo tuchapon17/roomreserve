@@ -74,4 +74,13 @@ class Room_has_article_model extends MY_Model
 		$this->session->set_flashdata($message_type."_message",$edit_titlename_message);
 		redirect(base_url().$main_url);
 	}
+	function is_article_id_exist($article_id)
+	{
+		//ถ้ามี ariticle_id นี้ใน tb_reserve_has_article (มีการใช้ในการจองอยู่) ไม่ให้แสดง checkbox ลบ
+		$this->db->select("COUNT(tb_article_id) AS count_article_id")->from("tb_reserve_has_article");
+		$this->db->where("tb_article_id",$article_id);
+		$query = $this->db->get()->result_array();
+		if($query[0]['count_article_id'] == 0) return true;
+		else return false;
+	}
 }

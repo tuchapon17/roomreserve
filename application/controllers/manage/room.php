@@ -31,6 +31,26 @@ class Room extends MY_Controller
 						"field"=>"input_discount_percent",
 						"label"=>"ส่วนลดของห้อง",
 						"rules"=>"required|max_length[6]"
+				),
+				/*array(
+						"field"=>"input_room_fee",
+						"label"=>"ค่าบริการ",
+						"rules"=>"required|max_length[9]"
+				),*/
+				array(
+						"field"=>"select_fee_type",
+						"label"=>"ประเภทค่าบริการ",
+						"rules"=>"required"
+				),
+				array(
+						"field"=>"input_room_fee_hour",
+						"label"=>"ค่าบริการต่อชั่วโมง",
+						"rules"=>"required|max_length[9]"
+				),
+				array(
+						"field"=>"input_room_fee_lump_sum",
+						"label"=>"ค่าบริการแบบเหมา",
+						"rules"=>"required|max_length[9]"
 				)
 		);
 		$this->frm->set_rules($config);
@@ -85,6 +105,57 @@ class Room extends MY_Controller
 					"IN_attr"=>'maxlength="7"',
 					"help_text"=>""
 			);
+			/*$in_room_fee="input_room_fee";
+			$in_room_fee=array(
+					"LB_text"=>"ค่าบริการ",
+					"LB_attr"=>$this->eml->span_redstar(),
+					"IN_type"=>'text',
+					"IN_class"=>'',
+					"IN_name"=>$in_room_fee,
+					"IN_id"=>$in_room_fee,
+					"IN_PH"=>'',
+					"IN_value"=>set_value($in_room_fee),
+					"IN_attr"=>'maxlength="9"',
+					"help_text"=>""
+			);*/
+			$se_fee_type=array(
+					"LB_text"=>"ประเภทค่าบริการ",
+					"LB_attr"=>$this->eml->span_redstar(),
+					"S_class"=>'',
+					"S_name"=>"select_fee_type",
+					"S_id"=>"select_fee_type",
+					"S_old_value"=>$this->input->post("select_fee_type"),
+					"S_data"=>$this->emm->get_select("tb_fee_type","fee_type_name"),
+					"S_id_field"=>"fee_type_id",
+					"S_name_field"=>"fee_type_name",
+					"help_text"=>''
+			);
+			$in_room_fee_hour="input_room_fee_hour";
+			$in_room_fee_hour=array(
+					"LB_text"=>"ค่าบริการต่อชั่วโมง",
+					"LB_attr"=>$this->eml->span_redstar(),
+					"IN_type"=>'text',
+					"IN_class"=>'',
+					"IN_name"=>$in_room_fee_hour,
+					"IN_id"=>$in_room_fee_hour,
+					"IN_PH"=>'',
+					"IN_value"=>set_value($in_room_fee_hour),
+					"IN_attr"=>'maxlength="9"',
+					"help_text"=>""
+			);
+			$in_room_fee_lump_sum="input_room_fee_lump_sum";
+			$in_room_fee_lump_sum=array(
+					"LB_text"=>"ค่าบริการแบบเหมา",
+					"LB_attr"=>$this->eml->span_redstar(),
+					"IN_type"=>'text',
+					"IN_class"=>'',
+					"IN_name"=>$in_room_fee_lump_sum,
+					"IN_id"=>$in_room_fee_lump_sum,
+					"IN_PH"=>'',
+					"IN_value"=>set_value($in_room_fee_lump_sum),
+					"IN_attr"=>'maxlength="9"',
+					"help_text"=>""
+			);
 			$data=array(
 					"htmlopen"=>$this->pel->htmlopen(),
 					"head"=>$this->pel->head("เพิ่มห้อง"),
@@ -98,7 +169,11 @@ class Room extends MY_Controller
 					"in_room_name"=>$this->eml->form_input($in_room_name),
 					"se_room_type"=>$this->eml->form_select($se_room_type),
 					"te_room_detail"=>$this->eml->form_textarea($te_room_detail),
-					"in_discount_percent"=>$this->eml->form_input($in_discount_percent)
+					"in_discount_percent"=>$this->eml->form_input($in_discount_percent),
+					//"in_room_fee"=>$this->eml->form_input($in_room_fee),
+					"se_fee_type"=>$this->eml->form_select($se_fee_type),
+					"in_room_fee_hour"=>$this->eml->form_input($in_room_fee_hour),
+					"in_room_fee_lump_sum"=>$this->eml->form_input($in_room_fee_lump_sum)
 			);
 		
 			$this->load->view("manage/room/add_room",$data);
@@ -111,7 +186,9 @@ class Room extends MY_Controller
 					"tb_room_type_id"=>$this->input->post("select_room_type"),
 					"room_detail"=>$this->input->post("textarea_room_detail"),
 					"room_status"=>"1",
-					"discount_percent"=>$this->input->post("input_discount_percent")
+					"discount_percent"=>$this->input->post("input_discount_percent"),
+					"room_fee_hour"=>$this->input->post("input_room_fee_hour"),
+					"room_fee_lump_sum"=>$this->input->post("input_room_fee_lump_sum")
 			);
 			$redirect_link="?d=manage&c=room&m=add";
 			$this->rom->manage_add($data,"tb_room",$redirect_link,$redirect_link,"room","เพิ่มห้องสำเร็จ","เพิ่มห้องไม่สำเร็จ");
@@ -223,6 +300,57 @@ class Room extends MY_Controller
 					"IN_attr"=>'maxlength="7"',
 					"help_text"=>""
 			);
+			/*$in_room_fee="input_room_fee";
+			$in_room_fee=array(
+					"LB_text"=>"ค่าบริการ",
+					"LB_attr"=>$this->eml->span_redstar(),
+					"IN_type"=>'text',
+					"IN_class"=>'',
+					"IN_name"=>$in_room_fee,
+					"IN_id"=>$in_room_fee,
+					"IN_PH"=>'',
+					"IN_value"=>set_value($in_room_fee),
+					"IN_attr"=>'maxlength="9"',
+					"help_text"=>""
+			);*/
+			$se_fee_type=array(
+					"LB_text"=>"ประเภทค่าบริการ",
+					"LB_attr"=>$this->eml->span_redstar(),
+					"S_class"=>'',
+					"S_name"=>"select_fee_type",
+					"S_id"=>"select_fee_type",
+					"S_old_value"=>$this->input->post("select_fee_type"),
+					"S_data"=>$this->emm->get_select("tb_fee_type","fee_type_name"),
+					"S_id_field"=>"fee_type_id",
+					"S_name_field"=>"fee_type_name",
+					"help_text"=>''
+			);
+			$in_room_fee_hour="input_room_fee_hour";
+			$in_room_fee_hour=array(
+					"LB_text"=>"ค่าบริการต่อชั่วโมง",
+					"LB_attr"=>$this->eml->span_redstar(),
+					"IN_type"=>'text',
+					"IN_class"=>'',
+					"IN_name"=>$in_room_fee_hour,
+					"IN_id"=>$in_room_fee_hour,
+					"IN_PH"=>'',
+					"IN_value"=>set_value($in_room_fee_hour),
+					"IN_attr"=>'maxlength="9"',
+					"help_text"=>""
+			);
+			$in_room_fee_lump_sum="input_room_fee_lump_sum";
+			$in_room_fee_lump_sum=array(
+					"LB_text"=>"ค่าบริการแบบเหมา",
+					"LB_attr"=>$this->eml->span_redstar(),
+					"IN_type"=>'text',
+					"IN_class"=>'',
+					"IN_name"=>$in_room_fee_lump_sum,
+					"IN_id"=>$in_room_fee_lump_sum,
+					"IN_PH"=>'',
+					"IN_value"=>set_value($in_room_fee_lump_sum),
+					"IN_attr"=>'maxlength="9"',
+					"help_text"=>""
+			);
 			$data=array(
 					"htmlopen"=>$this->pel->htmlopen(),
 					"head"=>$this->pel->head("แก้ไข/ลบ  ห้อง"),
@@ -237,6 +365,10 @@ class Room extends MY_Controller
 					"se_room_type"=>$this->eml->form_select($se_room_type),
 					"te_room_detail"=>$this->eml->form_textarea($te_room_detail),
 					"in_discount_percent"=>$this->eml->form_input($in_discount_percent),
+					//"in_room_fee"=>$this->eml->form_input($in_room_fee),
+					"se_fee_type"=>$this->eml->form_select($se_fee_type),
+					"in_room_fee_hour"=>$this->eml->form_input($in_room_fee_hour),
+					"in_room_fee_lump_sum"=>$this->eml->form_input($in_room_fee_lump_sum),
 					"table_edit"=>$this->table_edit($get_room_list),
 					"session_search_room"=>$this->session->userdata("search_room"),
 					"pagination_num_rows"=>$config["total_rows"],
@@ -252,7 +384,9 @@ class Room extends MY_Controller
 					"room_name"=>$this->input->post("input_room_name"),
 					"tb_room_type_id"=>$this->input->post("select_room_type"),
 					"room_detail"=>$this->input->post("textarea_room_detail"),
-					"discount_percent"=>$this->input->post("input_discount_percent")
+					"discount_percent"=>$this->input->post("input_discount_percent"),
+					"room_fee_hour"=>$this->input->post("input_room_fee_hour"),
+					"room_fee_lump_sum"=>$this->input->post("input_room_fee_lump_sum")
 			);
 			$where=array(
 					"room_id"=>$this->session->userdata($session_edit_id)

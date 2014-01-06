@@ -60,8 +60,8 @@ class Room_has_article extends MY_Controller
 						"rules"=>"required"
 				),
 				array(
-						"field"=>$this->lang->line("input_unit_num"),
-						"label"=>$this->lang->line("label_input_unit_num"),
+						"field"=>$this->lang->line("input_article_num"),
+						"label"=>$this->lang->line("label_input_article_num"),
 						"rules"=>"required|numeric"
 				),
 				array(
@@ -109,15 +109,15 @@ class Room_has_article extends MY_Controller
 					"S_name_field"=>"fee_type_name",
 					"help_text"=>''
 			);
-			$in_unit_num=array(
-					"LB_text"=>$this->lang->line("label_input_unit_num"),
+			$in_article_num=array(
+					"LB_text"=>$this->lang->line("label_input_article_num"),
 					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
-					"IN_name"=>$this->lang->line("input_unit_num"),
-					"IN_id"=>$this->lang->line("input_unit_num"),
+					"IN_name"=>$this->lang->line("input_article_num"),
+					"IN_id"=>$this->lang->line("input_article_num"),
 					"IN_PH"=>'',
-					"IN_value"=>set_value($this->lang->line("input_unit_num")),
+					"IN_value"=>set_value($this->lang->line("input_article_num")),
 					"IN_attr"=>'maxlength="4"',
 					"help_text"=>""
 			);
@@ -147,7 +147,7 @@ class Room_has_article extends MY_Controller
 					"se_article"=>$this->eml->form_select($se_article),
 					"se_room"=>$this->eml->form_select($se_room),
 					"se_fee_type"=>$this->eml->form_select($se_fee_type),
-					"in_unit_num"=>$this->eml->form_input($in_unit_num),
+					"in_article_num"=>$this->eml->form_input($in_article_num),
 					"in_lump_sum_base_unit"=>$this->eml->form_input($in_lump_sum_base_unit)					
 			);
 			$this->load->view("manage/room_has_article/add_room_has_article",$data);
@@ -157,7 +157,7 @@ class Room_has_article extends MY_Controller
 			$data=array(
 					"tb_room_id"=>$this->input->post($this->lang->line("select_room")),
 					"tb_article_id"=>$this->input->post($this->lang->line("select_article")),
-					"unit_num"=>$this->input->post($this->lang->line("input_unit_num")),
+					"article_num"=>$this->input->post($this->lang->line("input_article_num")),
 					"tb_fee_type_id"=>$this->input->post($this->lang->line("select_fee_type")),
 					"lump_sum_base_unit"=>$this->input->post($this->lang->line("input_lump_sum_base_unit"))
 			);
@@ -194,8 +194,8 @@ class Room_has_article extends MY_Controller
 						"rules"=>"required"
 				),
 				array(
-						"field"=>$this->lang->line("input_unit_num"),
-						"label"=>$this->lang->line("label_input_unit_num"),
+						"field"=>$this->lang->line("input_article_num"),
+						"label"=>$this->lang->line("label_input_article_num"),
 						"rules"=>"required|numeric"
 				),
 				array(
@@ -274,15 +274,15 @@ class Room_has_article extends MY_Controller
 					"S_name_field"=>"fee_type_name",
 					"help_text"=>''
 			);
-			$in_unit_num=array(
-					"LB_text"=>$this->lang->line("label_input_unit_num"),
+			$in_article_num=array(
+					"LB_text"=>$this->lang->line("label_input_article_num"),
 					"LB_attr"=>$this->eml->span_redstar(),
 					"IN_type"=>'text',
 					"IN_class"=>'',
-					"IN_name"=>$this->lang->line("input_unit_num"),
-					"IN_id"=>$this->lang->line("input_unit_num"),
+					"IN_name"=>$this->lang->line("input_article_num"),
+					"IN_id"=>$this->lang->line("input_article_num"),
 					"IN_PH"=>'',
-					"IN_value"=>set_value($this->lang->line("input_unit_num")),
+					"IN_value"=>set_value($this->lang->line("input_article_num")),
 					"IN_attr"=>'maxlength="4"',
 					"help_text"=>""
 			);
@@ -336,7 +336,7 @@ class Room_has_article extends MY_Controller
 						//"se_article"=>$this->eml->form_select($se_article),
 						//"se_room"=>$this->eml->form_select($se_room),
 					"se_fee_type"=>$this->eml->form_select($se_fee_type),
-					"in_unit_num"=>$this->eml->form_input($in_unit_num),
+					"in_article_num"=>$this->eml->form_input($in_article_num),
 					"in_lump_sum_base_unit"=>$this->eml->form_input($in_lump_sum_base_unit),
 					"in_room"=>$this->eml->form_input($in_room),
 					"in_article"=>$this->eml->form_input($in_article),
@@ -354,7 +354,7 @@ class Room_has_article extends MY_Controller
 			$set=array(
 					//"tb_room_id"=>$this->input->post($this->lang->line("select_room")),
 					//"tb_article_id"=>$this->input->post($this->lang->line("select_article")),
-					"unit_num"=>$this->input->post($this->lang->line("input_unit_num")),
+					"article_num"=>$this->input->post($this->lang->line("input_article_num")),
 					"tb_fee_type_id"=>$this->input->post($this->lang->line("select_fee_type")),
 					"lump_sum_base_unit"=>$this->input->post($this->lang->line("input_lump_sum_base_unit"))
 			);
@@ -453,7 +453,7 @@ class Room_has_article extends MY_Controller
 				<th>'.$this->lang->line("label_select_room").'</th>
 				<th>'.$this->lang->line("label_select_article").'</th>
 				<th>'.$this->lang->line("label_select_fee_type").'</th>
-				<th>'.$this->lang->line("label_input_unit_num").'</th>
+				<th>'.$this->lang->line("label_input_article_num").'</th>
 				<th>'.$this->lang->line("label_input_lump_sum_base_unit").'</th>
 				<th class="same_first_td">แก้ไข</th>
 				<th><input type="checkbox" id="del_all_room_has_article"></th>
@@ -463,15 +463,19 @@ class Room_has_article extends MY_Controller
 		if(!empty($data))
 		{
 			foreach ($data AS $dt):
-			//<td>'.$num_row.'</td>
+			if($this->load_rha_model->is_article_id_exist($dt['tb_article_id']))
+			{
+				$del_checkbox = '<input type="checkbox" value="'.$dt["tb_room_id"].",".$dt["tb_article_id"].'" name="del_room_has_article[]" class="del_room_has_article">';
+			}
+			else $del_checkbox='';
 			$html.='<tr>
 					<td id="room'.$dt["tb_room_id"].'">'.$dt["room_name"].'</td>
 					<td id="article'.$dt["tb_article_id"].'">'.$dt["article_name"].'</td>
 					<td id="fee_type'.$dt["tb_fee_type_id"].'">'.$dt["fee_type_name"].'</td>
-					<td>'.$dt["unit_num"].'</td>
+					<td>'.$dt["article_num"].'</td>
 					<td>'.$dt["lump_sum_base_unit"].'</td>
 					<td class="same_first_td">'.$this->eml->btn('edit','onclick=load_room_has_article("'.$dt["tb_room_id"].",".$dt["tb_article_id"].'")').'</td>
-					<td><input type="checkbox" value="'.$dt["tb_room_id"].",".$dt["tb_article_id"].'" name="del_room_has_article[]" class="del_room_has_article"></td>
+					<td>'.$del_checkbox.'</td>
 			';
 			$html.='</tr>';
 			$num_row++;

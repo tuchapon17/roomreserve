@@ -99,6 +99,36 @@ class Test extends CI_Controller {
 		}
 		
 	}
+	function testpdf()
+	{
+		$this->load->library("pdf");
+		$pdf=$this->pdf;
+		/*
+		 * public function __construct($orientation='P', $unit='mm', $format='A4', $unicode=true, $encoding='UTF-8', $diskcache=false, $pdfa=false) {
+		 */
+		$pdf = new Pdf('P', 'mm', 'A4', true, 'UTF-8', false);
+		//$fontname = $pdf->addTTFfont($_SERVER['DOCUMENT_ROOT'].'/roomreserve/plugins/fonts/THSarabunNewI.ttf', 'TrueTypeUnicode', '', 32);
+		$pdf->SetTitle('My Title');
+		$pdf->SetHeaderMargin(30);
+		$pdf->SetTopMargin(20);
+		$pdf->setFooterMargin(20);
+		$pdf->SetAutoPageBreak(true);
+		$pdf->SetAuthor('Author');
+		$pdf->SetDisplayMode('real', 'default');
+		$pdf->setFontSubsetting(false);
+		$pdf->SetFont('thsarabunnew', '', 16);
+		
+		$pdf->AddPage();
+		//$pdf->SetPrintHeader(false);
+		//$pdf->SetPrintFooter(false);
+		
+		$pdf->Write(18, 'Some sample text');
+		$pdf->Cell(0, 12, 'ภาษาไทยExample 001 - cell', 1, 1, 'C');
+		$pdf->Multicell(0,2,"ทดสอบภถี่สี่ห้าเจ็ดเป๊กThis is a multi-line text string\nNew line\nNew line");
+		
+		$pdf->AddPage();
+		$pdf->Output('My-File-Name.pdf', 'I');
+	}
 }
 
 /* End of file welcome.php */

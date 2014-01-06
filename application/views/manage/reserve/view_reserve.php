@@ -42,7 +42,14 @@ echo $head;
       	<?php //echo $reserve_tab;?>
       		<div class="col-lg-12" id="loginform">
       		 	
-				
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">ค่าบริการ</h3>
+					</div>
+					<div class="panel-body">
+						<strong>รวมทั้งสิ้น  <span class="red-text"><?php echo $total_price;?></span> บาท</strong>
+					</div>
+				</div>
 				<?php 
 				/*$ad=$article_data;
 				$dd=$datetime_data;

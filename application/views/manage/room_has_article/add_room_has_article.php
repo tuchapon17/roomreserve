@@ -47,13 +47,13 @@ echo $head;
 	      		 			"select_article"=>"select_article",
 							"select_room"=>"select_room",
 							"select_fee_type"=>"select_fee_type",
-							"input_unit_num"=>"input_unit_num",
+							"input_article_num"=>"input_article_num",
 							"input_lump_sum_base_unit"=>"input_lump_sum_base_unit"
 	      		 	);
       		 		echo form_error($em_name["select_article"]);
       		 		echo form_error($em_name["select_room"]);
       		 		echo form_error($em_name["select_fee_type"]);
-      		 		echo form_error($em_name["input_unit_num"]);
+      		 		echo form_error($em_name["input_article_num"]);
       		 		echo form_error($em_name["input_lump_sum_base_unit"]);
       		 	?>
       			</div>
@@ -67,8 +67,8 @@ echo $head;
 						echo "<span id='".$em_name["select_article"]."_error' class='hidden'>".form_error($em_name["select_article"])."</span>";
 						echo $se_room;
 						echo "<span id='".$em_name["select_room"]."_error' class='hidden'>".form_error($em_name["select_room"])."</span>";
-						echo $in_unit_num;
-						echo "<span id='".$em_name["input_unit_num"]."_error' class='hidden'>".form_error($em_name["input_unit_num"])."</span>";
+						echo $in_article_num;
+						echo "<span id='".$em_name["input_article_num"]."_error' class='hidden'>".form_error($em_name["input_article_num"])."</span>";
 						echo $se_fee_type;
 						echo "<span id='".$em_name["select_fee_type"]."_error' class='hidden'>".form_error($em_name["select_fee_type"])."</span>";
 						echo $in_lump_sum_base_unit;

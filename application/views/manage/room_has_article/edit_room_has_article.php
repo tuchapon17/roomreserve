@@ -51,13 +51,13 @@ echo $head;
 	      		 			"input_article"=>"input_article",
 							"input_room"=>"input_room",
 							"select_fee_type"=>"select_fee_type",
-							"input_unit_num"=>"input_unit_num",
+							"input_article_num"=>"input_article_num",
 							"input_lump_sum_base_unit"=>"input_lump_sum_base_unit"
 	      		 	);
       		 		echo form_error($em_name["input_article"]);
       		 		echo form_error($em_name["input_room"]);
       		 		echo form_error($em_name["select_fee_type"]);
-      		 		echo form_error($em_name["input_unit_num"]);
+      		 		echo form_error($em_name["input_article_num"]);
       		 		echo form_error($em_name["input_lump_sum_base_unit"]);
       		 	?>
       			</div>
@@ -72,8 +72,8 @@ echo $head;
 						echo "<span id='".$em_name["input_article"]."_error' class='hidden'>".form_error($em_name["input_article"])."</span>";
 						echo $in_room;
 						echo "<span id='".$em_name["input_room"]."_error' class='hidden'>".form_error($em_name["input_room"])."</span>";
-						echo $in_unit_num;
-						echo "<span id='".$em_name["input_unit_num"]."_error' class='hidden'>".form_error($em_name["input_unit_num"])."</span>";
+						echo $in_article_num;
+						echo "<span id='".$em_name["input_article_num"]."_error' class='hidden'>".form_error($em_name["input_article_num"])."</span>";
 						echo $se_fee_type;
 						echo "<span id='".$em_name["select_fee_type"]."_error' class='hidden'>".form_error($em_name["select_fee_type"])."</span>";
 						echo $in_lump_sum_base_unit;
@@ -201,7 +201,7 @@ echo $js;
 				$("#input_room").val($("#room"+resp.tb_room_id).text());
 				$("#input_article").val($("#article"+resp.tb_article_id).text());
 				$("#select_fee_type").val(resp.tb_fee_type_id);
-				$("#input_unit_num").val(resp.unit_num);
+				$("#input_article_num").val(resp.article_num);
 				$("#input_lump_sum_base_unit").val(resp.lump_sum_base_unit);
 			},
 			error:function(error){
@@ -248,7 +248,7 @@ echo $js;
 		select_field+='<option value="room_name">ชื่อห้อง</option>';
 		select_field+='<option value="article_name">ชื่อครุภัณฑ์/อุปกรณ์</option>';
 		select_field+='<option value="fee_type_name">ประเภทค่าบริการ</option>';
-		select_field+='<option value="unit_num">จำนวนครุภัณฑ์/อุปกรณ์</option>';
+		select_field+='<option value="article_num">จำนวนครุภัณฑ์/อุปกรณ์</option>';
 		select_field+='<option value="lump_sum_base_unit">ค่าบริการพื้นฐาน(เหมา)</option>';
 		select_field+='</select>';
 		var select_type='<select id="ordertype" class="form-control">';
@@ -287,7 +287,7 @@ echo $js;
 		select_field+='<option value="room_name">ชื่อห้อง</option>';
 		select_field+='<option value="article_name">ชื่อครุภัณฑ์/อุปกรณ์</option>';
 		select_field+='<option value="fee_type_name">ประเภทค่าบริการ</option>';
-		select_field+='<option value="unit_num">จำนวนครุภัณฑ์/อุปกรณ์</option>';
+		select_field+='<option value="article_num">จำนวนครุภัณฑ์/อุปกรณ์</option>';
 		select_field+='<option value="lump_sum_base_unit">ค่าบริการพื้นฐาน(เหมา)</option>';
 		select_field+='</select>';
 
