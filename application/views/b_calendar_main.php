@@ -123,7 +123,7 @@ echo $head;
 			border:1px solid #ccc;
 			padding:5px;
 		}
-		.time-small-begin{
+		.time-small{
 			text-align:right;
 		}
 		
@@ -153,9 +153,6 @@ echo $head;
 							<?php echo $customviewbox;?>
 						</div>
 					</div>
-      		 	
-      		 	
-      		 	
       		 	<div class="alert-danger" id="login-alert">
       			</div>
       			<?php echo $calendar;?>
@@ -174,6 +171,20 @@ echo $js;
 	<script type="text/javascript">
 	<!--
 	$(function(){
+		/*
+		* วนลูปทุก td เพื่อ ลบ <div class='time-small'> ให้เหลือแค่ 2 แถว แถวที่ 3 ให้เป็น ... 
+		*/
+		$(".table-calendar td").each(function(){
+			var count=0;
+			//.time-small loop
+			$(this).children("div.time-small").each(function(){
+				count++;
+				if(count==3)$(this).html("<strong>...</strong>");
+				if(count>3)$(this).remove();
+			});
+		});
+
+		
 		$("#search-body").hide();
 		$("#search-heading").click(function(){
 			if($("#search-body").is(":hidden"))
@@ -187,18 +198,48 @@ echo $js;
 				$("#search-arrow").children().attr("class","fa fa-caret-square-o-down");
 			}
 		});
-		
-		
+		<?php
+		if($this->session->userdata("bct-approve"))
+		{
+		?>
+			$("#bct-approve").val("<?php echo $this->session->userdata("bct-approve");?>");
+		<?php 
+		}		
+		?>
+		<?php
+		if($this->session->userdata("bct-month"))
+		{
+		?>
+			$("#bct-month").val("<?php echo $this->session->userdata("bct-month");?>");
+		<?php 
+		}		
+		?>
+		<?php
+		if($this->session->userdata("bct-year"))
+		{
+		?>
+			$("#bct-year").val("<?php echo $this->session->userdata("bct-year");?>");
+		<?php 
+		}		
+		?>
+		<?php
+		if($this->session->userdata("bct-room"))
+		{
+		?>
+			$("#bct-room").val("<?php echo $this->session->userdata("bct-room");?>");
+		<?php 
+		}		
+		?>
 		//ทำเป็นเรียงอยู่บรรทัดเดียวกัน
-		//$("#ct-room,#ct-year,#ct-month").css({width:"auto"});
+		//$("#bct-room,#bct-year,#bct-month").css({width:"auto"});
 
-		/*$("#ct-room").val(getURLParameter("rmid"));
-		$("#ct-year").val(getURLParameter("year"));
-		$("#ct-month").val(getURLParameter("month"));
-		$("#ct-btn").click(function(){
-			var room=$("#ct-room").find(":selected").val();
-			var year=$("#ct-year").find(":selected").val();
-			var month=$("#ct-month").find(":selected").val();
+		/*$("#bct-room").val(getURLParameter("rmid"));
+		$("#bct-year").val(getURLParameter("year"));
+		$("#bct-month").val(getURLParameter("month"));
+		$("#bct-btn").click(function(){
+			var room=$("#bct-room").find(":selected").val();
+			var year=$("#bct-year").find(":selected").val();
+			var month=$("#bct-month").find(":selected").val();
 			var url="<?php echo base_url();?>?c=calendar&m=main&year="+year+"&month="+month+"&rmid="+room;
 			if(getURLParameter("resid")!="null") url+="&resid="+getURLParameter("resid");
 			window.location=url;
@@ -227,7 +268,6 @@ echo $js;
 		$(".table-calendar tr:not(:nth-child(2)) td").hover(function(){
 			$(this).css("background-color","#ACD7FC");
 		},function(){
-			
 			$(this).css("background-color","");
 		});
 		

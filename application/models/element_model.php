@@ -91,4 +91,20 @@ class Element_model extends CI_Model
 		$query=$this->db->get();
 		return $query->result_array();
 	}
+	
+	/**
+	 * เลือกห้องเฉพาะที่มีอุปกรณ์ (tb_room_has_article)
+	 * @param string $room_type_id
+	 * @return array
+	 */
+	function reserve_room_list($room_type_id)
+	{
+		$this->db->select()->from("tb_room");
+		$this->db->join("tb_room_has_article","tb_room_has_article.tb_room_id=tb_room.room_id");
+		$this->db->like('tb_room_type_id',$room_type_id,'both')
+		->order_by("CONVERT(room_name USING TIS620)","ASC")
+		->group_by("room_name");
+		$query=$this->db->get();
+		return $query->result_array();
+	}
 }

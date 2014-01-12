@@ -9,7 +9,7 @@ class Reserve extends MY_Controller
 	function __construct()
 	{
 		parent::__construct();
-		$this->fl->check_group_privilege(array("01","02","07"),false,"OR");
+		$this->fl->check_group_privilege(array("01","02","04","07"),false,"OR");
 		$this->load->model("manage/reserve_model");
 			$this->load_reserve_model=$this->reserve_model;
 		$this->lang->load("reserve/reserve","thailand");
@@ -308,15 +308,19 @@ class Reserve extends MY_Controller
 			$this->load_reserve_model->manage_add2($data,"tb_reserve");
 			
 			//insert tb_reserve_has_article
-			foreach ($this->input->post("article") as $index=>$val)
+			if($this->input->post("article"))
 			{
-				$data2=array(
-						"tb_reserve_id"=>$reserve_id,
-						"tb_article_id"=>$val,
-						"unit_num"=>$this->input->post("article_num")[$index]
-				);
-				$this->load_reserve_model->manage_add2($data2,"tb_reserve_has_article");
+				foreach ($this->input->post("article") as $index=>$val)
+				{
+					$data2=array(
+							"tb_reserve_id"=>$reserve_id,
+							"tb_article_id"=>$val,
+							"unit_num"=>$this->input->post("article_num")[$index]
+					);
+					$this->load_reserve_model->manage_add2($data2,"tb_reserve_has_article");
+				}
 			}
+			
 			
 			//insert tb_reserve_has_datetime
 			if($this->input->post("reserve_time")=="reserve_time1")
@@ -624,8 +628,7 @@ class Reserve extends MY_Controller
 			else
 			{
 				$this->db->trans_commit();
-				
-				
+				redirect(base_url()."?d=manage&c=reseve&m=view&id=".$reserve_id);
 			}
 			
 			
@@ -863,7 +866,7 @@ class Reserve extends MY_Controller
 		 * Return JSON
 		 */
 		if($this->input->post("room_type_id")!=''):
-			$query=$this->emm->select_room_list($this->input->post("room_type_id"));
+			$query=$this->emm->reserve_room_list($this->input->post("room_type_id"));
 			$data='';
 			if($query>0):
 			foreach($query AS $ar):
@@ -953,14 +956,13 @@ class Reserve extends MY_Controller
 			if($this->session->userdata("search_reserve"))
 			{
 				$liketext=$this->session->userdata("search_reserve");
-				$config['total_rows']=$this->load_reserve_model->get_all_numrows("tb_reserve",$liketext,"reserve_id");
+				$config['total_rows']=$this->load_reserve_model->get_all_reserve_numrows("tb_reserve",$liketext,"reserve_id");
 		
 				$get_reserve_list=$this->load_reserve_model->get_reserve_list($config['per_page'],$this->getpage,$liketext);
 			}
 			else
 			{
-				$config['total_rows']=$this->load_reserve_model->get_all_numrows("tb_reserve",'',"reserve_id");
-		
+				$config['total_rows']=$this->load_reserve_model->get_all_reserve_numrows("tb_reserve",'',"reserve_id");
 				$get_reserve_list=$this->load_reserve_model->get_reserve_list($config['per_page'],$this->getpage);
 			}
 			$this->pagination->initialize($config);
@@ -985,19 +987,139 @@ class Reserve extends MY_Controller
 		}
 		else
 		{
-			/*$prev_url=$_SERVER['HTTP_REFERER'];
-			$session_edit_id="edit_reserve_id";
-			$set=array(
-					"reserve_id"=>$this->input->post("input_reserve_name"),
-					"tb_reserve_type_id"=>$this->input->post("select_reserve_type"),
-					"reserve_detail"=>$this->input->post("textarea_reserve_detail"),
-					"discount_percent"=>$this->input->post("input_discount_percent")
+
+		}
+	}
+	function edit2()
+	{
+		$this->fl->check_group_privilege(array("01"));
+		$config=array(
+				array(
+						"field"=>"aa",
+						"label"=>"aa",
+						"rules"=>""
+				)
+		);
+		$this->frm->set_rules($config);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
+		{
+			if(!$this->session->userdata("orderby_reserve2"))
+				$this->session->set_userdata("orderby_reserve2",array("field"=>"reserve_id","type"=>"ASC"));
+			//pagination
+			$this->load->library("pagination");
+			$config['use_page_numbers'] = TRUE;
+			$config['base_url']=base_url()."?d=manage&c=reserve&m=edit2";
+			//set per_page
+			if($this->session->userdata("set_per_page")) $config['per_page']=$this->session->userdata("set_per_page");
+			else $config['per_page']=3;
+		
+			if(isset($_GET['page']) && preg_match('/^[\d]+$/',$_GET['page'])) $this->getpage=(($_GET['page']-1)*$config['per_page']);
+			else $this->getpage=0;
+		
+		
+			if($this->session->userdata("search_reserve2"))
+			{
+				$liketext=$this->session->userdata("search_reserve2");
+				$config['total_rows']=$this->load_reserve_model->get_all_reserve_numrows2("tb_reserve",$liketext,"reserve_id");
+		
+				$get_reserve_list=$this->load_reserve_model->get_reserve_list2($config['per_page'],$this->getpage,$liketext);
+			}
+			else
+			{
+				$config['total_rows']=$this->load_reserve_model->get_all_reserve_numrows2("tb_reserve",'',"reserve_id");
+		
+				$get_reserve_list=$this->load_reserve_model->get_reserve_list2($config['per_page'],$this->getpage);
+			}
+			$this->pagination->initialize($config);
+		
+			//..pagination
+			$data=array(
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("จัดการการจอง"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
+					"reserve_tab"=>$this->reserve_tab(),
+					"table_edit"=>$this->table_edit($get_reserve_list),
+					"session_search_reserve"=>$this->session->userdata("search_reserve2"),
+					"pagination_num_rows"=>$config["total_rows"],
+					"manage_search_box"=>$this->pel->manage_search_box($this->session->userdata("search_reserve2"))
 			);
-			$where=array(
-					"reserve_id"=>$this->session->userdata($session_edit_id)
+			$this->load->view("manage/reserve/edit_reserve2",$data);
+		}
+		else
+		{
+
+		}
+	}
+	function edit3()
+	{
+		$this->fl->check_group_privilege(array("04"));
+		$config=array(
+				array(
+						"field"=>"aa",
+						"label"=>"aa",
+						"rules"=>""
+				)
+		);
+		$this->frm->set_rules($config);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
+		{
+			if(!$this->session->userdata("orderby_reserve3"))
+				$this->session->set_userdata("orderby_reserve3",array("field"=>"reserve_id","type"=>"ASC"));
+			//pagination
+			$this->load->library("pagination");
+			$config['use_page_numbers'] = TRUE;
+			$config['base_url']=base_url()."?d=manage&c=reserve&m=edit3";
+			//set per_page
+			if($this->session->userdata("set_per_page")) $config['per_page']=$this->session->userdata("set_per_page");
+			else $config['per_page']=3;
+	
+			if(isset($_GET['page']) && preg_match('/^[\d]+$/',$_GET['page'])) $this->getpage=(($_GET['page']-1)*$config['per_page']);
+			else $this->getpage=0;
+	
+	
+			if($this->session->userdata("search_reserve3"))
+			{
+				$liketext=$this->session->userdata("search_reserve3");
+				$config['total_rows']=$this->load_reserve_model->get_all_reserve_numrows3("tb_reserve",$liketext,"reserve_id");
+	
+				$get_reserve_list=$this->load_reserve_model->get_reserve_list3($config['per_page'],$this->getpage,$liketext);
+			}
+			else
+			{
+				$config['total_rows']=$this->load_reserve_model->get_all_reserve_numrows3("tb_reserve",'',"reserve_id");
+	
+				$get_reserve_list=$this->load_reserve_model->get_reserve_list3($config['per_page'],$this->getpage);
+			}
+			$this->pagination->initialize($config);
+	
+			//..pagination
+			$data=array(
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("จัดการการจอง"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
+					"reserve_tab"=>$this->reserve_tab(),
+					"table_edit"=>$this->table_edit($get_reserve_list),
+					"session_search_reserve"=>$this->session->userdata("search_reserve3"),
+					"pagination_num_rows"=>$config["total_rows"],
+					"manage_search_box"=>$this->pel->manage_search_box($this->session->userdata("search_reserve3"))
 			);
-			$this->load_reserve_model->manage_edit($set, $where, "tb_reserve", $session_edit_id, "edit_reserve", "แก้ไขห้องสำเร็จ", "แก้ไขห้องไม่สำเร็จ", "?d=manage&c=reserve&m=edit", $prev_url);
-			*/
+			$this->load->view("manage/reserve/edit_reserve3",$data);
+		}
+		else
+		{
+	
 		}
 	}
 	function table_edit($data)
@@ -1010,9 +1132,8 @@ class Reserve extends MY_Controller
 		$html.='<thead>
 				<th>รหัส</th>
 				<th>ชื่อโครงการ</th>
-
-				<th class="same_first_td">สถานะ<br/><button type="button" class="cbtn cbtn-green" id="allow-all"><button type="button" class="cbtn cbtn-red" id="disallow-all"></th>
-				<th class="same_first_td">แก้ไข</th>
+				<th class="same_first_td">อนุมัติ</th>
+				<th class="same_first_td">รายละเอียด</th>
 				<th>ลบ<br/><input type="checkbox" id="del_all_reserve"></th>
 		';
 		$html.='</thead>
@@ -1031,7 +1152,7 @@ class Reserve extends MY_Controller
 			$html.='<tr>
 					<td>'.$dt["reserve_id"].'</td>
 					<td id="reserve'.$dt["reserve_id"].'">'.$dt["project_name"].'</td>
-					<td class="same_first_td">'.$checkbox.'</td>
+					<td class="text-center">'.$this->eml->btn('approve','onclick=approve_alert("'.$dt['reserve_id'].'","'.base_url().'");').'</td>
 					<td class="same_first_td">'.$this->eml->btn('view','onclick=window.open("'.base_url().'?d=manage&c=reserve&m=view&id='.$dt["reserve_id"].'","_blank")').'</td>
 					<td><input type="checkbox" value="'.$dt["reserve_id"].'" name="del_reserve[]" class="del_reserve"></td>
 			';
@@ -1043,9 +1164,7 @@ class Reserve extends MY_Controller
 		$html.='<tr>
 				<td></td>
 				<td></td>
-				<td align="center">'.$this->eml->btn('submitcheck','onclick="show_allow_list();return false;"')." ".
-					$this->eml->btn('refreshcheck','onclick="location.reload(true);"').'
-				</td>
+				<td></td>
 				<td></td>
 				<td>'.$this->eml->btn('delete','onclick="show_del_list();return false;"').'</td>
 				</tr>
@@ -1056,13 +1175,21 @@ class Reserve extends MY_Controller
 	}
 	function reserve_tab()
 	{
+		//<li><a href="#"  id="add">จองห้อง</a></li>
 		$html='
 		<ul class="nav nav-tabs" id="manage_tab">
 			<!-- data-toggle มี pill/tab -->
-			<li><a href="#"  id="add">จองห้อง</a></li>';
-		$html.='
-			<li><a href="#"  id="edit">จัดการการจอง</a></li>
 			';
+		if($this->fl->check_group_privilege(array("02"),true))
+		{
+			$html.='<li><a href="#"  id="edit">จัดการการจอง</a></li>';
+		}
+		$html.='<li><a href="#"  id="edit2">จัดการการจองที่อนุมัติแล้ว</a></li>';
+		if($this->fl->check_group_privilege(array("04"),true))
+		{
+			$html.='<li><a href="#"  id="edit3">จัดการการจองสำหรับผู้บริหาร</a></li>';
+		}
+		
 		$html.='</ul>';
 		return $html;
 	}
@@ -1122,6 +1249,7 @@ class Reserve extends MY_Controller
 			$this->db->join("tb_article","tb_article.article_id=tb_reserve_has_article.tb_article_id");
 			$this->db->where("tb_reserve_id",$_GET["id"]);
 			$used_article_query = $this->db->get()->result_array();
+			
 			$where_in=array();
 			foreach($used_article_query as $u)
 			{
@@ -1145,7 +1273,11 @@ class Reserve extends MY_Controller
 			$this->db->join("tb_reserve_has_datetime","tb_reserve_has_datetime.tb_reserve_id=tb_reserve_has_article.tb_reserve_id");
 			//$this->db->join("tb_reserve_has_person","tb_reserve_has_person.tb_reserve_id=tb_reserve_has_article.tb_reserve_id");
 			$this->db->where("tb_room.room_id",$reserve_data['tb_room_id']);
-			$this->db->where_in("tb_room_has_article.tb_article_id",$where_in);
+			
+			//ถ้า ไม่มีรายการจองอุปกรณ์
+			if(!empty($used_article_query))
+				$this->db->where_in("tb_room_has_article.tb_article_id",$where_in);
+			
 			$used_room = $this->db->get()->result_array();
 			echo $this->db->last_query();
 			//print_r($used_room);
@@ -1249,6 +1381,10 @@ class Reserve extends MY_Controller
 		{
 			$this->session->set_userdata("orderby_reserve",array("field"=>$this->input->post("field"),"type"=>$this->input->post("type")));
 		}
+		if($this->input->post("field") && $this->input->post("type2"))
+		{
+			$this->session->set_userdata("orderby_reserve2",array("field"=>$this->input->post("field"),"type"=>$this->input->post("type2")));
+		}
 	}
 	function datetime_diff($datetimebegin,$datetimeend)
 	{
@@ -1263,5 +1399,208 @@ class Reserve extends MY_Controller
 				"minute"=>$interval->i,
 				"second"=>$interval->s
 		);
+	}
+	function search()
+	{
+		if($this->input->post("input_search_box"))
+		{
+			$this->session->set_userdata('search_reserve',$this->input->post("input_search_box"));
+	
+		}
+		else if($this->input->post("clear"))
+		{
+			$this->session->unset_userdata("search_reserve");
+		}
+		redirect(base_url()."?d=manage&c=reserve&m=edit");
+	}
+	function search2()
+	{
+		if($this->input->post("input_search_box"))
+		{
+			$this->session->set_userdata('search_reserve2',$this->input->post("input_search_box"));
+	
+		}
+		else if($this->input->post("clear"))
+		{
+			$this->session->unset_userdata("search_reserve2");
+		}
+		redirect(base_url()."?d=manage&c=reserve&m=edit2");
+	}
+	function search3()
+	{
+		if($this->input->post("input_search_box"))
+		{
+			$this->session->set_userdata('search_reserve3',$this->input->post("input_search_box"));
+	
+		}
+		else if($this->input->post("clear"))
+		{
+			$this->session->unset_userdata("search_reserve3");
+		}
+		redirect(base_url()."?d=manage&c=reserve&m=edit3");
+	}
+	function reserve_approve()
+	{
+		echo $this->input->post("select_approve");
+		$set=array("approve"=>$this->input->post("select_approve"));
+		if($this->input->post("select_approve") == 1)
+		{
+			$set['approve_on']=date('Y-m-d H:i:s');
+			$set['approve_by']=$this->session->userdata("rs_username");
+		}
+		$where=array("reserve_id"=>@$_GET['id']);
+		$this->load_reserve_model->manage_edit2($set,$where,"tb_reserve","reserve_approve","สำเร็จ","ไม่สำเร็จ",$_SERVER['HTTP_REFERER']);
+		/*
+		 * $set=array(
+					"room_name"=>$this->input->post("input_room_name"),
+					"tb_room_type_id"=>$this->input->post("select_room_type"),
+					"room_detail"=>$this->input->post("textarea_room_detail"),
+					"discount_percent"=>$this->input->post("input_discount_percent"),
+					"room_fee_hour"=>$this->input->post("input_room_fee_hour"),
+					"room_fee_lump_sum"=>$this->input->post("input_room_fee_lump_sum")
+			);
+			$where=array(
+					"room_id"=>$this->session->userdata($session_edit_id)
+			);
+			$this->rom->manage_edit($set, $where, "tb_room", "edit_room", "แก้ไขห้องสำเร็จ", "แก้ไขห้องไม่สำเร็จ", "?d=manage&c=room&m=edit", $prev_url);
+		
+		 */
+	}
+	function reserve_list()
+	{
+		$config=array(
+				array(
+						"field"=>"aa",
+						"label"=>"aa",
+						"rules"=>""
+				)
+		);
+		$this->frm->set_rules($config);
+		$this->frm->set_message("rule","message");
+		if($this->frm->run() == false)
+		{
+			if(!$this->session->userdata("orderby_reserve_list"))
+				$this->session->set_userdata("orderby_reserve_list",array("field"=>"reserve_id","type"=>"ASC"));
+			//pagination
+			$this->load->library("pagination");
+			$config['use_page_numbers'] = TRUE;
+			$config['base_url']=base_url()."?d=manage&c=reserve&m=reserve_list";
+			//set per_page
+			if($this->session->userdata("set_per_page")) $config['per_page']=$this->session->userdata("set_per_page");
+			else $config['per_page']=3;
+		
+			if(isset($_GET['page']) && preg_match('/^[\d]+$/',$_GET['page'])) $this->getpage=(($_GET['page']-1)*$config['per_page']);
+			else $this->getpage=0;
+		
+		
+			if($this->session->userdata("search_reserve_list"))
+			{
+				$liketext=$this->session->userdata("search_reserve_list");
+				$config['total_rows']=$this->load_reserve_model->user_reserve_list_numrows("tb_reserve",$liketext,"reserve_id");
+		
+				$get_reserve_list=$this->load_reserve_model->user_reserve_list($config['per_page'],$this->getpage,$liketext);
+			}
+			else
+			{
+				$config['total_rows']=$this->load_reserve_model->user_reserve_list_numrows("tb_reserve",'',"reserve_id");
+				$get_reserve_list=$this->load_reserve_model->user_reserve_list($config['per_page'],$this->getpage);
+			}
+			$this->pagination->initialize($config);
+		
+			//..pagination
+			$data=array(
+					"htmlopen"=>$this->pel->htmlopen(),
+					"head"=>$this->pel->head("จัดการการจอง"),
+					"bodyopen"=>$this->pel->bodyopen(),
+					"navbar"=>$this->pel->navbar(),
+					"js"=>$this->pel->js(),
+					"footer"=>$this->pel->footer(),
+					"bodyclose"=>$this->pel->bodyclose(),
+					"htmlclose"=>$this->pel->htmlclose(),
+					"table_edit"=>$this->table_reserve_list($get_reserve_list),
+					"session_search_reserve"=>$this->session->userdata("search_reserve_list"),
+					"pagination_num_rows"=>$config["total_rows"],
+					"manage_search_box"=>$this->pel->manage_search_box($this->session->userdata("search_reserve_list"))
+			);
+			$this->load->view("manage/reserve/user_reserve_list",$data);
+		}
+		else
+		{
+		
+		}
+	}
+	function table_reserve_list($data)
+	{
+		if($this->session->userdata("orderby_reserve")["type"]=="ASC") $img='<img width="9" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_212_down_arrow.png">';
+		else if($this->session->userdata("orderby_reserve")["type"]=="DESC") $img='<img width="9" src="'.base_url().'images/glyphicons_free/glyphicons/png/glyphicons_213_up_arrow.png">';
+		$num_row=$this->getpage+1;
+		$html='
+				<table class="table table-striped table-bordered fixed-table" id="tabel_data_list">';
+		$html.='<thead>
+				<th>รหัส</th>
+				<th>ชื่อโครงการ</th>
+				<th class="same_first_td">สถานะการจอง</th>
+				<th class="same_first_td">รายละเอียด</th>
+				<th>ลบ<br/><input type="checkbox" id="del_all_reserve"></th>
+		';
+		$html.='</thead>
+		<form method="post" action="'.base_url().'?d=manage&c=reserve&m=delete" id="form_del_reserve">';
+		if(!empty($data))
+		{
+			foreach ($data AS $dt):
+			if($dt['approve']==0)$checkbox='<span class="checkboxFour">
+									  		<input type="checkbox" value="'.$dt["reserve_id"].'" id="checkboxFourInput'.$dt["reserve_id"].'" name="allow_reserve0[]" class="allow_reserve0"/>
+										  	<label for="checkboxFourInput'.$dt["reserve_id"].'"></label>
+									  		</span>';
+			else $checkbox='<span class="checkboxFour">
+					  		<input type="checkbox" value="'.$dt["reserve_id"].'" id="checkboxFourInput'.$dt["reserve_id"].'" name="allow_reserve1[]" class="allow_reserve1" checked/>
+						  	<label for="checkboxFourInput'.$dt["reserve_id"].'"></label>
+					  		</span>';
+			if($dt['approve']==0) $approve_text="<span class='text-warning'>รออนุมัติ</span>";
+			else if($dt['approve']==1) $approve_text="<span class='text-success'>อนุมัติ</span>";
+			else if($dt['approve']==3) $approve_text="<span class='text-danger'>ไม่อนุมัติ</span>";
+			$html.='<tr>
+					<td>'.$dt["reserve_id"].'</td>
+					<td id="reserve'.$dt["reserve_id"].'">'.$dt["project_name"].'</td>
+					<td>'.$approve_text.'</td>
+					<td class="same_first_td">'.$this->eml->btn('view','onclick=window.open("'.base_url().'?d=manage&c=reserve&m=view&id='.$dt["reserve_id"].'","_blank")').'</td>
+					<td><input type="checkbox" value="'.$dt["reserve_id"].'" name="del_reserve[]" class="del_reserve"></td>
+			';
+			//<td class="same_first_td">'.$this->eml->btn('view','onclick=show_all_data("'.$dt["reserve_id"].'")').'</td>
+			$html.='</tr>';
+			$num_row++;
+			endforeach;
+		}
+		$html.='<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>'.$this->eml->btn('delete','onclick="show_del_list();return false;"').'</td>
+				</tr>
+				</table>
+				</form>';
+		$html.=$this->pagination->create_links();
+		return $html;
+	}
+	function set_per_page()
+	{
+		if($this->input->post("num") && preg_match('/^[1-9]|[1-9][\d]+/',$this->input->post("num")))
+		{
+			$this->session->set_userdata("set_per_page",$this->input->post("num"));
+		}
+		//redirect(base_url()."?d=manage&c=titlename&m=edit","refresh");
+	}
+	function search_user_list()
+	{
+		if($this->input->post("input_search_box"))
+		{
+			$this->session->set_userdata('search_reserve_list',$this->input->post("input_search_box"));
+		}
+		else if($this->input->post("clear"))
+		{
+			$this->session->unset_userdata("search_reserve_list");
+		}
+		redirect(base_url()."?d=manage&c=reserve&m=reserve_list");
 	}
 }

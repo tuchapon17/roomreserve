@@ -87,6 +87,20 @@ class MY_Model extends CI_Model
 			redirect(base_url().$main_url);
 		}
 	}
+	function manage_edit2($set, $where, $table_name, $message_type, $success_message='success', $error_message='error', $prev_url)
+	{
+		$this->db->trans_begin();
+		$this->db->update($table_name,$set,$where);
+		if($this->db->trans_status()===FALSE):
+		$this->db->trans_rollback();
+		$this->session->set_flashdata($message_type."_message","<p class='text-danger'>".$error_message."</p>");
+		redirect($prev_url);
+		else:
+		$this->db->trans_commit();
+		$this->session->set_flashdata($message_type."_message","<p class='text-success'>".$success_message."</p>");
+		redirect($prev_url);
+		endif;
+	}
 	function manage_delete($arr_id, $table, $field_PK, $select_field, $message_type='', $main_url='')
 	{
 		$edit_titlename_message='';
@@ -180,5 +194,6 @@ class MY_Model extends CI_Model
 	{
 		return $this->db->list_fields($table_name);
 	}
+	
 	
 }

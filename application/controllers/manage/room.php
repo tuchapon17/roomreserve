@@ -541,7 +541,7 @@ class Room extends MY_Controller
 				$this->session->set_userdata("room_has_pic_id",$_GET['rmid']);
 				$data=array(
 						"htmlopen"=>$this->pel->htmlopen(),
-						"head"=>$this->pel->head("เพิ่มรูป"),
+						"head"=>$this->pel->head("จัดการรูป"),
 						"bodyopen"=>$this->pel->bodyopen(),
 						"navbar"=>$this->pel->navbar(),
 						"js"=>$this->pel->js(),
@@ -553,6 +553,21 @@ class Room extends MY_Controller
 						"room_data"=>$this->rom->get_room_data($_GET['rmid'])
 				);
 				$this->load->view("manage/room/upload_pic",$data);
+			}
+			else
+			{
+				$data=array(
+						"htmlopen"=>$this->pel->htmlopen(),
+						"head"=>$this->pel->head("จัดการรูป"),
+						"bodyopen"=>$this->pel->bodyopen(),
+						"navbar"=>$this->pel->navbar(),
+						"js"=>$this->pel->js(),
+						"footer"=>$this->pel->footer(),
+						"bodyclose"=>$this->pel->bodyclose(),
+						"htmlclose"=>$this->pel->htmlclose(),
+						"room_list_for_upload"=>$this->room_list_for_upload()
+				);
+				$this->load->view("manage/room/room_list_upload_pic",$data);
 			}
 		}
 		else
@@ -639,5 +654,33 @@ class Room extends MY_Controller
 			$this->db->trans_commit();
 			echo json_encode(array("commit"));
 		endif;
+	}
+	function room_list_for_upload()
+	{
+		$room_list = $this->rom->get_room_list_upload();
+		$options='';
+		foreach($room_list as $r)
+		{
+			$options.='<option value="'.$r['room_id'].'">'.$r['room_name'].'</option>';
+		}
+		$html='
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">เลือกห้อง</h3>
+			</div>
+			<div class="panel-body">
+				<div class="form-group">
+					<select class="form-control" id="room_list">
+						'.$options.'
+					</select>
+					<br/>
+					<div class="text-right">
+					'.$this->eml->btn("submit","id='btn_room_list'").'
+					</div>
+				</div>
+			</div>
+		</div>
+		';
+		return $html;
 	}
 }

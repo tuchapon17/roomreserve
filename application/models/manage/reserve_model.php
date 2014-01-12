@@ -23,11 +23,49 @@ class Reserve_model extends MY_Model
 	
 		if($liketext!='')
 		{
-			$query=$this->db->select()->from("tb_reserve")->like("reserve_id",$liketext,"both")->order_by("CONVERT(".$orderby_filed." USING TIS620)",$orderby_type)->limit($perpage,$getpage)->get();
+			$query=$this->db->select()->from("tb_reserve")->where("approve",0)->like("reserve_id",$liketext,"both")->order_by("CONVERT(".$orderby_filed." USING TIS620)",$orderby_type)->limit($perpage,$getpage)->get();
 		}
 		else
 		{
-			$query=$this->db->select()->from("tb_reserve")->order_by("CONVERT(".$orderby_filed." USING TIS620)",$orderby_type)->limit($perpage,$getpage)->get();
+			$query=$this->db->select()->from("tb_reserve")->where("approve",0)->order_by("CONVERT(".$orderby_filed." USING TIS620)",$orderby_type)->limit($perpage,$getpage)->get();
+		}
+		if($query->num_rows()>0)
+		{
+			return $query->result_array();
+		}
+		else return false;
+	}
+	function get_reserve_list2($perpage,$getpage=0,$liketext='')
+	{
+		$orderby_filed=$this->session->userdata("orderby_reserve2")["field"];
+		$orderby_type=$this->session->userdata("orderby_reserve2")["type"];
+	
+		if($liketext!='')
+		{
+			$query=$this->db->select()->from("tb_reserve")->where("approve",1)->like("reserve_id",$liketext,"both")->order_by("CONVERT(".$orderby_filed." USING TIS620)",$orderby_type)->limit($perpage,$getpage)->get();
+		}
+		else
+		{
+			$query=$this->db->select()->from("tb_reserve")->where("approve",1)->order_by("CONVERT(".$orderby_filed." USING TIS620)",$orderby_type)->limit($perpage,$getpage)->get();
+		}
+		if($query->num_rows()>0)
+		{
+			return $query->result_array();
+		}
+		else return false;
+	}
+	function get_reserve_list3($perpage,$getpage=0,$liketext='')
+	{
+		$orderby_filed=$this->session->userdata("orderby_reserve2")["field"];
+		$orderby_type=$this->session->userdata("orderby_reserve2")["type"];
+	
+		if($liketext!='')
+		{
+			$query=$this->db->select()->from("tb_reserve")->where("approve",2)->like("reserve_id",$liketext,"both")->order_by("CONVERT(".$orderby_filed." USING TIS620)",$orderby_type)->limit($perpage,$getpage)->get();
+		}
+		else
+		{
+			$query=$this->db->select()->from("tb_reserve")->where("approve",2)->order_by("CONVERT(".$orderby_filed." USING TIS620)",$orderby_type)->limit($perpage,$getpage)->get();
 		}
 		if($query->num_rows()>0)
 		{
@@ -84,5 +122,71 @@ class Reserve_model extends MY_Model
 		$this->db->where("tb_reserve.reserve_id",$reserve_id);
 		$query=$this->db->get()->result_array();
 		return $query;
+	}
+	function get_all_reserve_numrows($table,$liketext='',$like_field)
+	{
+		if($liketext=='')return $this->db->from($table)->where("approve",0)->get()->num_rows();
+		else
+		{
+			return $this->db->from($table)->where("approve",0)->like($like_field,$liketext,"both")->get()->num_rows();
+		}
+	}
+	function get_all_reserve_numrows2($table,$liketext='',$like_field)
+	{
+		if($liketext=='')return $this->db->from($table)->where("approve",1)->get()->num_rows();
+		else
+		{
+			return $this->db->from($table)->where("approve",1)->like($like_field,$liketext,"both")->get()->num_rows();
+		}
+	}
+	function get_all_reserve_numrows3($table,$liketext='',$like_field)
+	{
+		if($liketext=='')return $this->db->from($table)->where("approve",2)->get()->num_rows();
+		else
+		{
+			return $this->db->from($table)->where("approve",2)->like($like_field,$liketext,"both")->get()->num_rows();
+		}
+	}
+	
+	/**
+	 * นับจำนวนแถว สำหรับหน้า รายการจองของผู้จอง
+	 * @param string $table
+	 * @param string $liketext
+	 * @param string $like_field
+	 */
+	function user_reserve_list_numrows($table,$liketext='',$like_field)
+	{
+		if($liketext=='')return $this->db->from($table)->where("tb_user_username",$this->session->userdata("rs_username"))->get()->num_rows();
+		else
+		{
+			return $this->db->from($table)->where("tb_user_username",$this->session->userdata("rs_username"))->like($like_field,$liketext,"both")->get()->num_rows();
+		}
+	}
+	
+	/**
+	 * query รายการจอง สำหรับหน้า รายการจองของผู้จอง
+	 * @param number $perpage
+	 * @param number $getpage
+	 * @param string $liketext
+	 * @return boolean
+	 */
+	function user_reserve_list($perpage,$getpage=0,$liketext='')
+	{
+		$orderby_filed=$this->session->userdata("orderby_reserve_list")["field"];
+		$orderby_type=$this->session->userdata("orderby_reserve_list")["type"];
+		
+		if($liketext!='')
+		{
+			$query=$this->db->select()->from("tb_reserve")->where("tb_user_username",$this->session->userdata("rs_username"))->like("reserve_id",$liketext,"both")->order_by("CONVERT(".$orderby_filed." USING TIS620)",$orderby_type)->limit($perpage,$getpage)->get();
+		}
+		else
+		{
+			$query=$this->db->select()->from("tb_reserve")->where("tb_user_username",$this->session->userdata("rs_username"))->order_by("CONVERT(".$orderby_filed." USING TIS620)",$orderby_type)->limit($perpage,$getpage)->get();
+		}
+		if($query->num_rows()>0)
+		{
+			return $query->result_array();
+		}
+		else return false;
 	}
 }

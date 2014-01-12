@@ -31,18 +31,24 @@ echo $head;
 			width:auto;
 			text-align:left;
 		}
+		#table_bydate2{
+			border:1px solid #ccc;
+		}
 		#table_bydate2 th, tr, td{
 			border:1px solid #ccc;
 			padding:0;
 		}
 		#table_bydate2 tr:nth-child(1) td{
-			width:40px;
+			width:45px;
+			overflow: hidden;
+			text-align:center;
 		}
 		div[id^="divcontent2-"]:hover,div[id*=" divcontent2-"]:hover{
 			background-color:#fff;
 			cursor:pointer;
 		}
 		div[id^="divcontent2-"],div[id*=" divcontent2-"]{
+			text-align:center;
 			white-space: nowrap;
 			overflow:hidden;
 			position:absolute;
@@ -62,13 +68,8 @@ echo $head;
     <div class="container">
       <div class="row">
       	<div class="col-lg-12">
-      	<?php //echo $titlename_tab;?>
-      		<div  id="loginform">
-				
+      	<?php //echo $titlename_tab;?>				
       		 	<h2>วันที่<span id="cdate"></span></h2>
-      		 	<div class="alert-danger" id="login-alert">
-      		 	
-      			</div>
       			<div>
 					<table id="table_bydate2">
 						<tr>
@@ -79,7 +80,6 @@ echo $head;
 						</tr>
 					</table>
 				</div>
-			</div>
         </div>
       </div>
      
@@ -94,14 +94,20 @@ echo $js;
 	<script type="text/javascript">
 	
 	$(function(){
-		$("#cdate").text(getParameterByName("cdate"));
+		
+		//reverse Date from Y-m-d to d-m-Y
+		var date1=getParameterByName("cdate").split('-');
+		date1.reverse();
+		var date_reversed=date1.join('-');
+		$("#cdate").text(date_reversed);
 		
 		var likedate=getParameterByName("cdate");
 		var dateRegex = /[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/;
 		if(dateRegex.test(likedate)==true)
 		{
+			var content2_height=0;
 			$.ajax({
-				url:"?c=calendar&m=getdatetime",
+				url:"?c=b_calendar&m=getdatetime",
 				data:{likedate:likedate},
 				type:"POST",
 				dataType:"json",
@@ -135,24 +141,26 @@ echo $js;
 						var secs = s % 60;
 						s = (s - secs) / 60;
 
+						var a = $("#table_bydate2").parent().width();
+						$("#table_bydate2 tr:nth-child(1) td").width(a/24);
 						var w_td = $("#table_bydate2").width()/24;
-						var ratio = w_td/60;//เดิมสูง 60px 60 min
-						
-						$(".content2").append("<div id='divcontent2-"+i+"' class='divbydate "+resp[i].datetime_id+"'>"+hour_start+":"+min_start_string+" - "+hour_end+":"+min_end_string+"</div>");
+						var ratio = w_td/60;//เดิมสูง 60px =60 min
+	
+						$(".content2").append("<div id='divcontent2-"+i+"' class='divbydate-"+resp[i].datetime_id+"'>"+hour_start+":"+min_start_string+" - "+hour_end+":"+min_end_string+"</div>");
 						$("#divcontent2-"+i).offset({left:($("td#"+hour_start).offset().left+(min_start*ratio)),top:($("tr:nth-child(1)").offset().top+$("tr:nth-child(1)").height())});
 						
 						if($("#divcontent2-"+(i-1)).length > 0)
 						{
 							var prev_pos=$("#divcontent2-"+(i-1)).offset().top+$("#divcontent2-"+(i-1)).height();
-							$("#divcontent2-"+i).offset({left:($("td#"+hour_start).offset().left+min_start),top:prev_pos});
+							$("#divcontent2-"+i).offset({left:($("td#"+hour_start).offset().left+(min_start*ratio)),top:prev_pos});
 						}
 						//width each td = 47px (47/60=0.78333333)
 						$("#divcontent2-"+i).css({width:(s*ratio)});
-
+						content2_height+=$("#divcontent2-"+i).height();
 						//show reserve detail
 						$("#divcontent2-"+i).bind("click",function(){
 							$.ajax({
-								url:"?c=calendar&m=get_datetime_detail",
+								url:"?c=b_calendar&m=get_datetime_detail",
 								data:{datetime_id:resp[i].datetime_id},
 								type:"POST",
 								dataType:"json",
@@ -187,19 +195,41 @@ echo $js;
 											<dd></dd>\
 										</dl>\
 									';
-									bootbox.alert(text);
+									//bootbox.alert(text);
+									bootbox.dialog({
+										message: text,
+										title: "",
+										buttons: {
+											success: {
+												label: "ตกลง",
+												className: "btn-primary",
+												callback: function() {
+
+												}
+											},
+											danger: {
+												label: "รายละเอียดเพิ่มเติม",
+												className: "btn-primary",
+												callback: function() {
+													window.open("<?php echo base_url();?>?d=manage&c=reserve&m=view&id="+rs.reserve_id,"_blank");
+												}
+											}
+										}
+									});
 								},
 								error:function(error){
 
 								}
-							});
-						});
-					});
+							});//ajax
+						});//on click
+					});//each
+					$("td.content2").height(content2_height+2);
 				},
 				error:function(error){
 					alert("Error : "+error);
 				}
 			});
+			
 		}//end if test regex
 		
 		/*#################################################

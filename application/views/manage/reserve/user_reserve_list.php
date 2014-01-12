@@ -39,10 +39,10 @@ echo $head;
     <div class="container">
       <div class="row">
       	<div class="col-lg-12">
-      	<?php echo $reserve_tab;?>
+
       		<div class="col-lg-12" id="loginform">
-      		 	<h2>จัดการการจอง</h2>
-      		 	<form role="form" class="form-inline" action="?d=manage&c=reserve&m=search" method="post" autocomplete="off">
+      		 	<h2>ประวัติการจองห้อง</h2>
+      		 	<form role="form" class="form-inline" action="?d=manage&c=reserve&m=search_user_list" method="post" autocomplete="off">
       		 		<?php echo $manage_search_box;?>
       		 	</form>
       		 	<?php echo $table_edit;?>
@@ -132,8 +132,8 @@ echo $js;
 		Reset search result
 		###################################################*/
 		$("#clearSearch").click(function(){
-			$.post("<?php echo base_url()?>?d=manage&c=reserve&m=search",{clear:"clear"},function(data,status){
-				window.location="<?php echo base_url();?>?d=manage&c=reserve&m=edit";
+			$.post("<?php echo base_url()?>?d=manage&c=reserve&m=search_user_list",{clear:"clear"},function(data,status){
+				window.location="<?php echo base_url();?>?d=manage&c=reserve&m=reserve_list";
 			});
 		}); 
 		/*#################################################
@@ -201,8 +201,8 @@ echo $js;
 	}*/
 	function set_per_page(num)
 	{
-		$.post("<?php echo base_url()?>?d=manage&c=titlename&m=set_per_page",{num:num},function(data,status){
-			window.location="<?php echo base_url();?>?d=manage&c=reserve&m=edit";
+		$.post("<?php echo base_url()?>?d=manage&c=reserve&m=set_per_page",{num:num},function(data,status){
+			window.location="<?php echo base_url();?>?d=manage&c=reserve&m=reserve_list";
 		});
 	}
 	function show_del_list()

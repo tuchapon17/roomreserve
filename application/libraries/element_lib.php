@@ -131,6 +131,10 @@ class Element_lib
 		{
 			$html='<button type="button" class="btn btn-primary" '.$other_attr.' title="จัดการรูป"><i class="fa fa-picture-o fa-lg"></i></button>';
 		}
+		else if($btntype=="approve")
+		{
+			$html='<button type="button" class="btn btn-primary" '.$other_attr.' title=""><i class="fa fa-legal fa-lg"></i></button>';
+		}
 		return $html;
 	}
 }

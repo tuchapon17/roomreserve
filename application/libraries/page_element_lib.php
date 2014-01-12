@@ -140,6 +140,10 @@ class Page_element_lib
 		';
 		//<li class="active">
 		$html.='<li><a href="?d=manage&c=reserve&m=add">จองห้อง</a></li>';
+		if($this->fl->check_group_privilege(array("07"),true))
+		{
+			$html.='<li><a href="?d=manage&c=reserve&m=reserve_list">ประวัติการจองห้อง</a></li>';
+		}
 		if($this->fl->check_group_privilege(array("02","05","06"),true,"OR"))
 		{
 			$html.='<li class="dropdown">
@@ -153,6 +157,7 @@ class Page_element_lib
 				$html.='<li class="divider"></li>';
 				$html.='<li><a href="?d=manage&c=room_type&m=add">ประเภทห้อง</a></li>';
 				$html.='<li><a href="?d=manage&c=room&m=add">ห้อง</a></li>';
+				$html.='<li><a href="?d=manage&c=room&m=pic">จัดการรูปห้อง</a></li>';
 				$html.='<li class="divider"></li>';
 				$html.='<li><a href="?d=manage&c=titlename&m=add">คำนำหน้าชื่อ</a></li>';
 				$html.='<li><a href="?d=manage&c=condition&m=edit">ระเบียบการใช้งานระบบ</a></li>';
@@ -183,6 +188,7 @@ class Page_element_lib
 		{
 			$html.='<li><a href="?d=privilege&c=assign&m=add">โอนสิทธิ์</a></li>';
 		}
+		$html.='<li><a href="?d=front&c=room&m=view">ห้อง</a></li>';
 		if(!$this->ci->session->userdata("rs_username"))
 		{
 			$html.='<li><a href="?c=register&m=step1">ลงทะเบียน</a></li>
@@ -223,8 +229,12 @@ class Page_element_lib
 	function footer()
 	{
 		return '
-		<footer>
-        	<p>&copy; CCURU 2013</p>
+		<footer class="text-center">
+			<p>
+        	&copy; 2013-2014 Uttaradit Rajabhat University All Rights Reserved. 
+			<br>
+			By Tuchapol Rittavee. Email: tuchapon33@hotmail.com
+				</p>
       	</footer>';
 	}
 	function manage_search_box($search_text)

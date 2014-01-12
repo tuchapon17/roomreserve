@@ -26,7 +26,7 @@
  * @author		ExpressionEngine Dev Team
  * @link		http://codeigniter.com/user_guide/libraries/calendar.html
  */
-class MY_Calendar extends CI_Calendar {
+class MY_Calendar2 extends CI_Calendar2 {
 
 	/**
 	 * Generate the calendar
@@ -98,8 +98,9 @@ class MY_Calendar extends CI_Calendar {
 
 		//reserve id , room id
 		$param='';
-		if(isset($_GET['resid']))$param.='&resid='.$_GET['resid'];
-		if(isset($_GET['rmid']))$param.='&rmid='.$_GET['rmid'];
+		//if(isset($_GET['resid']))$param.='&resid='.$_GET['resid'];
+		//if(isset($_GET['rmid']))$param.='&rmid='.$_GET['rmid'];
+		//if($this->session->userdata("bct-room"))$param.='&rmid='.$this->session->userdata("bct-room");
 		// "previous" month link
 		if ($this->show_next_prev == TRUE)
 		{
@@ -109,7 +110,7 @@ class MY_Calendar extends CI_Calendar {
 			$adjusted_date = $this->adjust_date($month - 1, $year);
 			//$out .= str_replace('{previous_url}', $this->next_prev_url.$adjusted_date['year'].'/'.$adjusted_date['month'], $this->temp['heading_previous_cell']);
 			
-			$out .= str_replace('{previous_url}', $this->next_prev_url.'&year='.$adjusted_date['year'].'&month='.$adjusted_date['month'].$param, $this->temp['heading_previous_cell']);
+			$out .= str_replace('{previous_url}', $this->next_prev_url.'&year='.$adjusted_date['year'].'&month='.$adjusted_date['month'], $this->temp['heading_previous_cell']);
 			//else
 			//$out .= str_replace('{previous_url}', $this->next_prev_url.'&year='.$adjusted_date['year'].'&month='.$adjusted_date['month'], $this->temp['heading_previous_cell']);
 			$out .= "\n";
@@ -130,7 +131,7 @@ class MY_Calendar extends CI_Calendar {
 			$adjusted_date = $this->adjust_date($month + 1, $year);
 			//$out .= str_replace('{next_url}', $this->next_prev_url.$adjusted_date['year'].'/'.$adjusted_date['month'], $this->temp['heading_next_cell']);
 			//if(isset($_GET['resid']))
-			$out .= str_replace('{next_url}', $this->next_prev_url.'&year='.$adjusted_date['year'].'&month='.$adjusted_date['month'].$param, $this->temp['heading_next_cell']);
+			$out .= str_replace('{next_url}', $this->next_prev_url.'&year='.$adjusted_date['year'].'&month='.$adjusted_date['month'], $this->temp['heading_next_cell']);
 			//else
 			//$out .= str_replace('{next_url}', $this->next_prev_url.'&year='.$adjusted_date['year'].'&month='.$adjusted_date['month'], $this->temp['heading_next_cell']);
 		}
@@ -176,7 +177,7 @@ class MY_Calendar extends CI_Calendar {
 					{
 						// Cells with content
 						//+ rmid get
-						$day2="<a href='".base_url()."?c=calendar&m=bydate&cdate=".$year."-".$month."-".$day2."&resid=".$reserve_id."&rmid=".$room_id."'>".$day."</a>";
+						$day2="<a href='".base_url()."?c=b_calendar&m=bydate&cdate=".$year."-".$month."-".$day2."'>".$day."</a>";
 						$temp = ($is_current_month == TRUE AND $day == $cur_day) ? $this->temp['cal_cell_content_today'] : $this->temp['cal_cell_content'];
 						$out .= str_replace('{day}', $day2, str_replace('{content}', $data[$day], $temp));
 					}
@@ -185,7 +186,7 @@ class MY_Calendar extends CI_Calendar {
 						// Cells with no content
 						//if(strlen($day)==1)$day2="0".$day;
 						//else $day2=$day;
-						//$day2="<a href='".base_url()."?c=calendar&m=bydate&cdate=".$year."-".$month."-".$day2."'>".$day."</a>";
+						//$day2="<a href='".base_url()."?c=b_calendar&m=bydate&cdate=".$year."-".$month."-".$day2."'>".$day."</a>";
 						$temp = ($is_current_month == TRUE AND $day == $cur_day) ? $this->temp['cal_cell_no_content_today'] : $this->temp['cal_cell_no_content'];
 						$out .= str_replace('{day}', $day, $temp);
 					}
@@ -212,7 +213,78 @@ class MY_Calendar extends CI_Calendar {
 	}
 
 	// --------------------------------------------------------------------
-
+	
+	/**
+	 * Get Month Name
+	 *
+	 * Generates a textual month name based on the numeric
+	 * month provided.
+	 *
+	 * @access	public
+	 * @param	integer	the month
+	 * @return	string
+	 */
+	function get_month_name($month)
+	{
+		if ($this->month_type == 'short')
+		{
+			$month_names = array('01' => 'cal_ม.ค.', '02' => 'cal_ก.พ.', '03' => 'cal_มี.ค.', '04' => 'cal_เม.ย.', '05' => 'cal_พ.ค.', '06' => 'cal_มิ.ย.', '07' => 'cal_ก.ค.', '08' => 'cal_ส.ค.', '09' => 'cal_ก.ย.', '10' => 'cal_ต.ค.', '11' => 'cal_พ.ย.', '12' => 'cal_ธ.ค.');
+		}
+		else
+		{
+			$month_names = array('01' => 'cal_มกราคม', '02' => 'cal_กุมภาพันธ์', '03' => 'cal_มีนาคม', '04' => 'cal_เมษายน', '05' => 'cal_พฤษภาคม', '06' => 'cal_มิถุนายน', '07' => 'cal_กรกฎาคม', '08' => 'cal_สิงหาคม', '09' => 'cal_กันยายน', '10' => 'cal_ตุลาคม', '11' => 'cal_พฤศจิกายน', '12' => 'cal_ธันวาคม');
+		}
+	
+		$month = $month_names[$month];
+	
+		if ($this->CI->lang->line($month) === FALSE)
+		{
+			return ucfirst(str_replace('cal_', '', $month));
+		}
+	
+		return $this->CI->lang->line($month);
+	}
+	
+	// --------------------------------------------------------------------
+	
+	/**
+	 * Get Day Names
+	 *
+	 * Returns an array of day names (Sunday, Monday, etc.) based
+	 * on the type.  Options: long, short, abrev
+	 *
+	 * @access	public
+	 * @param	string
+	 * @return	array
+	 */
+	function get_day_names($day_type = '')
+	{
+		if ($day_type != '')
+			$this->day_type = $day_type;
+	
+		if ($this->day_type == 'long')
+		{
+			$day_names = array('sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday');
+		}
+		elseif ($this->day_type == 'short')
+		{
+			$day_names = array('อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์');
+		}
+		else
+		{
+			$day_names = array('อา', 'จ', 'อ', 'พ', 'พฤ', 'ศ', 'ส');
+		}
+	
+		$days = array();
+		foreach ($day_names as $val)
+		{
+			$days[] = ($this->CI->lang->line('cal_'.$val) === FALSE) ? ucfirst($val) : $this->CI->lang->line('cal_'.$val);
+		}
+	
+		return $days;
+	}
+	
+	// --------------------------------------------------------------------
 }
 
 // END CI_Calendar class

@@ -56,4 +56,8 @@ class Room_model extends MY_Model
 		$this->db->where("room_pic_id",$room_pic_id)->limit(1);
 		return $this->db->get()->result_array();
 	}
+	function get_room_list_upload()
+	{
+		return $this->db->select()->from("tb_room")->get()->result_array();
+	}
 }

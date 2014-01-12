@@ -6,6 +6,10 @@ class Register_model extends MY_Model
 		parent::__construct();
 		date_default_timezone_set('Asia/Bangkok');
 	}
+	
+	/**
+	 * Insert register information to tb_user , Insert user privilege to tb_user_has_privilege
+	 */
 	function add_user()
 	{
 		$username=$this->input->post("input_username");
@@ -61,10 +65,25 @@ class Register_model extends MY_Model
 				$data["tb_occupation_id"]=$new_id;
 				
 			}
-			/*#################################################
+			/*
 			 * insert new user to tb_user
-			#################################################*/
+			*/
 			$this->db->set($data)->insert('tb_user');
+			
+			/*
+			* select privilege from usergroup and insert to tb_user_has_privilege
+			*/
+			$this->db->select()->from("tb_usergroup_has_privilege");
+			$group_privilege = $this->db->where("tb_usergroup_id","04")->get()->result_array();
+			foreach($group_privilege as $g)
+			{
+				$gp = array(
+						"tb_privilege_id"=>$g['tb_privilege_id'],
+						"tb_user_username"=>$username
+				);
+				$this->db->set($gp)->insert("tb_user_has_privilege");
+			}
+				
 		if($this->db->trans_status()===FALSE):
 			$this->db->trans_rollback();
 			$this->session->set_flashdata("register_status",false);
@@ -79,11 +98,22 @@ class Register_model extends MY_Model
 		endif;
 	}
 	
+	/**
+	 * convert '' to NULL before insert to DB
+	 * @param $data
+	 * @return NULL|old_data
+	 */
 	function toNull($data)
 	{
 		if($data=='')return null;
 		else return $data;
 	}
+	
+	/**
+	 * Check Username in tb_user, Return true if username not exists
+	 * @param $username
+	 * @return boolean
+	 */
 	function username_already_exist($username)
 	{
 		$this->db->select()->from("tb_user")->where("username",$username);

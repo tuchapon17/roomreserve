@@ -42,7 +42,7 @@ echo $head;
       	<?php echo $reserve_tab;?>
       		<div class="col-lg-12" id="loginform">
       		 	<h2>จัดการการจอง</h2>
-      		 	<form role="form" class="form-inline" action="?d=manage&c=reserve&m=search" method="post" autocomplete="off">
+      		 	<form role="form" class="form-inline" action="?d=manage&c=reserve&m=search3" method="post" autocomplete="off">
       		 		<?php echo $manage_search_box;?>
       		 	</form>
       		 	<?php echo $table_edit;?>
@@ -65,7 +65,7 @@ echo $js;
 ?>
 <!-- Custom Javascript -->
 	<script type="text/javascript" src="<?php echo base_url();?>js/user_profile_script.js"></script>
-	<script type="text/javascript" src="<?php echo base_url();?>js/manage/reserve.js"></script>
+	
 	<script type="text/javascript">
 	<!--
 
@@ -132,8 +132,8 @@ echo $js;
 		Reset search result
 		###################################################*/
 		$("#clearSearch").click(function(){
-			$.post("<?php echo base_url()?>?d=manage&c=reserve&m=search",{clear:"clear"},function(data,status){
-				window.location="<?php echo base_url();?>?d=manage&c=reserve&m=edit";
+			$.post("<?php echo base_url()?>?d=manage&c=reserve&m=search2",{clear:"clear"},function(data,status){
+				window.location="<?php echo base_url();?>?d=manage&c=reserve&m=edit2";
 			});
 		}); 
 		/*#################################################
@@ -239,7 +239,7 @@ echo $js;
 					className: "btn-success",
 					callback: function() {
 
-						$.post("<?php echo base_url()?>?d=manage&c=reserve&m=set_orderby",{field:$("#orderby").val(),type:$("#ordertype").val()},function(data,status){
+						$.post("<?php echo base_url()?>?d=manage&c=reserve&m=set_orderby",{field:$("#orderby").val(),type2:$("#ordertype").val()},function(data,status){
 							window.location="<?php echo base_url();?>?d=manage&c=reserve&m=edit";
 						});
 					}
@@ -400,7 +400,37 @@ echo $js;
 			}
 		});//ajax1
 	}
-	
+	function approve_alert(r_id,base_url)
+	{
+		var html='';
+		html +='<form role="form" id="form_approve" action="'+base_url+'?d=manage&c=reserve&m=reserve_approve&id='+r_id+'" method="post" autocomplete="off">';
+		html +='<select id="select_approve" name="select_approve" class="form-control">';
+		html +='<option value="0">รออนุมัติ</option>';
+		html +='<option value="1">อนุมัติ</option>';
+		html +='<option value="3">ไม่อนุมัติ</option>';
+		html += '</select>';
+		html +='</form>';
+		bootbox.dialog({
+			message: html,
+			title: "อนุมัติการจอง",
+			buttons: {
+				success: {
+					label: "ตกลง",
+					className: "btn-success",
+					callback: function() {
+						$("#form_approve").submit();
+					}
+				},
+				danger: {
+					label: "ยกเลิก",
+					className: "btn-danger",
+					callback: function() {
+					
+					}
+				}
+			}
+		});
+	}
 	//-->
 	
 	</script>

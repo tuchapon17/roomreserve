@@ -1,5 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-class Calendar_Model extends CI_Model
+class b_calendar_Model extends CI_Model
 {
 	var $conf;
 	var $month;
@@ -10,7 +10,7 @@ class Calendar_Model extends CI_Model
 		$this->conf=array(
 				"start_day"=>'monday',
 				"show_next_prev"=>true,
-				"next_prev_url"=>"?c=calendar&m=main"
+				"next_prev_url"=>"?c=b_calendar&m=main"
 		);
 		$this->month=(isset($_GET["month"]) ? $this->month=$_GET["month"] : $this->month="");
 		$this->year=(isset($_GET["year"]) ? $this->year=$_GET["year"] : $this->year="");
@@ -57,15 +57,18 @@ class Calendar_Model extends CI_Model
 	   	{table_close}</table>{/table_close}
 		';
 	}
-	function get_calendar($year,$month,$room_id)
+	function get_calendar($year,$month,$approve,$room_id)
 	{
 		$this->db->select()->from("tb_reserve_has_datetime");
 		$this->db->join("tb_reserve","tb_reserve_has_datetime.tb_reserve_id=tb_reserve.reserve_id");
-		$where=array("tb_reserve.approve"=>1);
-		//if($reserve_id!=null)$where["tb_reserve.reserve_id"]=$reserve_id;
-		if($room_id!=null && $room_id!='all')$where['tb_reserve.tb_room_id']=$room_id;
-		$this->db->where($where);
-		$this->db->like("reserve_datetime_begin","$year-$month","after");
+		//$where=array("tb_reserve.approve"=>1);
+		if($this->session->userdata("bct-approve")!="all")
+			$where["tb_reserve.approve"]=$this->session->userdata("bct-approve");
+		if($room_id!=null && $room_id!='all')
+			$where['tb_reserve.tb_room_id']=$room_id;
+		if(isset($where))
+			$this->db->where($where);
+		$this->db->like("reserve_datetime_begin","$year-$month","after")->order_by("reserve_datetime_begin","ASC");
 		$query=$this->db->get();
 		$cal_data=array();
 		foreach ($query->result_array() as $row)
@@ -73,22 +76,21 @@ class Calendar_Model extends CI_Model
 			//$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)]="<i class='fa fa-info-circle'></i>";
 			if(!array_key_exists((int)substr($row["reserve_datetime_begin"],8,2), $cal_data))
 				//$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)]="<div class='text-left' onclick='alert(\"$row[reserve_datetime_begin].$row[reserve_datetime_end]\");'>".$row["project_name"]."</div>";
-				$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)]="<div class='time-small-begin'><small><a href=''>".substr($row["reserve_datetime_begin"],11,5)."</a></small></div>";
+				$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)]="<div class='time-small'><small><a href='".base_url()."?d=manage&c=reserve&m=view&id=".$row['tb_reserve_id']."'>".substr($row["reserve_datetime_begin"],11,5)."-".substr($row["reserve_datetime_end"],11,5)."</a></small></div>";
 			else
 				//$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)].="<div class='text-left' onclick='alert(\"$row[reserve_datetime_begin].$row[reserve_datetime_end]\");'>".$row["project_name"]."</div>";
-				$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)].="<div class='time-small-begin'><small><a href=''>".substr($row["reserve_datetime_begin"],11,5)."</a></small></div>";
+				$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)].="<div class='time-small'><small><a href=''>".substr($row["reserve_datetime_begin"],11,5)."-".substr($row["reserve_datetime_end"],11,5)."</a></small></div>";
 		}
 		return $cal_data;
 	}
-	function generate($year,$month,$room_id)
+	function generate($year,$month,$approve,$room_id)
 	{
-		
-		$this->load->library("calendar",$this->conf);
+		$this->load->library("calendar2",$this->conf);
 		/*$cal_data=array(
 				10=>'?c=test&m=calen&year=2013&month=10',
 				11=>'bar'
 		);*/
-		$cal_data=$this->get_calendar($year, $month,$room_id);
-		return $this->calendar->generate($year,$month,$cal_data);
+		$cal_data=$this->get_calendar($year, $month,$approve,$room_id);
+		return $this->calendar2->generate($year,$month,$cal_data);
 	}
 }

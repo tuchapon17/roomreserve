@@ -129,6 +129,18 @@ class Test extends CI_Controller {
 		$pdf->AddPage();
 		$pdf->Output('My-File-Name.pdf', 'I');
 	}
+	function post()
+	{
+		if(isset($_GET['id']))
+		{
+			echo $_GET['id'];break;
+			//redirect(base_url()."?c=test&m=post");
+		}
+		echo '<form action="'.base_url().'?c=test&m=post&id=1234" method="post">';
+		echo '<button type="submit">test</button></form>';
+		
+	}
+	
 }
 
 /* End of file welcome.php */
