@@ -5,7 +5,51 @@ class MY_Model extends CI_Model
 	{
 		parent::__construct();
 		date_default_timezone_set('Asia/Bangkok');
+		$this->default_admin_account();
 	}
+	
+	function default_admin_account()
+	{
+		$this->db->select()->from("tb_user")->where(array("tb_usergroup_id"=>"01"));
+		$ugroup=$this->db->get();
+		$this->db->select()->from("tb_user")->where(array("username"=>"admin"));
+		$admin=$this->db->get();
+		
+		$this->db->select()->from("tb_titlename")->limit(1);
+		$titlename=$this->db->get()->result_array();
+		
+		if($ugroup->num_rows()<1 && $admin->num_rows()<1)
+		{
+			$set=array(
+					"username"=>"admin",
+					"password"=>md5("admin@reserve"),
+					"email"=>"tuchapon33@hotmail.com",
+					"regis_on"=>date('Y-m-d H:i:s'),
+					"regis_ip"=>"127.0.0.1",
+					"tb_usergroup_id"=>"01",
+					"tb_titlename_id"=>$titlename[0]['titlename_id'],
+					"firstname"=>"admin",
+					"lastname"=>"admin",
+					"tb_occupation_id"=>"00",
+					"phone"=>"0881515680",
+					"house_no"=>"87/3",
+					"village_no"=>"2",
+					"tb_province_id"=>"73",
+					"tb_district_id"=>"7303",
+					"tb_subdistrict_id"=>"730319",
+					"user_status"=>1
+			);
+			$this->db->trans_begin();
+				$this->db->insert("tb_user",$set);
+			if($this->db->trans_status()===FALSE):
+				$this->db->trans_rollback();
+			else:
+				$this->db->trans_commit();
+			endif;
+			
+		}
+	}
+	
 	function get_maxid($zero_num,$field_id,$table)
 	{
 		$current_max_id=(int)$this->db->select("MAX($field_id) AS $field_id")->from($table)->limit(1)->get()->result_array()[0][$field_id];

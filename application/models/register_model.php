@@ -73,6 +73,7 @@ class Register_model extends MY_Model
 			/*
 			* select privilege from usergroup and insert to tb_user_has_privilege
 			*/
+			/* ไม่ได้ใช้ มี trigger แล้ว = "add_user_has_privilege"
 			$this->db->select()->from("tb_usergroup_has_privilege");
 			$group_privilege = $this->db->where("tb_usergroup_id","04")->get()->result_array();
 			foreach($group_privilege as $g)
@@ -82,7 +83,7 @@ class Register_model extends MY_Model
 						"tb_user_username"=>$username
 				);
 				$this->db->set($gp)->insert("tb_user_has_privilege");
-			}
+			}*/
 				
 		if($this->db->trans_status()===FALSE):
 			$this->db->trans_rollback();

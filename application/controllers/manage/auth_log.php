@@ -30,7 +30,7 @@ class Auth_log extends MY_Controller
 			$config['base_url']=base_url()."?d=manage&c=auth_log&m=edit";
 			//set per_page
 			if($this->session->userdata("set_per_page")) $config['per_page']=$this->session->userdata("set_per_page");
-			else $config['per_page']=3;
+			else $config['per_page']=2;
 			//ตำแหน่งหน้าที่แสดงข้อมูล
 			if(isset($_GET['page']) && preg_match('/^[\d]$/',$_GET['page'])) $this->getpage=$_GET['page'];
 			else $this->getpage=0;
