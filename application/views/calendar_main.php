@@ -146,13 +146,13 @@ echo $head;
       		 	<h2>ปฏิทิน</h2>
       		 	<?php if(isset($_GET['resid'])) echo "<h4>รหัสการจอง ".$_GET['resid']."</h4>";?>
       		 	<div class="panel panel-default">
-						<div class="panel-heading" id="search-heading">
-							<h3 class="panel-title">ค้นหา<div id="search-arrow"><i class="fa fa-caret-square-o-down"></i></div></h3>
-						</div>
-						<div class="panel-body" id="search-body">
-							<?php echo $customviewbox;?>
-						</div>
+					<div class="panel-heading" id="search-heading">
+						<h3 class="panel-title">ค้นหา<div id="search-arrow"><i class="fa fa-caret-square-o-down"></i></div></h3>
 					</div>
+					<div class="panel-body" id="search-body">
+						<?php echo $customviewbox;?>
+					</div>
+				</div>
       		 	
       		 	
       		 	

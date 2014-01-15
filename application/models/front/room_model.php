@@ -11,7 +11,7 @@ class Room_Model extends MY_Model
 		if($return_type=="array")
 		{
 			$this->db->select()->from("tb_room");
-			$this->db->join("tb_room_has_pic","tb_room_has_pic.tb_room_id=tb_room.room_id");
+			//$this->db->join("tb_room_has_pic","tb_room_has_pic.tb_room_id=tb_room.room_id");
 			$this->db->join("tb_room_type","tb_room_type.room_type_id=tb_room.tb_room_type_id");
 			$this->db->join("tb_fee_type","tb_fee_type.fee_type_id=tb_room.tb_fee_type_id");
 			$this->db->group_by("room_id")->limit($perpage,$page);
@@ -33,5 +33,24 @@ class Room_Model extends MY_Model
 		$this->db->where("tb_room_id",$room_id);
 		return $this->db->get()->result_array();
 	}
-	
+	function form_select_room_get_room($room_type_id)
+	{
+		$this->db->select()->from("tb_room")->where("tb_room_type_id",$room_type_id);
+		return $this->db->get()->result_array();
+	}
+	function form_select_room_get_room_type()
+	{
+		$this->db->select()->from("tb_room_type");
+		return $this->db->get()->result_array();
+	}
+	function get_room_data($room_id)
+	{
+		$this->db->select()->from("tb_room");
+		$this->db->join("tb_room_type","tb_room_type.room_type_id=tb_room.tb_room_type_id");
+		$this->db->join("tb_fee_type","tb_fee_type.fee_type_id=tb_room.tb_fee_type_id");
+		if($room_id!=null)$this->db->where("room_id",$room_id);
+		else $this->db->limit(1);
+		return $this->db->get()->result_array();
+	}
+
 }

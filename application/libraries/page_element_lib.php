@@ -54,19 +54,18 @@ class Page_element_lib
 		      		body {
 				  		padding-top: 50px;
 					}
+		      		.navbar-header .navbar-brand{
+		      			background-color:#178ACC;
+		      		}
 		    		.navbar-inverse {
-					   	background-color: #D89E36;
-		      			border-color:#D89E36;
+					   	!background-color: #D89E36;
+		      			!border-color:#D89E36;
 					}
 		      		.navbar-inverse .navbar-nav > .active > a, .navbar-inverse .navbar-nav > .active > a:hover, .navbar-inverse .navbar-nav > .active > a:focus{
-		      			background-color: #BD4932;
+		      			!background-color: #BD4932;
 		      		}
 		      		.navbar-inverse .navbar-nav > li > a , .navbar-inverse .navbar-brand{
-		      			color:#FFFAD5;
-		      		}
-		      		.btn-default{
-		      			color:#FFFAD5;
-		      			background-color:#105B63;
+		      			!color:#FFFAD5;
 		      		}
 		      		.red-text{
 		      			color:red;
@@ -124,9 +123,9 @@ class Page_element_lib
 	{
 		//$ci =& get_instance();
 		$html='
-		<div class="navbar navbar-inverse navbar-fixed-top" id="navbarmenu">
+		<div class="navbar navbar-default navbar-fixed-top" id="navbarmenu">
 	      <div class="container">
-	        <div class="navbar-header" style="background-color: #BD4932;">
+	        <div class="navbar-header">
 	          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
 	            <span class="icon-bar"></span>
 	            <span class="icon-bar"></span>
@@ -189,6 +188,11 @@ class Page_element_lib
 			$html.='<li><a href="?d=privilege&c=assign&m=add">โอนสิทธิ์</a></li>';
 		}
 		$html.='<li><a href="?d=front&c=room&m=view">ห้อง</a></li>';
+		$html.='<li><a href="?c=calendar&m=main">ปฏิทิน</a></li>';
+		$html.='</ul>';
+				
+		//user
+		$html.='<div style="float:right;"><ul class="nav navbar-nav">';
 		if(!$this->ci->session->userdata("rs_username"))
 		{
 			$html.='<li><a href="?c=register&m=step1">ลงทะเบียน</a></li>
@@ -202,12 +206,11 @@ class Page_element_lib
 				          <li><a href="?c=user_profile&m=view_profile">ข้อมูลส่วนตัว</a></li>
 				          <li ><a id="logout_menu">ออกจากระบบ</a></li>
 				        </ul>
-			      	</li>
-		';
+			      	</li>';
 		}
-		$html.='<li><a href="?c=calendar&m=main">ปฏิทิน</a></li>';
-		$html.='</ul>
-	        </div><!--/.nav-collapse -->
+		$html.='</ul></div>';
+		
+	    $html.='</div><!--/.nav-collapse -->
 	      </div>
 	    </div>
 		';

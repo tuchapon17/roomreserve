@@ -113,7 +113,7 @@ class Element_lib
 		}
 		else if($btntype=="submit")
 		{
-			$html='<button type="submit" class="btn btn-default" '.$other_attr.'><i class="fa fa-check-square-o fa-lg fa-white"></i></button>';
+			$html='<button type="submit" class="btn btn-primary" '.$other_attr.'><i class="fa fa-check-square-o fa-lg fa-white"></i></button>';
 		}
 		else if($btntype=="view")
 		{

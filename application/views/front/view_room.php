@@ -26,7 +26,13 @@ echo $head;
 		    !padding:0 10px; /* To give a bit of padding on the left and right */
 			border:none;
 		}
-		
+		#search-arrow{
+			float:right;
+			cursor:pointer;
+		}
+		.room-pic{
+			cursor:pointer;
+		}
     </style>
 <?php
 	echo $bodyopen;
@@ -39,7 +45,16 @@ echo $head;
       	
       	<div class="col-lg-12">
       		<h2>ข้อมูลห้อง</h2>
+      		<div class="panel panel-default">
+				<div class="panel-heading" id="search-heading">
+					<h3 class="panel-title">เลือกห้อง<div id="search-arrow"><i class="fa fa-caret-square-o-down"></i></div></h3>
+				</div>
+				<div class="panel-body" id="search-body">
+					<?php echo $form_select_room;?>
+			</div>
+		</div>
       	</div>
+      	
       	<div class="col-lg-6">
       		<dl class="dl-horizontal">			
 	      		<dt>ชื่อห้อง</dt>
@@ -61,19 +76,28 @@ echo $head;
 	      		<dt></dt>
 	      		<dd><?php ?></dd>
 	      	</dl>
+
         </div>
         <div class="col-lg-6">
         <?php 
         foreach($get_pic_list as $g)
         {
         	$src=base_url().'upload/pic/'.$g['pic_name'];
-        	echo '<img class="img-thumbnail" style="width:33%;height:auto;" src="'.$src.'" onclick=large_pic("'.$src.'");>'; 
+        	echo '<img class="img-thumbnail room-pic" style="width:33%;height:auto;" src="'.$src.'" onclick=large_pic("'.$src.'");>'; 
         }
         ?>
         </div>
         <div class="col-lg-12">
+       		<strong>รายละเอียดห้อง</strong>
+	      	<pre>
+	      		<div id="room_detail"><?php echo $rl['room_detail'];?></div>
+	      	</pre>
+        </div>
+        <!--
+        <div class="col-lg-12">
         <?php echo $pagination;?>
         </div>
+        -->
       </div>
      
       <hr>
@@ -87,7 +111,58 @@ echo $js;
 	<script type="text/javascript">
 	
 	$(function(){
+		//search room btn disable
+		if($("#select_room").find("option:selected").val()=="")
+			$("#view-btn").addClass("disabled");
+		$("#select_room").on("change",function(){
+			if($("#select_room").find("option:selected").val()!="")
+				$("#view-btn").removeClass("disabled");
+		});
 		
+		//replace room_detail content
+		var room_detail = $("#room_detail").text();
+		$("#room_detail").html(room_detail);
+		
+		$("#search-body").hide();
+		$("#search-heading").click(function(){
+			if($("#search-body").is(":hidden"))
+			{
+				$("#search-body").slideDown();
+				$("#search-arrow").children().attr("class","fa fa-caret-square-o-up");
+			}
+			else
+			{	
+				$("#search-body").slideUp();
+				$("#search-arrow").children().attr("class","fa fa-caret-square-o-down");
+			}
+		});
+
+		/*
+		*แสดงข้อมูลห้องใน dropdown (Get room list)
+		*/
+		$("#select_room_type").on("change",function(){
+			if($(this).find("option:selected").val()!=""){
+				$.ajax({
+					url:"?d=front&c=room&m=select_room_list",
+					data:{room_type_id:$(this).find("option:selected").val()},
+					type:"POST",
+					dataType:"json",
+					success:function(resp){
+						$("#select_room").find("option:gt(0)").remove();
+						if(resp.room_list!=null)$("#select_room").append(resp.room_list);
+						
+					},
+					error:function(error){
+						alert("Error : "+error);
+					}
+				});
+			}
+			else
+			{
+				$("#select_room").find("option:gt(0)").remove();
+			}
+		});
+		if($("#select_room_type").find("option:selected").val()!="") $("#select_room_type").change();
 	});
 	function large_pic(src)
 	{
