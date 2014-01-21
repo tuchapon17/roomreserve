@@ -51,10 +51,15 @@ echo $head;
 				</div>
 				<div class="panel-body" id="search-body">
 					<?php echo $form_select_room;?>
+				</div>
 			</div>
-		</div>
       	</div>
-      	
+      	<!--
+      	<div class="col-lg-12">
+			<div style="float:left;"><button id="room-prev" class="btn btn-default" type="button"><i class="fa fa-angle-double-left"></i></button></div>
+			<div style="float:right;"><button id="room-next" class="btn btn-default" type="button"><i class="fa fa-angle-double-right"></i></button></div>
+		</div>
+		-->
       	<div class="col-lg-6">
       		<dl class="dl-horizontal">			
 	      		<dt>ชื่อห้อง</dt>
@@ -88,10 +93,12 @@ echo $head;
         ?>
         </div>
         <div class="col-lg-12">
-       		<strong>รายละเอียดห้อง</strong>
-	      	<pre>
-	      		<div id="room_detail"><?php echo $rl['room_detail'];?></div>
-	      	</pre>
+	      	<div class="panel panel-default">
+				<div class="panel-heading">
+					<strong>รายละเอียดห้อง</strong>
+				</div>
+				<div id="room_detail" class="panel-body"><?php echo $rl['room_detail'];?></div>
+			</div>
         </div>
         <!--
         <div class="col-lg-12">
@@ -111,6 +118,7 @@ echo $js;
 	<script type="text/javascript">
 	
 	$(function(){
+
 		//search room btn disable
 		if($("#select_room").find("option:selected").val()=="")
 			$("#view-btn").addClass("disabled");
@@ -150,7 +158,6 @@ echo $js;
 					success:function(resp){
 						$("#select_room").find("option:gt(0)").remove();
 						if(resp.room_list!=null)$("#select_room").append(resp.room_list);
-						
 					},
 					error:function(error){
 						alert("Error : "+error);
@@ -163,6 +170,8 @@ echo $js;
 			}
 		});
 		if($("#select_room_type").find("option:selected").val()!="") $("#select_room_type").change();
+
+		
 	});
 	function large_pic(src)
 	{

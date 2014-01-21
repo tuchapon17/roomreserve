@@ -52,5 +52,11 @@ class Room_Model extends MY_Model
 		else $this->db->limit(1);
 		return $this->db->get()->result_array();
 	}
+	function check_room_id($room_id)
+	{
+		$count = $this->db->select("COUNT(room_id) AS count")->from("tb_room")->where("room_id",$room_id)->get()->result_array();
+		$count = $count[0];
+		return ($count['count']>0) ? true : false;
+	}
 
 }

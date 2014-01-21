@@ -79,7 +79,7 @@ class b_calendar_Model extends CI_Model
 				$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)]="<div class='time-small'><small><a href='".base_url()."?d=manage&c=reserve&m=view&id=".$row['tb_reserve_id']."'>".substr($row["reserve_datetime_begin"],11,5)."-".substr($row["reserve_datetime_end"],11,5)."</a></small></div>";
 			else
 				//$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)].="<div class='text-left' onclick='alert(\"$row[reserve_datetime_begin].$row[reserve_datetime_end]\");'>".$row["project_name"]."</div>";
-				$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)].="<div class='time-small'><small><a href=''>".substr($row["reserve_datetime_begin"],11,5)."-".substr($row["reserve_datetime_end"],11,5)."</a></small></div>";
+				$cal_data[(int)substr($row["reserve_datetime_begin"],8,2)].="<div class='time-small'><small><a href='".base_url()."?d=manage&c=reserve&m=view&id=".$row['tb_reserve_id']."'>".substr($row["reserve_datetime_begin"],11,5)."-".substr($row["reserve_datetime_end"],11,5)."</a></small></div>";
 		}
 		return $cal_data;
 	}

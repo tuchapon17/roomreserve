@@ -43,7 +43,11 @@ class Room extends MY_Controller
 				"form_select_room"=>$this->form_select_room()
 		);
 		*/
-		$room_id=($this->session->userdata("view-room"))?$this->session->userdata("view-room"):null;
+		if(isset($_GET['rmid']) && $this->rm->check_room_id($_GET['rmid']))
+		{
+			$room_id=$_GET['rmid'];
+		}
+		else $room_id=($this->session->userdata("view-room"))?$this->session->userdata("view-room"):null;
 		$room_data=$this->rm->get_room_data($room_id);
 		$data=array(
 				"htmlopen"=>$this->pel->htmlopen(),
@@ -56,7 +60,8 @@ class Room extends MY_Controller
 				"htmlclose"=>$this->pel->htmlclose(),
 				"get_room_list"=>$room_data,
 				"get_pic_list"=>$this->rm->get_pic_list($room_data[0]['room_id']),
-				"form_select_room"=>$this->form_select_room()
+				"form_select_room"=>$this->form_select_room(),
+				"perv_next_room"=>$this->perv_next_room()
 		);
 		$this->load->view("front/view_room",$data);
 	}
@@ -107,6 +112,16 @@ class Room extends MY_Controller
 					</div>
 				</div>';
 		$html.='</form>';		
+		return $html;
+	}
+	function perv_next_room()
+	{
+		$html='
+		<div class"col-lg-12">
+			<div style="float:left;"> << </div>
+			<div style="float:right;"> >> </div>
+		</div>				
+		';
 		return $html;
 	}
 	function form_select_room_process()

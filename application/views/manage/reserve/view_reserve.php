@@ -71,7 +71,7 @@ echo $head;
 	      		 				<dt>ชื่อโครงการ</dt>
 	      		 				<dd><?php echo $rd['project_name'];?></dd>
 	      		 				<dt>ห้องที่จอง</dt>
-	      		 				<dd><?php echo $rd['room_name'];?></dd>
+	      		 				<dd><a href="<?php echo base_url();?>?d=front&c=room&m=view&rmid=<?php echo $rd['room_id'];?>" target="_blank"><?php echo $rd['room_name'];?></a></dd>
 	      		 				<dt>จำนวนคนที่เข้าใช้</dt>
 	      		 				<dd><?php echo $rd['num_of_people'];?></dd>
 	      		 				<dt>วันที่จอง</dt>

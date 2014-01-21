@@ -101,6 +101,7 @@ class Test extends CI_Controller {
 	}
 	function testpdf()
 	{
+		ob_clean();
 		$this->load->library("pdf");
 		$pdf=$this->pdf;
 		/*
@@ -122,11 +123,25 @@ class Test extends CI_Controller {
 		//$pdf->SetPrintHeader(false);
 		//$pdf->SetPrintFooter(false);
 		
+		$header = array('Country','column2');
+		
+		// data loading
+		$data = $pdf->LoadData(array(
+			"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+		));
+		
+		// print colored table
+		$pdf->ColoredTable($header, $data);
+		
+		
+		
+		
 		$pdf->Write(18, 'Some sample text');
 		$pdf->Cell(0, 12, 'ภาษาไทยExample 001 - cell', 1, 1, 'C');
 		$pdf->Multicell(0,2,"ทดสอบภถี่สี่ห้าเจ็ดเป๊กThis is a multi-line text string\nNew line\nNew line");
 		
-		$pdf->AddPage();
+		ob_end_clean();
 		$pdf->Output('My-File-Name.pdf', 'I');
 	}
 	function post()

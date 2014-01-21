@@ -192,7 +192,7 @@ class Page_element_lib
 		$html.='</ul>';
 				
 		//user
-		$html.='<div style="float:right;"><ul class="nav navbar-nav">';
+		$html.='<ul class="nav navbar-nav navbar-right">';
 		if(!$this->ci->session->userdata("rs_username"))
 		{
 			$html.='<li><a href="?c=register&m=step1">ลงทะเบียน</a></li>
@@ -208,7 +208,7 @@ class Page_element_lib
 				        </ul>
 			      	</li>';
 		}
-		$html.='</ul></div>';
+		$html.='</ul>';
 		
 	    $html.='</div><!--/.nav-collapse -->
 	      </div>
